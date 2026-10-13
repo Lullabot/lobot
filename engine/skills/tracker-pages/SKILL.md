@@ -1,6 +1,6 @@
 ---
 name: tracker-pages
-description: Publish and keep in sync the PM's tracker pages: hosted pages (Claude artifacts with a shared database) for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist, where the PM reviews and edits records outside the chat. Use when the PM asks for a page, tracker, or dashboard for a Project Brain record, during the start-of-session routine and session close (to file what the PM changed on a page), and whenever a record with a page changes.
+description: Publish and keep in sync the PM's tracker pages: hosted pages (Claude artifacts with a shared database) for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist, where the PM reviews and edits records outside the chat. Use when the PM asks to see, pull up, list, or review a record that has a page or a page template (open questions, risks, decisions, RACI, a kickoff checklist), when the PM asks for a page, tracker, or dashboard for a Project Brain record, during the start-of-session routine and session close (to file what the PM changed on a page), and whenever a record with a page changes.
 ---
 
 # Tracker pages
@@ -21,17 +21,29 @@ Templates are in `templates/` in this skill's folder. Each has a `CONFIG` object
 |---|---|---|---|
 | `risks.html` | `docs/risks.md` | `risks/<R-###>` | Set severity, status, next step; add a risk |
 | `decisions.html` | `docs/decisions.yaml` | `decisions/<D-###>` | Set status and approver; propose a decision (marked as a proposal) |
-| `raci.html` | `docs/raci.yaml` (people from `docs/people.yaml`) | `roles`, `rows`, `meta/info`, `requests` | View the matrix per scope; request a change (no direct edits: RACI changes need a source) |
+| `raci.html` | `docs/raci.yaml` (people from `docs/people.yaml`) | `roles`, `rows`, `meta/info`, `requests` | View the matrix (Responsibility, then R, A, C, I with the people in each cell, grouped by area) per scope, or one page per site; request a change (no direct edits: RACI changes need a source) |
 | `questions.html` | `docs/questions.md` | `questions/<Q-###>` | Answer, reopen, add a question |
 | `checklist.html` | `docs/kickoff-checklist[-<scope>].md` (drive-sources skill, "Mirror a Sheet locally") | `kickoff/<scope or all>/tasks` | Set status and note; mark rows copied into the Sheet |
 
 ## Publish a page
 
 1. Copy the template to a scratch file and fill it: `{{PROJECT_NAME}}` (the project's display name), `{{SCOPES_JSON}}` (the scopes from `docs/raci.yaml` or `docs/sources.yaml` as JSON, or `{}` on a single-site project; always replace it, or the script won't run), and for the checklist `{{SCOPE_KEY}}`, `{{SHEET_URL}}`, `{{SHEET_TITLE}}`, `{{SHEET_TAB}}`. Check the script parses (`node --check` on the extracted script) before publishing.
+   For the RACI page, two `CONFIG` options: `site` set to a scope key makes a page for that site alone (no switcher; the title names the site), `showRoles: false` shows only people's names in the matrix (the roles list under it keeps each role as the reference), and `responseWindows: false` drops the "No response window" flags on a project that has chosen not to track them. On a multi-site project the PM can have one RACI page per site, all from the one `docs/raci.yaml`. Seed each with only its site's data (rows for `all` and that scope, each role's `people` for that scope, and that scope alone in `meta/info`), because anyone who can open a page can read its whole database. A record change then updates every page it appears on.
 2. Publish it with capabilities `{"db": {}, "user": {}}`. The page starts private; tell the PM to share it from the page if the team should see it.
 3. Seed the database from the record, one document per entry, in one batch. For every editable field, also store the value as it is in the file under `synced` (`synced: {severity, status, nextStep}` for a risk). Never seed invented example rows.
 4. Read the collection back once (and once as a view-only user) to confirm it loaded.
 5. Add the page to the root `CLAUDE.md` "This project" table: record, link. Pages live in one person's account, so the link is recorded but the record stays in `docs/`.
+
+## Show a record
+
+When the PM asks to see a record that has a template above, in any wording ("pull up my open questions", "show me the risks", "where's the RACI?"), the page is the answer, not a table in chat.
+
+1. **Find the page** in the root `CLAUDE.md` "This project" table.
+2. **Check it first.** Read its database and list anything waiting to be filed (see "Keep them in sync"), so the PM knows the page and the file differ.
+3. **Open it** (in Claude: the Artifact tool's `open` action). If the record has a template but no page yet, publish it ("Publish a page"), then open it.
+4. **Summarize in chat**, briefly: counts, and the few items most likely to need the PM's attention first. Don't reprint the whole record.
+
+If the assistant can't open pages, answer from the file and say the page link is in the root `CLAUDE.md`. A record with no template (people, glossary, journal, meetings) is answered from the file, or with the dashboard skill when the PM wants to browse.
 
 ## Keep them in sync
 

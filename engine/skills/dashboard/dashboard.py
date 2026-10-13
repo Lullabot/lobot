@@ -21,6 +21,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -130,8 +131,18 @@ def tab_decisions(root):
     return "# Decision log\n\n" + table(["ID", "Decision", "Status", "Driver", "Approver", "Date", "Tags"], rows)
 
 
+RACI_KEY = [
+    ("R", "Responsible", "Does the work. A task can have more than one."),
+    ("A", "Accountable", "Owns the outcome and makes the final call. Always exactly one person."),
+    ("C", "Consulted", "Gives input before the work is done or the decision is made."),
+    ("I", "Informed", "Kept up to date once the work is done or the decision is made."),
+]
+AREA_LABELS = {"qa": "QA", "ux": "UX", "seo": "SEO"}
+
+
 def tab_raci(root):
-    """One table per scope and area: Task | R | A | C | I, with people's names in the cells."""
+    """A shareable RACI document: header, letter key, one table per scope and area
+    (Task | R | A | C | I, equal fixed columns), and the source file in the footer."""
     data = load_yaml(root, "docs/raci.yaml")
     if data is None:
         return None
@@ -142,6 +153,7 @@ def tab_raci(root):
     rows = data.get("rows") or {}
     scopes = data.get("scopes") or {}
     scope_keys = list(scopes) or ["all"]
+    e = lambda v: html.escape(str(v if v is not None else ""))
 
     def person(key):
         if key in (None, "", "tbd"):
@@ -151,22 +163,51 @@ def tab_raci(root):
         return name or key
 
     def who(role_key, scope):
-        """Names filling a role in a scope, with the role title, e.g. 'Sam Lee — Technical lead'."""
+        """One line per role: the people filling it, then the role title under them."""
         role = roles.get(role_key)
         if not isinstance(role, dict):
-            return role_key
+            return '<div class="who"><span class="nm">%s</span></div>' % e(role_key)
         filled = role.get("people") or {}
         value = filled.get(scope, filled.get("all")) if isinstance(filled, dict) else filled
-        names = [person(v) for v in (value if isinstance(value, list) else [value])]
-        return "%s — %s" % (", ".join(names), role.get("title") or role_key)
+        names = ", ".join(person(v) for v in (value if isinstance(value, list) else [value]))
+        return '<div class="who"><span class="nm">%s</span><span class="rl">%s</span></div>' % (
+            e(names), e(role.get("title") or role_key))
 
     def cells(values, scope):
         values = values if isinstance(values, list) else ([values] if values else [])
-        return "; ".join(who(v, scope) for v in values)
+        return "".join(who(v, scope) for v in values) or '<span class="none">—</span>'
 
-    out = ["# RACI matrix", "",
-           "R = does the work · A = owns the outcome and signs off (one person) · C = consulted before · I = informed after.",
-           "Status: %s." % (data.get("status") or "unknown")]
+    status = str(data.get("status") or "unknown")
+    agreed = data.get("agreed") if isinstance(data.get("agreed"), dict) else {}
+    status_text = {"draft": "Draft, not yet agreed", "agreed": "Agreed", "needs-review": "Needs review"}.get(status, status.capitalize())
+    if status == "agreed" and agreed.get("date"):
+        status_text += " on %s" % agreed["date"]
+    stamp = mtime(root, "docs/raci.yaml")
+    if stamp:
+        t = time.localtime(stamp)
+        updated = "%s %d, %d" % (time.strftime("%B", t), t.tm_mday, t.tm_year)
+    else:
+        updated = ""
+    meta = [("Status", status_text)]
+    if updated:
+        meta.append(("Last updated", updated))
+    if scopes:
+        meta.append(("Sites", ", ".join(str(v) for v in scopes.values())))
+
+    out = ['<article class="raci-doc">',
+           '<div class="dochead"><div class="eyebrow">Prepared by Lullabot</div>',
+           '<h1>%s RACI Matrix</h1>' % e(project_name(root)),
+           '<p class="lede">Who does the work, who makes the call, who is asked, and who is kept informed, for each area of the project.</p>',
+           '<dl class="docmeta">' + "".join('<div><dt>%s</dt><dd>%s</dd></div>' % (e(k), e(v)) for k, v in meta) + '</dl>']
+    if status == "needs-review" and data.get("review_reason"):
+        out.append('<p class="review">Under review: %s</p>' % e(data["review_reason"]))
+    out.append('</div>')
+    out.append('<dl class="raci-key">' + "".join(
+        '<div><dt><b class="ltr">%s</b>%s</dt><dd>%s</dd></div>' % (l, t, d) for l, t, d in RACI_KEY) + '</dl>')
+
+    colgroup = '<colgroup><col class="c-task">' + '<col class="c-role">' * 4 + '</colgroup>'
+    thead = '<thead><tr><th scope="col">Task</th>' + "".join(
+        '<th scope="col" title="%s">%s <span class="full">%s</span></th>' % (t, l, t) for l, t, _ in RACI_KEY) + '</tr></thead>'
     for scope in scope_keys:
         # Rows that apply here: key@scope replaces key; unscoped rows apply everywhere.
         chosen = {}
@@ -178,28 +219,35 @@ def tab_raci(root):
                 continue
             if sc or base not in chosen:
                 chosen[base] = row
+        out.append('<section class="scope">')
         if len(scope_keys) > 1 or scopes:
-            out += ["", "## %s" % scopes.get(scope, scope)]
+            out.append('<h2>%s</h2>' % e(scopes.get(scope, scope)))
         by_area = {}
         for base, row in chosen.items():
             by_area.setdefault(row.get("area") or "other", []).append(row)
         notes = []
         for area in by_area:  # file order, like the raci skill's --table
-            out += ["", "### %s" % area.capitalize(), ""]
-            lines = []
+            label = AREA_LABELS.get(area, str(area).replace("-", " ").capitalize())
+            body = []
             for row in by_area[area]:
                 a = cells(row.get("A"), scope)
                 if row.get("backup"):
-                    a += "; backup: " + cells(row.get("backup"), scope)
-                lines.append([row.get("responsibility"), cells(row.get("R"), scope), a,
-                              cells(row.get("C"), scope), cells(row.get("I"), scope)])
+                    a += '<div class="backup">Backup</div>' + cells(row.get("backup"), scope)
+                task = '<div class="task">%s</div>' % e(row.get("responsibility"))
+                if row.get("response_window"):
+                    task += '<div class="rw">Response window: %s</div>' % e(row["response_window"])
+                body.append("<tr><th scope=\"row\">%s</th><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (
+                    task, cells(row.get("R"), scope), a, cells(row.get("C"), scope), cells(row.get("I"), scope)))
                 role = roles.get(row.get("A")) if isinstance(row.get("A"), str) else None
                 if isinstance(role, dict) and role.get("org") == "client" and not row.get("response_window"):
                     notes.append("No response window set for: %s" % row.get("responsibility"))
-            out.append(table(["Task", "R", "A", "C", "I"], lines))
+            out.append('<h3>%s</h3><div class="tw"><table class="raci-t">%s%s<tbody>%s</tbody></table></div>' % (
+                e(label), colgroup, thead, "".join(body)))
         if notes:
-            out += ["", "**Open:**", ""] + ["- " + n for n in notes]
-    return "\n".join(out)
+            out.append('<div class="open"><strong>Open:</strong><ul>%s</ul></div>' % "".join("<li>%s</li>" % e(n) for n in notes))
+        out.append('</section>')
+    out.append('</article>')
+    return {"html": "\n".join(out), "footer": True}
 
 
 def tab_people(root):
@@ -291,8 +339,8 @@ PAGE = r"""<!doctype html>
 --ok:#6fcf97;--ok-bg:#183025;--warn:#f0b45a;--warn-bg:#33281a;--bad:#f08b7a;--bad-bg:#3a201c;--na:#8a919c;--na-bg:#222830;color-scheme:dark}}
 *{box-sizing:border-box}html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--f);display:grid;grid-template-columns:220px 1fr;grid-template-rows:auto 1fr}
-header{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
-header h1{font-size:18px;margin:0}header .meta{color:var(--muted);font-size:13px}
+header.app{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
+header.app h1{font-size:18px;margin:0}header.app .meta{color:var(--muted);font-size:13px}
 nav{border-right:1px solid var(--line);padding:12px 8px;overflow:auto}
 nav a{display:block;padding:7px 12px;border-radius:6px;color:var(--fg);text-decoration:none;font-size:14px}
 nav a:hover{background:var(--accent-soft)}nav a[aria-current="page"]{background:var(--accent);color:var(--surface);font-weight:600}
@@ -308,9 +356,46 @@ th{background:var(--bg);font-weight:600;border-top:0;position:sticky;top:0}
 .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
 .ok{color:var(--ok);background:var(--ok-bg)}.warn{color:var(--warn);background:var(--warn-bg)}.bad{color:var(--bad);background:var(--bad-bg)}.na{color:var(--na);background:var(--na-bg)}
 .err{color:var(--bad)}
+/* RACI: a shareable document. Equal fixed columns in every table, vertical dividers, source in the footer. */
+.raci-doc .dochead{display:grid;gap:8px;padding-bottom:18px;margin-bottom:18px;border-bottom:2px solid var(--accent)}
+.raci-doc .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.raci-doc h1{font-size:28px;margin:0}
+.raci-doc .lede{margin:0;color:var(--muted);max-width:70ch}
+.docmeta{display:flex;flex-wrap:wrap;gap:6px 28px;margin:4px 0 0}
+.docmeta div{display:grid;gap:1px}.docmeta dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.docmeta dd{margin:0;font-weight:600}
+.raci-doc .review{margin:0;padding:8px 12px;border-radius:6px;color:var(--warn);background:var(--warn-bg)}
+.raci-key{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0 0 8px}
+.raci-key div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.raci-key dt{display:flex;align-items:center;gap:8px;font-weight:700}
+.raci-key dd{margin:4px 0 0;color:var(--muted);font-size:14px}
+.ltr{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:5px;background:var(--accent);color:var(--surface);font-family:var(--m);font-size:13px}
+.raci-doc h2{font-size:20px;margin-top:32px;padding-top:4px}
+.raci-doc h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 0 6px}
+.raci-doc .tw{margin:0}
+table.raci-t{table-layout:fixed;min-width:720px}
+table.raci-t col.c-task{width:28%}table.raci-t col.c-role{width:18%}
+table.raci-t th,table.raci-t td{border-left:1px solid var(--line);overflow-wrap:anywhere}
+table.raci-t th:first-child,table.raci-t td:first-child{border-left:0}
+table.raci-t thead th{font-size:14px}table.raci-t thead .full{font-weight:500;color:var(--muted)}
+table.raci-t tbody th{background:none;position:static;font-weight:500;border-top:1px solid var(--line)}
+.raci-t .who{display:grid;margin-bottom:6px}.raci-t .who:last-child{margin-bottom:0}
+.raci-t .nm{font-weight:600}.raci-t .rl,.raci-t .rw,.raci-t .backup{font-size:12px;color:var(--muted)}
+.raci-t .rw{margin-top:4px}.raci-t .backup{margin-top:8px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.raci-t .none{color:var(--muted)}
+.raci-doc .open{margin-top:12px;font-size:14px}
+.docfoot{margin-top:32px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.mono{font-family:var(--m)}
+@media print{
+ body{display:block;background:#fff;color:#000}header.app,nav{display:none}main{overflow:visible;padding:0}
+ .tw{overflow:visible;border-color:#bbb}table.raci-t{min-width:0}th{position:static}
+ table.raci-t th,table.raci-t td{border-color:#bbb}.raci-doc .open{display:none}
+ .raci-doc h3,.raci-t tr{break-inside:avoid;break-after:avoid-page}.raci-t tr{break-after:auto}
+ .ltr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 @media (max-width:700px){body{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}nav{display:flex;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}}
 </style></head><body>
-<header><h1>__TITLE__</h1><span class="meta">Lobot dashboard · read-only · updates as the files change</span></header>
+<header class="app"><h1>__TITLE__</h1><span class="meta">Lobot dashboard · read-only · updates as the files change</span></header>
 <nav id="nav"></nav>
 <main><div class="doc" id="doc">Loading…</div></main>
 <script>
@@ -358,7 +443,11 @@ async function show(force){
   if(!force&&h===current&&d.stamp===stamp)return;current=h;stamp=d.stamp;
   const top=h.startsWith("meeting/")?"meetings":h;
   document.querySelectorAll("nav a").forEach(a=>{if(a.dataset.id===top)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
-  document.getElementById("doc").innerHTML=(d.source?`<div class="src">${esc(d.source)}</div>`:"")+(d.error?`<p class="err">${esc(d.error)}</p>`:md(d.markdown||""));
+  const body=d.error?`<p class="err">${esc(d.error)}</p>`:(d.html!=null?d.html:md(d.markdown||""));
+  // Tabs meant for sharing (RACI) put the source file in a footer instead of above the title.
+  document.getElementById("doc").innerHTML=d.footer&&!d.error
+    ?body+(d.source?`<footer class="docfoot">Source: <span class="mono">${esc(d.source)}</span></footer>`:"")
+    :(d.source?`<div class="src">${esc(d.source)}</div>`:"")+body;
 }
 window.addEventListener("hashchange",()=>show(true));
 setInterval(()=>{if(!document.hidden)show(false).catch(()=>{})},5000);
@@ -416,6 +505,8 @@ def make_handler(root):
                         stamp = mtime(root, src) if src and not src.endswith("/") else None
                         if t[0] == "meetings":
                             stamp = len(latest(root, "docs/meetings"))
+                        if isinstance(body, dict):  # a tab that renders its own (escaped) HTML
+                            return self.json({"html": body["html"], "footer": body.get("footer", False), "source": src, "stamp": stamp})
                         return self.json({"markdown": body or "Nothing here yet.", "source": src, "stamp": stamp})
                 return self.json({"error": "Unknown tab."}, 404)
             self.send(404, "Not found", "text/plain")

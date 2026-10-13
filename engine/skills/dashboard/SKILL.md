@@ -25,7 +25,7 @@ It opens `http://127.0.0.1:<port>/` in the browser. Options: a project path as t
 
 ## Tabs
 
-Shown only when the record exists: Overview (`docs/overview/index.md`), Questions (`docs/questions.md`), Risks (`docs/risks.md`), Decisions (`docs/decisions.yaml`), RACI (the raci skill's `--table` view of `docs/raci.yaml`), one Kickoff checklist per `docs/kickoff-checklist*.md`, People, Glossary, Journal (latest day), and Meetings (list, then each set of notes).
+Shown only when the record exists: Overview (`docs/overview/index.md`), Questions (`docs/questions.md`), Risks (`docs/risks.md`), Decisions (`docs/decisions.yaml`), RACI (`docs/raci.yaml` laid out to share with the client: a header with status and date, what each letter means, one table per site and area with the same columns throughout, and the source file in the footer; print it or save it as a PDF from the browser), one Kickoff checklist per `docs/kickoff-checklist*.md`, People, Glossary, Journal (latest day), and Meetings (list, then each set of notes).
 
 ## For the assistant
 

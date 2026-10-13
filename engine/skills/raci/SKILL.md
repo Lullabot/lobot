@@ -141,7 +141,7 @@ rows:
 - **Exactly one A per row, and A is one person.** If the A role resolves to a team or nobody in some scope, the row is invalid. Put extra advisors in C.
 - **At least one R.** A and R may be the same role; on a small team they usually are.
 - **No role holds conflicting letters on one row.** C and I don't overlap with R or A, or with each other.
-- **Client A needs a backup and a response window.** Client approvals are where agency work usually stalls, and a late approval is what moves the schedule under the contract.
+- **Client A needs a backup and a response window.** Client approvals are where agency work usually stalls, and a late approval is what moves the schedule under the contract. A PM may choose not to track response windows on a project; record that as a project rule (root `CLAUDE.md`), and the validator's response-window warnings can then be ignored there.
 - **People are referenced by people directory key** (people skill). Anyone filling a role has an active role on the project; add them to the directory if they're missing. Never guess who someone is.
 - **Quote** `responsibility`, `source`, `notes`, and scope display names.
 - **The SOW wins on what it covers.** When the matrix and the SOW disagree, don't change either: raise it as an open question for the PM.

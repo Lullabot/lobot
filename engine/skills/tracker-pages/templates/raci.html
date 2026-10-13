@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: one working column; a "waiting for Claude" request queue above a scope-switched matrix (scrolls inside its own box), roles legend below. */
+/* Layout: one working column; a "waiting for Claude" request queue above a scope-switched matrix (Responsibility | R | A | C | I, people in the cells, grouped by area; scrolls inside its own box), roles legend below. */
 :root{
   --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
   --accent:#1f5f8b; --accent-soft:#e3eef6;
@@ -12,6 +12,7 @@
   --done:#1d7a46; --done-bg:#e1f3e8;
   --na:#7b8290; --na-bg:#f0f1f3;
   --sync:#a33a2b; --sync-bg:#fbe6e2;
+  --brand:#d22630; --brand-ink:#ffffff;   /* Lullabot red for Lullabot tags; swap for the exact brand value */
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
@@ -20,20 +21,25 @@
   --accent:#7cb4dc; --accent-soft:#1c2c3a;
   --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
   --done:#6fcf97; --done-bg:#183025; --na:#8a919c; --na-bg:#222830;
-  --sync:#f08b7a; --sync-bg:#3a201c; color-scheme:dark}}
+  --sync:#f08b7a; --sync-bg:#3a201c; --brand:#d22630; --brand-ink:#ffffff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
   --accent:#7cb4dc; --accent-soft:#1c2c3a;
   --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
   --done:#6fcf97; --done-bg:#183025; --na:#8a919c; --na-bg:#222830;
-  --sync:#f08b7a; --sync-bg:#3a201c; color-scheme:dark}
+  --sync:#f08b7a; --sync-bg:#3a201c; --brand:#d22630; --brand-ink:#ffffff; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45;padding:0 16px}
 .wrap{max-width:1040px;margin:0 auto;padding-block:28px 48px;display:grid;gap:22px;min-width:0}
-header{display:grid;gap:6px}
-.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
-h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+.dochead{display:grid;gap:8px;padding-bottom:18px;border-bottom:2px solid var(--accent)}
+.brandrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:28px;line-height:1.2;margin:0;text-wrap:balance}
+.docmeta{display:flex;flex-wrap:wrap;gap:6px 28px;margin:4px 0 0}
+.docmeta div{display:grid;gap:1px}
+.docmeta dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.docmeta dd{margin:0;font-weight:600}
 h2{font-size:15px;margin:0}
 .sub{color:var(--muted);margin:0;max-width:68ch}
 a{color:var(--accent)}
@@ -44,6 +50,7 @@ a:focus-visible,button:focus-visible,textarea:focus-visible,summary:focus-visibl
 .s-done{color:var(--done);background:var(--done-bg)} .s-na{color:var(--na);background:var(--na-bg)}
 .s-sync{color:var(--sync);background:var(--sync-bg)}
 .s-acc{color:var(--accent);background:var(--accent-soft)}
+.s-brand{color:var(--brand-ink);background:var(--brand)}
 section.queue{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px}
 .qhead,.lhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
 .qrow{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding-top:10px;border-top:1px solid var(--line);font-size:14px}
@@ -60,21 +67,27 @@ button:disabled{opacity:.5;cursor:default}
 .filters{display:flex;flex-wrap:wrap;gap:6px}
 .filters button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .list{display:grid;gap:10px;min-width:0}
-.legendkey{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted);align-items:center}
-.legendkey span{display:inline-flex;gap:6px;align-items:center}
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:0}
+.key div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.key dt{display:flex;align-items:center;gap:8px;font-weight:700}
+.key dd{margin:4px 0 0;color:var(--muted);font-size:14px}
 
 /* Matrix */
 .scroller{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch}
-table.raci{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:14px}
+/* Fixed layout: the responsibility column is set, every role column gets an equal share; min-width is set per render. */
+table.raci{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;font-size:14px}
+col.c-resp{width:280px}
+table.raci{min-width:calc(280px + var(--roles,4) * 140px)}
 .raci th,.raci td{border-bottom:1px solid var(--line);padding:10px 10px;vertical-align:top;text-align:left}
 .raci tbody tr:last-child td{border-bottom:0}
 .raci thead th{background:var(--surface);font-weight:600}
-.raci .grp th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-block:8px 6px}
-.raci .grp th.g-client,.raci .role.c-first,.raci td.c-first{border-left:2px solid var(--line)}
-.raci th.role{min-width:112px;max-width:140px;font-size:13px;line-height:1.3}
-.raci th.role .who{display:block;font-weight:500;color:var(--muted);margin-top:4px;font-size:12px}
-.raci .stick{position:sticky;left:0;z-index:1;background:var(--surface);min-width:250px;max-width:320px;border-right:1px solid var(--line)}
-.raci td.cell{text-align:center;vertical-align:middle;white-space:nowrap}
+.raci .stick{position:sticky;left:0;z-index:1;background:var(--surface);border-right:1px solid var(--line)}
+.raci td.cell{border-left:1px solid var(--line)}
+.raci th.let{border-left:1px solid var(--line);font-size:13px;white-space:nowrap}
+.raci tr.area th{background:var(--bg);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-block:8px 6px}
+.raci .names{display:grid;gap:4px}
+.raci .name{overflow-wrap:anywhere}
+.raci .rolenote{display:block;font-size:12px;color:var(--muted)}
 .resp-title{font-weight:500}
 .resp-meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:12px;color:var(--muted)}
 .chip{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px}
@@ -101,23 +114,37 @@ textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);b
 .rolecard .people{display:grid;gap:2px;font-size:14px}
 .muted{color:var(--muted)}
 .tbd{font-size:12px;font-weight:600;color:var(--na);background:var(--na-bg);padding:1px 6px;border-radius:4px;margin-left:4px}
-.foot{color:var(--muted);font-size:13px}
+.foot{display:grid;gap:4px;color:var(--muted);font-size:13px;padding-top:12px;border-top:1px solid var(--line)}
 .notice{background:var(--sync-bg);color:var(--sync);border-radius:8px;padding:10px 12px;font-size:14px}
-@media (max-width:520px){.raci .stick{min-width:200px;max-width:220px}}
+@media (max-width:520px){col.c-resp{width:210px} table.raci{min-width:calc(210px + var(--roles,4) * 110px)}}
+@media print{
+  body{background:#fff;padding:0}
+  .no-print,.reqrow,button,details.src{display:none!important}
+  .wrap{padding:0;max-width:none}
+  .scroller{overflow:visible;border-color:#bbb}
+  table.raci{min-width:0!important}
+  .raci .stick{position:static}
+  .raci tr{break-inside:avoid}
+  .l,.pill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow" id="eyebrow">Project Brain</div>
-    <h1>RACI matrix</h1>
-    <p class="sub">Who is Responsible, Accountable, Consulted and Informed for each area of work, on the Lullabot and client sides. Read from <span class="mono">docs/raci.yaml</span> in the Project Brain. To change an assignment, request it on the row.</p>
-    <div class="tally" id="tally"></div>
+  <header class="dochead">
+    <div class="brandrow">
+      <span class="eyebrow">Prepared by Lullabot</span>
+      <button type="button" class="no-print" id="print">Print or save as PDF</button>
+    </div>
+    <h1 id="doctitle">{{PROJECT_NAME}} RACI Matrix</h1>
+    <p class="sub">Who does the work, who makes the call, who is asked, and who is kept informed, for each area of the project, on the Lullabot and client sides.</p>
+    <dl class="docmeta" id="docmeta"></dl>
+    <div class="tally no-print" id="tally"></div>
   </header>
 
-  <div class="notice" id="notice" hidden></div>
+  <div class="notice no-print" id="notice" hidden></div>
 
-  <section class="queue" aria-labelledby="qh">
+  <section class="queue no-print" aria-labelledby="qh">
     <div class="qhead"><h2 id="qh">Waiting for Claude to file</h2></div>
     <div id="queue"><p class="empty">Loading requests…</p></div>
   </section>
@@ -125,14 +152,14 @@ textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);b
   <section class="list" aria-labelledby="mh">
     <div class="lhead">
       <h2 id="mh">Matrix</h2>
-      <div class="filters" role="group" aria-label="Choose a site" id="scopes" hidden></div>
+      <div class="filters no-print" role="group" aria-label="Choose a site" id="scopes" hidden></div>
     </div>
-    <div class="legendkey" aria-label="Letter key">
-      <span><b class="l l-A">A</b>Accountable, makes the final call</span>
-      <span><b class="l l-R">R</b>Responsible, does the work</span>
-      <span><b class="l l-C">C</b>Consulted before</span>
-      <span><b class="l l-I">I</b>Informed after</span>
-    </div>
+    <dl class="key" aria-label="What the letters mean">
+      <div><dt><b class="l l-R">R</b>Responsible</dt><dd>Does the work. A task can have more than one.</dd></div>
+      <div><dt><b class="l l-A">A</b>Accountable</dt><dd>Owns the outcome and makes the final call. Always exactly one person.</dd></div>
+      <div><dt><b class="l l-C">C</b>Consulted</dt><dd>Gives input before the work is done or the decision is made.</dd></div>
+      <div><dt><b class="l l-I">I</b>Informed</dt><dd>Kept up to date once the work is done or the decision is made.</dd></div>
+    </dl>
     <div class="scroller" id="scroller" tabindex="0" aria-label="RACI matrix, scrolls sideways">
       <table class="raci" id="matrix">
         <tbody><tr><td class="stick"><span class="resp-title">Responsibilities appear here once they load.</span><div class="resp-meta">If nothing shows, ask Claude to sync the RACI matrix from the Project Brain.</div></td></tr></tbody>
@@ -145,16 +172,22 @@ textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);b
     <div class="roles" id="roles"><p class="empty">Roles appear here once they load.</p></div>
   </section>
 
-  <p class="foot">Change requests are reviewed and filed into the Project Brain by Claude.</p>
+  <footer class="foot">
+    <span>Source: <span class="mono">docs/raci.yaml</span> in the {{PROJECT_NAME}} Project Brain</span>
+    <span class="no-print">To change an assignment, use “Request a change” on its row. Requests are reviewed and filed into the Project Brain by Claude.</span>
+  </footer>
 </div>
 
 <script>
 const CONFIG = {
-  project: "{{PROJECT_NAME}}",          // eyebrow: "<project> · Project Brain"
+  project: "{{PROJECT_NAME}}",          // also filled into the title and footer above
   scopes: {{SCOPES_JSON}},              // {} on a single-site project, else {"site-a": "Site A", ...}
+  site: "",                             // a scope key: one page per site, no site switcher ("" shows the switcher)
+  showRoles: true,                      // false: the matrix and backups show names only; the roles list below always shows each role
+  responseWindows: true,                // false: the project doesn't track client response windows; no "No response window" flags
 };
 const ORG_LABEL = {agency: "Lullabot", client: "Client"};
-const STATUS_CLS = {draft: "s-prog", agreed: "s-done", "needs-review": "s-sync"};
+const STATUS_TEXT = {draft: "Draft, not yet agreed", agreed: "Agreed", "needs-review": "Needs review"};
 let scope = "all", roles = [], rows = [], requests = [], meta = null;
 let db = null, reqColl = null, canWrite = true, openForm = null;
 
@@ -164,15 +197,18 @@ const pill = (cls, text) => el("span", {className: "pill " + cls, textContent: t
 
 // Scopes: keys from CONFIG.scopes plus any named in meta/info, then "all" (Project-wide).
 // Labels prefer meta/info scope names, falling back to CONFIG. No scopes at all: hide the switcher, show "all".
-const scopeKeys = () => { const ks = [...Object.keys(CONFIG.scopes || {})]; Object.keys(meta?.scopes || {}).forEach(k => { if (k !== "all" && !ks.includes(k)) ks.push(k); }); return ks; };
+const scopeKeys = () => { if (CONFIG.site) return [CONFIG.site]; const ks = [...Object.keys(CONFIG.scopes || {})]; Object.keys(meta?.scopes || {}).forEach(k => { if (k !== "all" && !ks.includes(k)) ks.push(k); }); return ks; };
 const hasScopes = () => scopeKeys().length > 0;
 const scopeLabel = k => k === "all" ? "Project-wide" : ((CONFIG.scopes || {})[k] || meta?.scopes?.[k] || k);
 const scopeFull = k => k === "all" ? "Project-wide" : (meta?.scopes?.[k] || (CONFIG.scopes || {})[k] || k);
 const firstScope = () => scopeKeys()[0] || "all";
 let scopePicked = false;
 try { const s = localStorage.getItem("raci-scope"); if (s && (s === "all" || scopeKeys().includes(s))) { scope = s; scopePicked = true; } } catch (e) {}
+if (CONFIG.site) { scope = CONFIG.site; scopePicked = true; }
 if (!scopePicked) scope = firstScope();
-$("eyebrow").textContent = `${CONFIG.project} · Project Brain`;
+if (CONFIG.site) { const t = `${CONFIG.project} ${scopeLabel(CONFIG.site)} RACI Matrix`; $("doctitle").textContent = t; document.title = t; }
+const namesOnly = CONFIG.showRoles === false;
+$("print").onclick = () => window.print();
 
 function notice(msg){ const n = $("notice"); n.textContent = msg || ""; n.hidden = !msg; }
 
@@ -200,8 +236,7 @@ function rolesFor(sc){
   return roles.filter(r => peopleFor(r, sc) || used.has(r.key))
     .sort((a, b) => (a.org === b.org ? 0 : a.org === "agency" ? -1 : 1) || (a.order ?? 0) - (b.order ?? 0));
 }
-const lettersFor = (row, key) => ["A","R","C","I"].filter(L => L === "A" ? row.A === key : (row[L] || []).includes(key));
-function noWindow(row){ const a = roleByKey()[row.A]; return a && a.org === "client" && !row.response_window; }
+function noWindow(row){ if (CONFIG.responseWindows === false) return false; const a = roleByKey()[row.A]; return a && a.org === "client" && !row.response_window; }
 
 // Person rendering: tbd and placeholder keys get a muted marker.
 function personNode(p){
@@ -218,6 +253,7 @@ function peopleNode(list){
 }
 function roleLabel(key, sc){
   const r = roleByKey()[key]; if (!r) return el("span", {textContent: key});
+  if (namesOnly) return peopleNode(peopleFor(r, sc));
   const s = el("span", {}, [r.title + " ("]); s.append(peopleNode(peopleFor(r, sc)), ")"); return s;
 }
 
@@ -229,12 +265,17 @@ function render(){
   const vis = rowsFor(scope);
   const nw = vis.filter(noWindow).length;
   const kids = [];
-  if (meta) kids.push(pill(STATUS_CLS[meta.status] || "s-todo", "Status: " + (meta.status || "unknown")));
   if (rows.length) kids.push(pill("s-acc", hasScopes() ? `${vis.length} responsibilities in ${scopeLabel(scope)}` : `${vis.length} responsibilities`));
   if (nw) kids.push(pill("s-sync", `${nw} without a response window`));
   if (open.length) kids.push(pill("s-prog", `${open.length} change request${open.length === 1 ? "" : "s"} open`));
-  if (meta && meta.synced) kids.push(pill("s-na", "Synced " + meta.synced));
   $("tally").replaceChildren(...kids);
+
+  // Document details: what a client reads on a shared or printed copy.
+  const facts = [];
+  if (meta) facts.push(["Status", STATUS_TEXT[meta.status] ? STATUS_TEXT[meta.status] + (meta.status === "agreed" && meta.agreed?.date ? " on " + meta.agreed.date : "") : (meta.status || "Unknown")]);
+  if (hasScopes()) facts.push(["Site", scopeFull(scope)]);
+  if (meta && meta.synced) facts.push(["Last updated", meta.synced]);
+  $("docmeta").replaceChildren(...facts.map(([k, v]) => el("div", {}, [el("dt", {textContent: k}), el("dd", {textContent: v})])));
 
   // Queue
   if (!db) {}
@@ -260,46 +301,52 @@ function render(){
   renderRoles();
 }
 
+const LETTERS = [["R","Responsible"],["A","Accountable"],["C","Consulted"],["I","Informed"]];
+const AREA_LABEL = a => (a || "other").replace(/[-_]/g, " ").replace(/^./, c => c.toUpperCase());
+function cellFor(row, L){
+  const keys = L === "A" ? (row.A ? [row.A] : []) : (row[L] || []);
+  if (!keys.length) return el("span", {className: "dash", textContent: "·", ariaHidden: "true"});
+  const box = el("div", {className: "names"});
+  keys.forEach(k => {
+    const r = roleByKey()[k];
+    const line = el("div", {className: "name"}, [r ? peopleNode(peopleFor(r, scope)) : el("span", {textContent: k})]);
+    if (r && !namesOnly) line.append(el("span", {className: "rolenote", textContent: r.title}));
+    box.append(line);
+  });
+  return box;
+}
 function renderMatrix(vis){
-  const cols = rolesFor(scope);
-  const agency = cols.filter(r => r.org === "agency"), client = cols.filter(r => r.org !== "agency");
-  const grp = el("tr", {className: "grp"}, [ el("th", {className: "stick", scope: "col", textContent: hasScopes() ? scopeFull(scope) : ""}) ]);
-  if (agency.length) grp.append(el("th", {colSpan: agency.length, scope: "colgroup", textContent: ORG_LABEL.agency}));
-  if (client.length) grp.append(el("th", {className: "g-client", colSpan: client.length, scope: "colgroup", textContent: ORG_LABEL.client}));
+  // Columns: the responsibility, then R, A, C, I with the people in each cell. Rows grouped by area.
   const head = el("tr", {}, [ el("th", {className: "stick", scope: "col", textContent: "Responsibility"}) ]);
-  cols.forEach((r, i) => {
-    const th = el("th", {className: "role" + (r.org !== "agency" && i === agency.length ? " c-first" : ""), scope: "col"}, [r.title]);
-    const who = el("span", {className: "who"}); who.append(peopleNode(peopleFor(r, scope))); th.append(who);
-    head.append(th);
-  });
-
+  LETTERS.forEach(([L, word]) => head.append(el("th", {className: "let", scope: "col"}, [el("b", {className: "l l-" + L, textContent: L}), " " + word])));
   const body = el("tbody");
-  vis.forEach(row => {
-    const meta1 = el("div", {className: "resp-meta"}, [ el("span", {className: "mono", textContent: row.area}) ]);
-    if (row.scope !== "all") meta1.append(el("span", {className: "override", textContent: "@" + row.scope, title: "Applies to this site only"}));
-    if (noWindow(row)) meta1.append(el("span", {className: "chip s-sync", textContent: "No response window"}));
-    else if (row.response_window) meta1.append(el("span", {textContent: "Response window: " + row.response_window}));
-    if (row.backup) { const b = el("span", {}, ["Backup: "]); b.append(roleLabel(row.backup, scope)); meta1.append(b); }
-    const reqBtn = el("button", {className: "link", type: "button", textContent: openForm === row.key ? "Cancel request" : "Request a change", disabled: !db || !canWrite});
-    reqBtn.setAttribute("aria-expanded", String(openForm === row.key));
-    reqBtn.onclick = () => { openForm = openForm === row.key ? null : row.key; render(); if (openForm) setTimeout(() => $("req-" + cssId(row.key))?.focus(), 0); };
-    meta1.append(reqBtn);
-    const src = (row.source || row.notes) ? el("details", {className: "src"}, [
-      el("summary", {textContent: "Source and notes"}),
-      row.source ? el("p", {textContent: "Source: " + row.source}) : null,
-      row.notes ? el("p", {textContent: "Notes: " + row.notes}) : null ]) : null;
-    const tr = el("tr", {}, [ el("th", {className: "stick", scope: "row"}, [ el("div", {className: "resp-title", textContent: row.responsibility}), meta1, src ]) ]);
-    cols.forEach((r, i) => {
-      const ls = lettersFor(row, r.key);
-      const td = el("td", {className: "cell" + (r.org !== "agency" && i === agency.length ? " c-first" : "")});
-      if (!ls.length) td.append(el("span", {className: "dash", textContent: "·", ariaHidden: "true"}));
-      else { ls.forEach(L => td.append(el("b", {className: "l l-" + L, textContent: L, title: {A:"Accountable",R:"Responsible",C:"Consulted",I:"Informed"}[L]}))); td.setAttribute("aria-label", `${r.title}: ${ls.join(", ")}`); }
-      tr.append(td);
+  const areas = [];
+  vis.forEach(r => { if (!areas.includes(r.area)) areas.push(r.area); });
+  areas.forEach(area => {
+    body.append(el("tr", {className: "area"}, [el("th", {className: "stick", scope: "colgroup", colSpan: 5, textContent: AREA_LABEL(area)})]));
+    vis.filter(r => r.area === area).forEach(row => {
+      const meta1 = el("div", {className: "resp-meta"});
+      if (row.scope !== "all" && !CONFIG.site) meta1.append(el("span", {className: "override", textContent: "@" + row.scope, title: "Applies to this site only"}));
+      if (noWindow(row)) meta1.append(el("span", {className: "chip s-sync", textContent: "No response window"}));
+      else if (row.response_window) meta1.append(el("span", {textContent: "Response window: " + row.response_window}));
+      if (row.backup) { const b = el("span", {}, ["Backup: "]); b.append(roleLabel(row.backup, scope)); meta1.append(b); }
+      const reqBtn = el("button", {className: "link", type: "button", textContent: openForm === row.key ? "Cancel request" : "Request a change", disabled: !db || !canWrite});
+      reqBtn.setAttribute("aria-expanded", String(openForm === row.key));
+      reqBtn.onclick = () => { openForm = openForm === row.key ? null : row.key; render(); if (openForm) setTimeout(() => $("req-" + cssId(row.key))?.focus(), 0); };
+      meta1.append(reqBtn);
+      const src = (row.source || row.notes) ? el("details", {className: "src"}, [
+        el("summary", {textContent: "Source and notes"}),
+        row.source ? el("p", {textContent: "Source: " + row.source}) : null,
+        row.notes ? el("p", {textContent: "Notes: " + row.notes}) : null ]) : null;
+      const tr = el("tr", {}, [ el("th", {className: "stick", scope: "row"}, [ el("div", {className: "resp-title", textContent: row.responsibility}), meta1, src ]) ]);
+      LETTERS.forEach(([L]) => tr.append(el("td", {className: "cell"}, [cellFor(row, L)])));
+      body.append(tr);
+      if (openForm === row.key) body.append(requestRow(row, 5));
     });
-    body.append(tr);
-    if (openForm === row.key) body.append(requestRow(row, cols.length + 1));
   });
-  $("matrix").replaceChildren(el("thead", {}, [grp, head]), body);
+  const colgroup = el("colgroup", {}, [el("col", {className: "c-resp"}), ...LETTERS.map(() => el("col", {className: "c-role"}))]);
+  $("matrix").style.setProperty("--roles", 4);
+  $("matrix").replaceChildren(colgroup, el("thead", {}, [head]), body);
 }
 
 const cssId = k => k.replace(/[^A-Za-z0-9_-]/g, "_");
@@ -330,7 +377,7 @@ function renderRoles(){
     if (!ppl || !ppl.length) pnode.append(el("div", {}, [el("span", {className: "tbd", textContent: "TBD"})]));
     else ppl.forEach(p => pnode.append(el("div", {}, [personNode(p), p.org ? el("span", {className: "muted", textContent: " · " + p.org}) : null])));
     return el("div", {className: "rolecard"}, [
-      el("div", {}, [pill(r.org === "agency" ? "s-acc" : "s-done", ORG_LABEL[r.org] || r.org)]),
+      el("div", {}, [pill(r.org === "agency" ? "s-brand" : "s-done", ORG_LABEL[r.org] || r.org)]),
       el("div", {className: "rt", textContent: r.title}),
       pnode,
       r.source ? el("details", {className: "src"}, [el("summary", {textContent: "Source"}), el("p", {textContent: r.source})]) : null ]);
@@ -339,6 +386,7 @@ function renderRoles(){
 
 function renderScopes(){
   const box = $("scopes");
+  if (CONFIG.site) { box.hidden = true; box.replaceChildren(); scope = CONFIG.site; return; }
   if (!hasScopes()) { box.hidden = true; box.replaceChildren(); scope = "all"; return; }
   if (!scopePicked && scope === "all") scope = firstScope();
   box.hidden = false;

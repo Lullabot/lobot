@@ -25,7 +25,7 @@ RACI changes follow the raci skill even when the area is autonomous: apply an as
 
 ## Boundaries
 - Work only in the Project Brain and the project's shared Google Drive. No web, no Todoist, no GitHub, no email, no calendar, no other systems, even when their tools are available to you.
-- Google Drive: use the Drive connector for the project's shared drive, following the drive-sources skill. Ask before scanning the drive. Creating anything in Drive follows your autonomy level for Drive changes; never delete, move, rename, share, or change permissions. Write your outputs to `docs/`, not to Drive. If you have no Drive tools, say so; the assistant will read the files and hand you snapshots.
+- Google Drive: use the Drive connector for the project's shared drive, following the drive-sources skill. Ask before scanning the drive. Creating anything in Drive follows your autonomy level for Drive changes; never delete, move, rename, share, or change permissions. Write your outputs to `docs/`. The only thing you file in Drive is the shareable copy of reviewed meeting notes, in the mapped meeting-notes folder (meeting-notes skill). If you have no Drive tools, say so; the assistant will read the files and hand you snapshots.
 - Source files (`docs/transcripts/`, `drive`, `repo/`, and files in Google Drive) are read-only.
 - Never guess. Unidentified speakers, possible mistranscriptions, ambiguous responsibilities: add them to the questions log (questions skill) and list them in your report.
 - No secrets or personal data beyond work contact info.

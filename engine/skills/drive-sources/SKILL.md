@@ -35,7 +35,7 @@ When Lucy runs as a subagent she can't talk to the PM mid-run. "Lucy asks" means
 
 - **The Google Drive connector.** Tool names differ by assistant; the steps below name what each call does. If no Drive connector is available, say so once, skip the Drive steps, and fall back to files the PM drops in `docs/transcripts/`. Never ask the PM to export a file you could read once the connector is set up; tell them which connector would remove that step.
 - **Access through the PM's own Google account.** Only what that account can open is visible. A file missing from a check may not be shared with the PM.
-- **Reading, not editing, Docs and Sheets.** The Drive connector reads files and can create folders and blank files, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, everything the assistant and Lucy produce stays in the Project Brain (`docs/`), as before.
+- **Reading, not editing, Docs and Sheets.** The Drive connector reads files and can create folders and blank files, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, everything the assistant and Lucy produce stays in the Project Brain (`docs/`), as before. The one exception is an `output` folder (see `purpose`): Lucy files new Docs there, copied from a Project Brain record, and the record stays the source of truth.
 
 ## Format
 
@@ -50,7 +50,7 @@ sources:
   contracts:
     kind: folder                       # folder | file
     url: https://drive.google.com/drive/folders/1DeF...
-    purpose: reference                 # transcripts | reference | deliverable
+    purpose: reference                 # transcripts | reference | deliverable | output
     added: 2026-10-09
     notes: "Signed SOW and change orders. Read before scope questions."
   meeting-transcripts:
@@ -89,6 +89,7 @@ Field rules:
   - `transcripts`: a folder of meeting transcripts. Needs `handler: meeting-notes`.
   - `reference`: material to read and cite (SOW, specs, client docs). Changes are reported, not processed.
   - `deliverable`: a client-facing Doc or Sheet that corresponds to a Project Brain record (`record`). Until the Docs and Sheets connectors are available, the Project Brain file stays the record of truth, and the Doc or Sheet is checked for client edits so the PM can reconcile them.
+  - `output`: a folder where Lucy files shareable copies of Project Brain records, one Doc per record (`record` is the `docs/` folder they come from, e.g. `docs/meetings/` for the meeting-notes folder). The skill that owns the record says when to file a copy, and the record file notes its copy's link. Every copy Lucy files is recorded in `processed` (its `result` is the record it was copied from), so her own copies never come up as new. Checks skip an output folder unless it also has a `handler`: some PMs drop Google Meet's Gemini notes straight into the Meeting Notes folder, so that folder then also takes `handler: meeting-notes`, `copy_to`, and `since`, like a transcripts folder.
 - **`since`** keeps the first check from turning up years of old transcripts. Set it to the date the PM wants to start from.
 - **`not_used`** lists standard layout items the PM said this project doesn't have, with the reason, so they stop coming up.
 - **`processed`** holds one entry per file handled, in the order handled. `result` is the file it became (`docs/meetings/...`), or `skipped: <reason>` when the PM chose not to process it. A file edited after it was handled gets a new entry with the new `modified` when it is handled again.
@@ -144,7 +145,7 @@ Run this when a project is set up, when `docs/sources.yaml` has no `shared_drive
 Run this when the PM asks, during the start-of-session routine (report only; process nothing without the PM), and before a task that relies on a mapped source.
 
 1. Read `docs/sources.yaml`. If it has no sources, skip the check silently.
-2. **Folders:** use the Drive connector's search with `parentId = '<folder id>'`, following page tokens until the list is complete. Ask for metadata only (no content snippets). With `subfolders: true`, repeat for each child folder.
+2. **Folders** (skip `output` folders that have no `handler`): use the Drive connector's search with `parentId = '<folder id>'`, following page tokens until the list is complete. Ask for metadata only (no content snippets). With `subfolders: true`, repeat for each child folder.
    - New: files whose ID is not in `processed`, created on or after `since`. Filter by ID, not by date alone: a transcript moved into the folder late keeps its original created date.
    - Changed: files in `processed` whose current `modifiedTime` is later than the latest `modified` recorded for them.
    - A shortcut (`application/vnd.google-apps.shortcut`) points at another file. Get its metadata to find the target; if the target can't be read, list it as a question for the PM.
@@ -209,7 +210,7 @@ Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the k
 - **Ask before scanning.** Mapping the shared drive starts with the PM's go-ahead, every time. Checking already-mapped sources doesn't need one.
 - **Changes in Drive follow Lucy's autonomy.** Creating a folder or blank file is a change in the client's drive, so it is its own autonomy area in Lucy's project config (junior by default). At junior, she names exactly what she'll create and where, and waits for the PM's yes on each item.
 - **Never delete, move, rename, or share in Drive,** and never change permissions. Ask the PM to do it.
-- **Outputs stay local.** Notes, logs, and records are written to `docs/`, never into Drive, until the Docs and Sheets connectors are available and the PM approves writing there.
+- **Outputs stay local, copies go to `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the copies a record's skill files in a mapped `output` folder (e.g. reviewed meeting notes), until the Docs and Sheets connectors are available and the PM approves writing elsewhere.
 - **Nothing is processed without the PM.** A check reports; the PM chooses what to process or skip.
 - **Ledger, not timestamps.** "New" means not in `processed`. Never infer that a file was handled from its date.
 - **No secrets in snapshots.** If a file contains credentials or keys, don't save a snapshot of it. Tell the PM and work from Drive directly.
