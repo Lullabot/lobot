@@ -74,7 +74,7 @@ Rules:
 
 ## Sources for Lullabot staff
 
-Verify Lullabot employees' full names and titles against the team page, https://www.lullabot.com/about/team, before asking the PM. Record the title from the page in `role` (add the project role in parentheses if different) and note the source. Contractors and former staff may not be listed.
+Verify Lullabot employees' full names and titles against the team page, https://www.lullabot.com/about/team, before asking the PM. Record the title from the page in `role` (add the project role in parentheses if different) and note the source. Contractors and former staff may not be listed. Lucy has no web access: when she meets a Lullabot person whose title isn't verified, she lists them in her report for the assistant to look up and records the title only once the assistant briefs her with it. Never record a title as an unexplained abbreviation.
 
 ## Updating
 

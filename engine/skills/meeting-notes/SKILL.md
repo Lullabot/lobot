@@ -17,6 +17,7 @@ Transcripts are long and noisy. The notes file is what the team and the assistan
 | Derived notes, one per meeting | `docs/meetings/YYYY-MM-DD-<slug>.md` |
 | Meeting type templates | `types/` in this skill's folder |
 | Project task routing (where tasks go, labels) | `.ai/project/task-management.md` |
+| Shareable copy for the team, one Google Doc per meeting | The `meeting-notes` folder in `docs/sources.yaml` (Project Management > Meeting Notes, next to Meeting Transcripts; one per scope) |
 
 ## Meeting types
 
@@ -40,7 +41,27 @@ Ask the PM for the meeting type if it isn't stated. Record the PM's label (e.g. 
 6. **Write the notes file** from the type file's template, `status: draft`.
 7. **Present one review list** to the PM (see Review below). Change nothing outside the notes file until the PM approves.
 8. **Apply what was approved** in one pass: create tasks per `.ai/project/task-management.md`, add decision log entries with the decision-log skill, edit context docs with their own skills (run validators), and record task links, entry IDs, and doc changes back in the notes file. Set `status: reviewed by <PM name>`.
-9. **Journal** one Log entry linking the notes file, plus `#people`, `#risk`, `#decision` tags as applicable.
+9. **File the shareable copy** in Drive (see below), add its link to the notes' frontmatter as `drive_copy:`, and record the copy in `docs/sources.yaml` `processed` (source: the meeting-notes folder, result: the notes file).
+10. **Journal** one Log entry linking the notes file, plus `#people`, `#risk`, `#decision` tags as applicable.
+
+## Gemini notes
+
+Google Meet's Gemini notes are one Doc with the summary, decisions, and next steps on one tab and the transcript on another. When the source is a Gemini notes Doc, the summary already exists and the team reads it there, so don't write another one:
+
+- **Snapshot the whole Doc** (both tabs) to `docs/transcripts/` as usual. The transcript tab is the source; Gemini's summary is a hint that is often wrong (misattributed speakers, proposals reported as agreed, mistranscribed names).
+- **Write a short record** in `docs/meetings/` instead of the full notes: the usual frontmatter plus `gemini_notes: <link>`, one line saying the summary and action items are Gemini's, then only **Corrections to Gemini's notes** (each with a transcript quote), the **Flags** table, and **Context updates**. No TL;DR, overview, or action-items table.
+- **Review and apply** as usual (steps 7 and 8). The Gemini Doc is already in Drive, so file no shareable copy.
+
+## Shareable copy in Drive
+
+Reviewed notes also go to the project's shared drive, so the team can read them without the Project Brain. The file in `docs/meetings/` stays the record; the Drive copy is a snapshot of it.
+
+- **Where.** The `meeting-notes` source in `docs/sources.yaml` for the meeting's scope: the Meeting Notes folder in Project Management, next to Meeting Transcripts. If it isn't mapped, offer to map or create it (drive-sources skill) and file the copy once the PM says yes.
+- **When.** After the PM has reviewed the notes (`status: reviewed by ...`). Never file a draft.
+- **What.** A new Google Doc (upload Markdown and let Drive convert it) titled `YYYY-MM-DD <meeting title>`. Start with one line: date, a link to the transcript in Drive (or its title when it was never in Drive), and "Notes reviewed by <PM name>". Then the notes' TL;DR, overview, action items, flags, and open questions. Leave out the frontmatter, the "Context updates" section, and links to Project Brain files (they don't open in Drive); write a record ID instead (`R-002`, `Q-012`).
+- **Who reads it.** Anyone with access to the folder. The source's `shared_with_client` says whether the client can: when it is `false`, file the notes as they are; when it is `true` or not set, check the copy for anything meant only for Lullabot (internal risk commentary, account or pricing notes) and ask the PM before filing it.
+- **Once Docs can be edited.** When the assistant has a connector that edits Google Docs, switch to one Doc per meeting with two tabs, the way Gemini's meeting notes are laid out: **Summary** (the copy described above) and **Transcript** (the full transcript). Confirm the switch with the PM first, and leave copies filed earlier as they are unless the PM asks to convert them.
+- **Changes.** If the notes change after filing, file the change in the same Doc when the connector can edit it; otherwise tell the PM the copy is out of date. Never delete or move an old copy.
 
 ## Rules
 
@@ -61,6 +82,6 @@ Show the PM one list, grouped, every item with a one-line reason and a transcrip
 2. **Context doc changes:** people (new entries, new facts, IDs), RACI (people named to a role or area, and anyone acting outside their recorded role, per the raci skill), glossary (new terms, corrected meanings, new `aka`), overview (facts added or corrected, open gaps closed).
 3. **Decision log entries:** each proposed entry in full (decision, justification, driver, approver, status, tags), per the decision-log skill.
 4. **Flags:** risks, ADR candidates, open questions, and how each will be followed up.
-5. **Questions for the PM:** unknown people, uncertain terms, unclear owners.
+5. **Questions for the PM:** unknown people, uncertain terms, unclear owners. Whatever the PM doesn't answer during review is added to the questions log (questions skill), and the notes' open questions link to it.
 
 The PM approves, edits, or drops items in one pass. Apply only what was approved.

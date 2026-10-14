@@ -9,7 +9,7 @@
 #              or the key of the layout folder it sits in. No parent: anywhere in the drive.
 #   kind       folder | file
 #   file_type  document | spreadsheet | presentation (files only: what to create)
-#   purpose    transcripts | reference | deliverable
+#   purpose    transcripts | reference | deliverable | output
 #   handler, copy_to, record: copied into the project's entry (see SKILL.md)
 #   why        one line Lucy can use to explain it to the PM
 items:
@@ -52,13 +52,21 @@ items:
     why: "Signed SOWs, change orders, and agreements. Read before scope questions."
   meeting-transcripts:
     name: "Meeting transcripts"
-    look_for: ["Meet Recordings", "Transcripts", "Recordings", "Meeting notes"]
+    look_for: ["Meet Recordings", "Transcripts", "Recordings"]
     parent: project-management
     kind: folder
     purpose: transcripts
     handler: meeting-notes
     copy_to: docs/transcripts/
     why: "Where Google Meet saves call transcripts, so new ones can be found and filed."
+  meeting-notes:
+    name: "Meeting Notes"
+    look_for: ["Meeting notes", "Notes", "Call notes", "Meeting summaries"]
+    parent: project-management
+    kind: folder
+    purpose: output
+    record: docs/meetings/
+    why: "Shareable copies of reviewed meeting notes, filed next to the transcripts they came from, so the team can read them without the Project Brain."
   risk-register:
     name: "Risk register"
     look_for: ["Risks", "RAID log", "Risk log"]

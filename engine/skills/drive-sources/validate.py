@@ -23,7 +23,7 @@ except ImportError:
 KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SCOPED_KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*(@[a-z0-9]+(-[a-z0-9]+)*)?$")
 KINDS = {"folder", "file"}
-PURPOSES = {"transcripts", "reference", "deliverable"}
+PURPOSES = {"transcripts", "reference", "deliverable", "output"}
 SOURCE_FIELDS = {"kind", "url", "purpose", "handler", "copy_to", "since", "subfolders",
                  "record", "shared_with_client", "added", "notes"}
 PROCESSED_REQUIRED = ["id", "title", "source", "modified", "processed", "result"]
@@ -225,14 +225,19 @@ def check_sources(sources, layout, scopes, errors, warnings):
                 errors.append(f"{where} a transcripts source needs a handler (meeting-notes)")
             if not s.get("copy_to"):
                 warnings.append(f"{where} no copy_to: transcripts won't be kept in the Project Brain")
-        if kind == "folder" and "since" not in s:
+        if kind == "folder" and (purpose != "output" or s.get("handler")) and "since" not in s:
             warnings.append(f"{where} no since date: the first check will list every file in the folder")
         if kind != "folder" and ("since" in s or "subfolders" in s):
             warnings.append(f"{where} since and subfolders only apply to folders")
         if purpose == "deliverable" and not s.get("record"):
             errors.append(f"{where} a deliverable needs record: the Project Brain file it corresponds to")
-        if purpose != "deliverable" and ("record" in s or "shared_with_client" in s):
-            warnings.append(f"{where} record and shared_with_client only apply to deliverables")
+        if purpose == "output":
+            if kind != "folder":
+                errors.append(f"{where} an output source must be a folder")
+            if not str(s.get("record", "")).startswith("docs/"):
+                errors.append(f"{where} an output folder needs record: the docs/ folder its copies come from")
+        if purpose not in ("deliverable", "output") and ("record" in s or "shared_with_client" in s):
+            warnings.append(f"{where} record and shared_with_client only apply to deliverables and output folders")
     return sources
 
 
