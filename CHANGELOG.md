@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.0](https://github.com/Lullabot/lobot/compare/v0.7.0...v0.8.0) (2026-10-14)
+
+### Added
+
+* **engine:** ask your assistant to "connect GitHub" and it sets up gh and tells you where to paste your token ([c2af233](https://github.com/Lullabot/lobot/commit/c2af2333ca8e5ce6befeccf75eec9bac2afec560))
+
+### Maintenance
+
+* ignore local .env file ([17efcf7](https://github.com/Lullabot/lobot/commit/17efcf7127f74db64ccc9c7b0d0346dfa0110296))
+
 ## [0.7.0](https://github.com/Lullabot/lobot/compare/v0.6.0...v0.7.0) (2026-10-14)
 
 ### Added
