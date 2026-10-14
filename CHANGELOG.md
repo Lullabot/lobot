@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.1](https://github.com/Lullabot/lobot/compare/v0.11.0...v0.11.1) (2026-10-14)
+
+### Fixed
+
+* **engine:** the local dashboard is withdrawn again; it reached 0.11.0 by mistake, and tracker pages remain the place to see your records outside the chat ([148b284](https://github.com/Lullabot/lobot/commit/148b2847adf0eb56489be20651b40fa014c6e7c6))
+
 ## [0.11.0](https://github.com/Lullabot/lobot/compare/v0.10.0...v0.11.0) (2026-10-14)
 
 ### Added
