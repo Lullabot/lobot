@@ -9,6 +9,8 @@
 set -u
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$here/../../../.." && pwd)"
+# In a Lobot checkout (maintainers), this script sits one level shallower, in engine/skills/github.
+[ -f "$here/../../../tools/lobot.js" ] && root="$(cd "$here/../../.." && pwd)"
 cd "$root" || exit 1
 say() { printf '%s: %s\n' "$1" "$2"; }
 

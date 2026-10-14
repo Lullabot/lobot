@@ -53,6 +53,37 @@ To try a change on a real project before it is pushed, apply this checkout to it
 node tools/lobot.js update /path/to/project
 ```
 
+## Working with GitHub
+
+The github skill (`engine/skills/github/SKILL.md`) is written for projects: it connects a PM's Project Brain to GitHub. This section is for working on this repository. The skill's scripts work from here too and use this checkout's own git-ignored `.env`.
+
+**Connect.** From the repository root, in the shell that runs git (in Cowork, the shell on the maintainer's computer, not the cloud workspace):
+
+```sh
+bash engine/skills/github/gh-setup.sh
+```
+
+Act on its output as the skill's "Connecting GitHub" describes, and follow its "Token safety". The token must also be able to write to this repository: a classic token needs the `repo` scope; a fine-grained one needs `Lullabot/lobot` under repository access, with Contents (and Pull requests, to open them) set to "Read and write". `auth: ok` only proves the token can read, so check that it can push before relying on it:
+
+```sh
+source engine/skills/github/gh-env.sh
+url=https://github.com/Lullabot/lobot.git
+git -c credential.helper= -c credential.helper='!gh auth git-credential' push --dry-run "$url" HEAD:refs/heads/main
+```
+
+A 403 ("Permission … denied") means the token can't write; say which setting to change and stop. (`gh api repos/Lullabot/lobot --jq .permissions.push` reports the account's access, not the token's, so it isn't a check.)
+
+**Fetch and push over HTTPS**, in the same shell after sourcing `gh-env.sh`, without changing `origin` (it may use SSH, which Cowork's shell can't):
+
+```sh
+git -c credential.helper= -c credential.helper='!gh auth git-credential' fetch "$url" +main:refs/remotes/origin/main
+git -c credential.helper= -c credential.helper='!gh auth git-credential' push "$url" BRANCH:refs/heads/BRANCH
+```
+
+- In Cowork, ask once per session for delete permission on the checkout before the first git command; without it git leaves lock files that break the next command.
+- Push only when the maintainer asks. Pushing `main` releases (see "Commits and releases"), so name every unpushed commit it would release before asking.
+- Fetch before editing and before pushing. If `main` moved, stop and say what changed rather than merging, rebasing, or force-pushing.
+
 ## Changes that start in a project
 
 When this repository is connected to a session alongside a project, make general changes here in `engine/`, then apply them to the project with the command above. If a general change was made in the project's `.ai/general/` instead (Lucy's general corrections log is the usual case), copy it here, strip anything project-specific, and commit it; the project's next update then finds nothing to overwrite.

@@ -5,7 +5,10 @@
 #   from the Project Brain's gitignored .env (Cowork, cloud sandboxes).
 # Never prints the token.
 
-_pb_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+_pb_here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_pb_root="$(cd "$_pb_here/../../../.." && pwd)"
+# In a Lobot checkout (maintainers), these scripts sit one level shallower, in engine/skills/github.
+[ -f "$_pb_here/../../../tools/lobot.js" ] && _pb_root="$(cd "$_pb_here/../../.." && pwd)"
 
 if ! command -v gh >/dev/null 2>&1; then
   _gh_bin="$(ls -d "$HOME"/.local/gh/gh_*/bin 2>/dev/null | tail -1)"
@@ -39,4 +42,4 @@ if [ -z "${GH_TOKEN:-}" ] && ! gh auth status >/dev/null 2>&1; then
   fi
   [ -z "${GH_TOKEN:-}" ] && echo "gh-env: no gh login and no GH_TOKEN in $_pb_root/.env (see .env.example)" >&2
 fi
-unset _pb_root _gh_bin _os _arch _ver _ext _file _base _want _got
+unset _pb_here _pb_root _gh_bin _os _arch _ver _ext _file _base _want _got
