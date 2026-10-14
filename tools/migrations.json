@@ -3,11 +3,63 @@
     "id": "lucille-to-lucy",
     "why": "The librarian agent was renamed from Lucille to Lucy, so her project settings move to match.",
     "steps": [
-      { "move": ".ai/project/agents/lucille", "to": ".ai/project/agents/lucy" },
-      { "replace": ".ai/project/agents/lucy/config.md", "from": "agents/lucille", "to": "agents/lucy" },
-      { "replace": ".ai/project/agents/lucy/config.md", "from": "Lucille", "to": "Lucy" },
-      { "replace": ".ai/project/agents/lucy/corrections.md", "from": "agents/lucille", "to": "agents/lucy" },
-      { "replace": ".ai/project/agents/lucy/corrections.md", "from": "Lucille", "to": "Lucy" }
+      {
+        "move": ".ai/project/agents/lucille",
+        "to": ".ai/project/agents/lucy"
+      },
+      {
+        "replace": ".ai/project/agents/lucy/config.md",
+        "from": "agents/lucille",
+        "to": "agents/lucy"
+      },
+      {
+        "replace": ".ai/project/agents/lucy/config.md",
+        "from": "Lucille",
+        "to": "Lucy"
+      },
+      {
+        "replace": ".ai/project/agents/lucy/corrections.md",
+        "from": "agents/lucille",
+        "to": "agents/lucy"
+      },
+      {
+        "replace": ".ai/project/agents/lucy/corrections.md",
+        "from": "Lucille",
+        "to": "Lucy"
+      }
+    ]
+  },
+  {
+    "id": "records-to-yaml",
+    "why": "The questions log, risk tracker, and task list move from markdown tables to YAML, like the decision log, so long entries, dated risk updates, and edits from the pages stay readable and safe.",
+    "steps": [
+      {
+        "convert": "docs/questions.md",
+        "to": "docs/questions.yaml",
+        "as": "questions"
+      },
+      {
+        "convert": "docs/risks.md",
+        "to": "docs/risks.yaml",
+        "as": "risks"
+      },
+      {
+        "convert": "docs/tasks.md",
+        "to": "docs/tasks.yaml",
+        "as": "tasks"
+      },
+      {
+        "relink": "docs/questions.md",
+        "to": "docs/questions.yaml"
+      },
+      {
+        "relink": "docs/risks.md",
+        "to": "docs/risks.yaml"
+      },
+      {
+        "relink": "docs/tasks.md",
+        "to": "docs/tasks.yaml"
+      }
     ]
   }
 ]

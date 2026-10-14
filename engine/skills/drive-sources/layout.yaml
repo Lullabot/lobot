@@ -73,8 +73,8 @@ items:
     kind: file
     file_type: spreadsheet
     purpose: deliverable
-    record: docs/risks.md
-    why: "The risk list the client sees. docs/risks.md stays the record of truth for now."
+    record: docs/risks.yaml
+    why: "The risk list the client sees. docs/risks.yaml stays the record of truth."
   status-reports:
     name: "Status reports"
     look_for: ["Status", "Weekly updates", "Reports"]

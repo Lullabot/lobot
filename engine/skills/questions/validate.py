@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""Validate a Project Brain questions log (docs/questions.md).
+"""Validate a Project Brain questions log (docs/questions.yaml).
 
-Usage: python3 validate.py [path/to/questions.md]
+Usage: python3 validate.py [path/to/questions.yaml]
 
-Checks the frontmatter and the questions table: IDs (Q-###, unique), scope,
-raised date, status (open | answered), and that answered questions have an
-answer. Open questions should come before answered ones.
+Checks each entry: ID (Q-###, unique, in order), required fields, scope,
+raised date, status (open | answered), and that answered questions have an answer.
 Exit code 0 = valid (warnings may print), 1 = errors found.
 """
+DEFAULT_PATH = "docs/questions.yaml"
+EXAMPLE_ID = "Q-001"
+REQUIRED = ["question", "scope", "raised", "source", "status"]
+ALLOWED = set(REQUIRED) | {"answer"}
+TEXT_FIELDS = ["question", "source", "answer"]
+STATUSES = ("open", "answered")
+
 import datetime
 import re
 import sys
@@ -17,95 +23,92 @@ try:
 except ImportError:
     sys.exit("PyYAML is required: pip install pyyaml")
 
-HEADER = ["ID", "Question", "Scope", "Raised", "Source", "Status", "Answer"]
-ID_RE = re.compile(r"^Q-\d{3,}$")
+
+class UniqueKeyLoader(yaml.SafeLoader):
+    """SafeLoader that errors on duplicate mapping keys instead of overwriting."""
+
+
+def _construct_mapping(loader, node, deep=False):
+    seen = set()
+    for key_node, _ in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in seen:
+            raise yaml.constructor.ConstructorError(
+                None, None, f"duplicate key: {key!r}", key_node.start_mark)
+        seen.add(key)
+    return loader.construct_mapping(node, deep)
+
+
+UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_mapping)
+
 SCOPE_RE = re.compile(r"^(all|[a-z0-9]+(-[a-z0-9]+)*)$")
-STATUSES = ("open", "answered")
 
 
-def cells(line):
-    line = line.strip()
-    if not (line.startswith("|") and line.endswith("|")):
-        return None
-    return [c.strip() for c in line[1:-1].split("|")]
-
-
-def is_date(value):
+def as_date(value):
+    """A YAML date, or an ISO date string; None otherwise."""
+    if isinstance(value, datetime.date):
+        return value
     try:
-        datetime.date.fromisoformat(value)
-        return True
+        return datetime.date.fromisoformat(str(value))
     except ValueError:
-        return False
+        return None
 
 
-def main(path):
-    errors, warnings = [], []
+def load(path):
     try:
-        text = open(path, encoding="utf-8").read()
+        with open(path, encoding="utf-8") as f:
+            return yaml.load(f, Loader=UniqueKeyLoader), None
     except OSError as e:
-        print(f"ERROR: {e}")
+        return None, str(e)
+    except yaml.YAMLError as e:
+        return None, f"does not parse: {e}"
+
+
+def check_common(key, entry, errors, warnings):
+    """Checks shared by every record: allowed fields, required fields, scope, text fields."""
+    where = f"[{key}]"
+    if not isinstance(entry, dict):
+        errors.append(f"{where} must be a mapping of fields")
+        return False
+    for field in REQUIRED:
+        if entry.get(field) in (None, ""):
+            errors.append(f"{where} missing '{field}'")
+    for field in entry:
+        if field not in ALLOWED:
+            errors.append(f"{where} unknown field '{field}' (allowed: {', '.join(sorted(ALLOWED))})")
+    if "scope" in entry and not SCOPE_RE.match(str(entry["scope"])):
+        errors.append(f"{where} scope must be 'all' or a lowercase scope key")
+    for field in TEXT_FIELDS:
+        if field in entry and not isinstance(entry[field], str):
+            errors.append(f"{where} '{field}' must be text (quote it)")
+    return True
+
+
+def run(path):
+    data, problem = load(path)
+    if problem:
+        print(f"ERROR: {path} {problem}")
         return 1
-    m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
-    if not m:
-        errors.append("missing frontmatter (title, status, updated)")
-        body = text
-    else:
-        body = text[m.end():]
-        try:
-            fm = yaml.safe_load(m.group(1)) or {}
-        except yaml.YAMLError as e:
-            fm = {}
-            errors.append(f"frontmatter does not parse: {e}")
-        for field in ("title", "status", "updated"):
-            if field not in fm:
-                errors.append(f"frontmatter missing '{field}'")
-        if "updated" in fm and not is_date(str(fm["updated"])):
-            errors.append("frontmatter 'updated' must be a date (YYYY-MM-DD)")
-
-    lines = body.splitlines()
-    start = next((i for i, l in enumerate(lines) if cells(l) == HEADER), None)
-    if start is None:
-        errors.append("no questions table with header: | " + " | ".join(HEADER) + " |")
-        rows = []
-    else:
-        rows = []
-        for n, line in enumerate(lines[start + 2:], start + 3):
-            c = cells(line)
-            if c is None:
-                break
-            rows.append((n, c))
-
-    seen, answered_seen, open_count = set(), False, 0
-    for n, c in rows:
-        where = f"[row {c[0] if c else '?'}]"
-        if len(c) != len(HEADER):
-            errors.append(f"{where} has {len(c)} cells, expected {len(HEADER)} (a '|' inside a cell breaks the table)")
-            continue
-        qid, question, scope, raised, source, status, answer = c
-        if not ID_RE.match(qid):
-            errors.append(f"{where} ID must look like Q-001")
-        elif qid in seen:
-            errors.append(f"{where} duplicate ID")
-        seen.add(qid)
-        if not question:
-            errors.append(f"{where} question is empty")
-        if not SCOPE_RE.match(scope):
-            errors.append(f"{where} scope must be 'all' or a lowercase scope key")
-        if not is_date(raised):
-            errors.append(f"{where} raised must be a date (YYYY-MM-DD)")
-        if not source:
-            warnings.append(f"{where} no source: say where the question came from")
-        if status not in STATUSES:
-            errors.append(f"{where} status must be one of: {', '.join(STATUSES)}")
-        elif status == "answered":
-            answered_seen = True
-            if not answer:
-                errors.append(f"{where} answered but the answer is empty")
+    if data is None:
+        print("OK: file is empty (no entries yet).")
+        return 0
+    if not isinstance(data, dict):
+        print(f"ERROR: {path} must be a mapping of IDs to entries")
+        return 1
+    errors, warnings = [], []
+    keys = list(data)
+    nums = []
+    for key in keys:
+        m = KEY_RE.match(str(key))
+        if not m:
+            errors.append(f"[{key}] ID must look like {EXAMPLE_ID}")
         else:
-            open_count += 1
-            if answered_seen:
-                warnings.append(f"{where} open question listed after an answered one (open first)")
-
+            nums.append(int(m.group(1)))
+        if check_common(key, data[key], errors, warnings):
+            check_entry(key, data[key], errors, warnings)
+    if nums != sorted(nums):
+        warnings.append("entries are not ordered by ID")
     for w in warnings:
         print(f"WARN:  {w}")
     for e in errors:
@@ -113,9 +116,27 @@ def main(path):
     if errors:
         print(f"{len(errors)} error(s) in {path}")
         return 1
-    print(f"OK: {len(rows)} questions, {open_count} open, {len(warnings)} warning(s).")
+    print(f"OK: {summary(data)}, {len(warnings)} warning(s).")
     return 0
 
 
+KEY_RE = re.compile(r"^Q-(\d{3,})$")
+
+
+def check_entry(key, q, errors, warnings):
+    where = f"[{key}]"
+    if "raised" in q and not as_date(q["raised"]):
+        errors.append(f"{where} raised must be a date (YYYY-MM-DD)")
+    if q.get("status") not in STATUSES:
+        errors.append(f"{where} status must be one of: {', '.join(STATUSES)}")
+    elif q["status"] == "answered" and not q.get("answer"):
+        errors.append(f"{where} answered but the answer is empty")
+
+
+def summary(data):
+    open_n = sum(1 for q in data.values() if isinstance(q, dict) and q.get("status") == "open")
+    return f"{len(data)} questions, {open_n} open"
+
+
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "docs/questions.md"))
+    sys.exit(run(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_PATH))

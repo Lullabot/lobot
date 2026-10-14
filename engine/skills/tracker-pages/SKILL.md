@@ -19,10 +19,10 @@ Templates are in `templates/` in this skill's folder. Each has a `CONFIG` object
 
 | Template | Record | Collections | PM can |
 |---|---|---|---|
-| `risks.html` | `docs/risks.md` | `risks/<R-###>` | Set severity, status, next step; add a risk |
+| `risks.html` | `docs/risks.yaml` | `risks/<R-###>` | Set severity, status, next step; add a risk |
 | `decisions.html` | `docs/decisions.yaml` | `decisions/<D-###>` | Set status and approver; propose a decision (marked as a proposal) |
 | `raci.html` | `docs/raci.yaml` (people from `docs/people.yaml`) | `roles`, `rows`, `meta/info`, `requests` | View the matrix (Responsibility, then R, A, C, I with the people in each cell, grouped by area) per scope, or one page per site; request a change (no direct edits: RACI changes need a source) |
-| `questions.html` | `docs/questions.md` | `questions/<Q-###>` | Answer, reopen, add a question |
+| `questions.html` | `docs/questions.yaml` | `questions/<Q-###>` | Answer, reopen, add a question |
 | `checklist.html` | `docs/kickoff-checklist[-<scope>].md` (drive-sources skill, "Mirror a Sheet locally") | `kickoff/<scope or all>/tasks` | Set status and note; mark rows copied into the Sheet |
 | `review.html` | The review desk: several records, one tab each (see "Review desk") | `review`, `questions`, `tasks`, `risks`, `decisions`, `checklist`, `meta/info` | Approve, change, or drop Lucy's proposals; answer questions; set task status and dates; set risk severity, status, next step; settle pending decisions; set checklist status; add a question, task, or risk |
 
@@ -31,7 +31,7 @@ Templates are in `templates/` in this skill's folder. Each has a `CONFIG` object
 1. Copy the template to a scratch file and fill it: `{{PROJECT_NAME}}` (the project's display name), `{{SCOPES_JSON}}` (the scopes from `docs/raci.yaml` or `docs/sources.yaml` as JSON, or `{}` on a single-site project; always replace it, or the script won't run), for the review desk `{{PM_NAME}}` (the PM's name as in `docs/people.yaml`), and for the checklist `{{SCOPE_KEY}}`, `{{SHEET_URL}}`, `{{SHEET_TITLE}}`, `{{SHEET_TAB}}`. Check the script parses (`node --check` on the extracted script) before publishing.
    For the RACI page, two `CONFIG` options: `site` set to a scope key makes a page for that site alone (no switcher; the title names the site), `showRoles: false` shows only people's names in the matrix (the roles list under it keeps each role as the reference), and `responseWindows: false` drops the "No response window" flags on a project that has chosen not to track them. On a multi-site project the PM can have one RACI page per site, all from the one `docs/raci.yaml`. Seed each with only its site's data (rows for `all` and that scope, each role's `people` for that scope, and that scope alone in `meta/info`), because anyone who can open a page can read its whole database. A record change then updates every page it appears on.
 2. Publish it with capabilities `{"db": {}, "user": {}}`. The page starts private; tell the PM to share it from the page if the team should see it.
-3. Seed the database from the record, one document per entry, in one batch. For every editable field, also store the value as it is in the file under `synced` (`synced: {severity, status, nextStep}` for a risk). Never seed invented example rows.
+3. Seed the database from the record, one document per entry, in one batch. Fields keep their record names except that pages use camelCase (`next_step` is `nextStep`, `confirmed_by` is `confirmedBy`, `needed_by` is `neededBy`). A risk's `risk` on a page is its text followed by its updates, one per line as `<date>: <note>`; an edit to the page's risk text that only adds a line is filed as a new update. For every editable field, also store the value as it is in the file under `synced` (`synced: {severity, status, nextStep}` for a risk). Never seed invented example rows.
 4. Read the collection back once (and once as a view-only user) to confirm it loaded.
 5. Add the page to the root `CLAUDE.md` "This project" table: record, link. Pages live in one person's account, so the link is recorded but the record stays in `docs/`.
 
@@ -53,9 +53,9 @@ The review desk is the PM's one stop for everything that needs them, and what "t
 | Tab | Seeded from | What goes in |
 |---|---|---|
 | Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank) |
-| Questions | `docs/questions.md` | Every row, as on the questions page |
-| My tasks, Others owe | `docs/tasks.md` (tasks skill) | Every row, with `mine: true` when the PM is the owner, plus `due`, `status`, `link`, and a blank `note` |
-| Risks | `docs/risks.md` | Every row, as on the risk page |
+| Questions | `docs/questions.yaml` | Every entry, as on the questions page |
+| My tasks, Others owe | `docs/tasks.yaml` (tasks skill) | Every entry, with `mine: true` when the PM is the owner, plus `due`, `status`, `link`, and a blank `note` |
+| Risks | `docs/risks.yaml` | Every entry, as on the risk page |
 | Decisions | `docs/decisions.yaml` | Pending entries only, with `driver`, `approver`, `neededBy` |
 | Checklists | Each `docs/kickoff-checklist[-<scope>].md` | Every row, `id` `<scope>-<row>`, with `scope`, `row`, `task`, `status`, `note` |
 

@@ -1,0 +1,3 @@
+# Task list: every action item, the PM's own and the ones others owe. Ordered by ID (T-001, T-002, ...); IDs are never reused.
+# Managed by the tasks skill: .ai/general/skills/tasks/SKILL.md
+# Validate after every edit: python3 .ai/general/skills/tasks/validate.py docs/tasks.yaml

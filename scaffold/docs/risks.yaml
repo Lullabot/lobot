@@ -1,0 +1,3 @@
+# Risk tracker: project risks, each confirmed by a named person. Ordered by ID (R-001, R-002, ...); IDs are never reused.
+# Managed by the risks skill: .ai/general/skills/risks/SKILL.md
+# Validate after every edit: python3 .ai/general/skills/risks/validate.py docs/risks.yaml

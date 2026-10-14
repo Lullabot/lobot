@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
-"""Validate a Project Brain task list (docs/tasks.md).
+"""Validate a Project Brain task list (docs/tasks.yaml).
 
-Usage: python3 validate.py [path/to/tasks.md]
+Usage: python3 validate.py [path/to/tasks.yaml]
 
-Checks the frontmatter and the tasks table: IDs (T-###, unique), owner,
-scope, due date, status (open | waiting | done | dropped), and source.
-Open and waiting rows should come before done and dropped ones.
+Checks each entry: ID (T-###, unique, in order), required fields, scope,
+due date, status (open | waiting | done | dropped), and link.
 Exit code 0 = valid (warnings may print), 1 = errors found.
 """
+DEFAULT_PATH = "docs/tasks.yaml"
+EXAMPLE_ID = "T-001"
+REQUIRED = ["task", "owner", "scope", "status", "source"]
+ALLOWED = set(REQUIRED) | {"due", "link", "note"}
+TEXT_FIELDS = ["task", "owner", "source", "link", "note"]
+ACTIVE = ("open", "waiting")
+CLOSED = ("done", "dropped")
+
 import datetime
 import re
 import sys
@@ -17,101 +24,92 @@ try:
 except ImportError:
     sys.exit("PyYAML is required: pip install pyyaml")
 
-HEADER = ["ID", "Task", "Owner", "Scope", "Due", "Status", "Source", "Link"]
-ID_RE = re.compile(r"^T-\d{3,}$")
+
+class UniqueKeyLoader(yaml.SafeLoader):
+    """SafeLoader that errors on duplicate mapping keys instead of overwriting."""
+
+
+def _construct_mapping(loader, node, deep=False):
+    seen = set()
+    for key_node, _ in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in seen:
+            raise yaml.constructor.ConstructorError(
+                None, None, f"duplicate key: {key!r}", key_node.start_mark)
+        seen.add(key)
+    return loader.construct_mapping(node, deep)
+
+
+UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_mapping)
+
 SCOPE_RE = re.compile(r"^(all|[a-z0-9]+(-[a-z0-9]+)*)$")
-ACTIVE = ("open", "waiting")
-CLOSED = ("done", "dropped")
 
 
-def cells(line):
-    line = line.strip()
-    if not (line.startswith("|") and line.endswith("|")):
-        return None
-    return [c.strip() for c in line[1:-1].split("|")]
-
-
-def is_date(value):
+def as_date(value):
+    """A YAML date, or an ISO date string; None otherwise."""
+    if isinstance(value, datetime.date):
+        return value
     try:
-        datetime.date.fromisoformat(value)
-        return True
+        return datetime.date.fromisoformat(str(value))
     except ValueError:
-        return False
+        return None
 
 
-def main(path):
-    errors, warnings = [], []
+def load(path):
     try:
-        text = open(path, encoding="utf-8").read()
+        with open(path, encoding="utf-8") as f:
+            return yaml.load(f, Loader=UniqueKeyLoader), None
     except OSError as e:
-        print(f"ERROR: {e}")
+        return None, str(e)
+    except yaml.YAMLError as e:
+        return None, f"does not parse: {e}"
+
+
+def check_common(key, entry, errors, warnings):
+    """Checks shared by every record: allowed fields, required fields, scope, text fields."""
+    where = f"[{key}]"
+    if not isinstance(entry, dict):
+        errors.append(f"{where} must be a mapping of fields")
+        return False
+    for field in REQUIRED:
+        if entry.get(field) in (None, ""):
+            errors.append(f"{where} missing '{field}'")
+    for field in entry:
+        if field not in ALLOWED:
+            errors.append(f"{where} unknown field '{field}' (allowed: {', '.join(sorted(ALLOWED))})")
+    if "scope" in entry and not SCOPE_RE.match(str(entry["scope"])):
+        errors.append(f"{where} scope must be 'all' or a lowercase scope key")
+    for field in TEXT_FIELDS:
+        if field in entry and not isinstance(entry[field], str):
+            errors.append(f"{where} '{field}' must be text (quote it)")
+    return True
+
+
+def run(path):
+    data, problem = load(path)
+    if problem:
+        print(f"ERROR: {path} {problem}")
         return 1
-    m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
-    if not m:
-        errors.append("missing frontmatter (title, status, updated)")
-        body = text
-    else:
-        body = text[m.end():]
-        try:
-            fm = yaml.safe_load(m.group(1)) or {}
-        except yaml.YAMLError as e:
-            fm = {}
-            errors.append(f"frontmatter does not parse: {e}")
-        for field in ("title", "status", "updated"):
-            if field not in fm:
-                errors.append(f"frontmatter missing '{field}'")
-        if "updated" in fm and not is_date(str(fm["updated"])):
-            errors.append("frontmatter 'updated' must be a date (YYYY-MM-DD)")
-
-    lines = body.splitlines()
-    start = next((i for i, l in enumerate(lines) if cells(l) == HEADER), None)
-    rows = []
-    if start is None:
-        errors.append("no tasks table with header: | " + " | ".join(HEADER) + " |")
-    else:
-        for n, line in enumerate(lines[start + 2:], start + 3):
-            c = cells(line)
-            if c is None:
-                break
-            rows.append((n, c))
-
-    seen, closed_seen, active = set(), False, 0
-    today = datetime.date.today()
-    overdue = 0
-    for n, c in rows:
-        where = f"[row {c[0] if c else '?'}]"
-        if len(c) != len(HEADER):
-            errors.append(f"{where} has {len(c)} cells, expected {len(HEADER)} (a '|' inside a cell breaks the table)")
-            continue
-        tid, task, owner, scope, due, status, source, link = c
-        if not ID_RE.match(tid):
-            errors.append(f"{where} ID must look like T-001")
-        elif tid in seen:
-            errors.append(f"{where} duplicate ID")
-        seen.add(tid)
-        if not task:
-            errors.append(f"{where} task is empty")
-        if not owner:
-            errors.append(f"{where} owner is empty (use a name, a team, or 'tbd')")
-        if not SCOPE_RE.match(scope):
-            errors.append(f"{where} scope must be 'all' or a lowercase scope key")
-        if due and not is_date(due):
-            errors.append(f"{where} due must be a date (YYYY-MM-DD) or blank")
-        if not source:
-            warnings.append(f"{where} no source: say where the action item came from")
-        if link and not link.startswith("http"):
-            warnings.append(f"{where} link should be a URL")
-        if status in ACTIVE:
-            active += 1
-            if closed_seen:
-                warnings.append(f"{where} {status} row listed after a closed one (open and waiting first)")
-            if due and is_date(due) and datetime.date.fromisoformat(due) < today:
-                overdue += 1
-        elif status in CLOSED:
-            closed_seen = True
+    if data is None:
+        print("OK: file is empty (no entries yet).")
+        return 0
+    if not isinstance(data, dict):
+        print(f"ERROR: {path} must be a mapping of IDs to entries")
+        return 1
+    errors, warnings = [], []
+    keys = list(data)
+    nums = []
+    for key in keys:
+        m = KEY_RE.match(str(key))
+        if not m:
+            errors.append(f"[{key}] ID must look like {EXAMPLE_ID}")
         else:
-            errors.append(f"{where} status must be one of: {', '.join(ACTIVE + CLOSED)}")
-
+            nums.append(int(m.group(1)))
+        if check_common(key, data[key], errors, warnings):
+            check_entry(key, data[key], errors, warnings)
+    if nums != sorted(nums):
+        warnings.append("entries are not ordered by ID")
     for w in warnings:
         print(f"WARN:  {w}")
     for e in errors:
@@ -119,9 +117,31 @@ def main(path):
     if errors:
         print(f"{len(errors)} error(s) in {path}")
         return 1
-    print(f"OK: {len(rows)} tasks, {active} open or waiting, {overdue} overdue, {len(warnings)} warning(s).")
+    print(f"OK: {summary(data)}, {len(warnings)} warning(s).")
     return 0
 
 
+KEY_RE = re.compile(r"^T-(\d{3,})$")
+
+
+def check_entry(key, t, errors, warnings):
+    where = f"[{key}]"
+    if t.get("status") not in ACTIVE + CLOSED:
+        errors.append(f"{where} status must be one of: {', '.join(ACTIVE + CLOSED)}")
+    if "due" in t and not as_date(t["due"]):
+        errors.append(f"{where} due must be a date (YYYY-MM-DD)")
+    if t.get("link") and not str(t["link"]).startswith("http"):
+        warnings.append(f"{where} link should be a URL")
+    if t.get("status") in CLOSED and not t.get("note"):
+        warnings.append(f"{where} {t['status']} with no note: say who said so and when")
+
+
+def summary(data):
+    today = datetime.date.today()
+    active = [t for t in data.values() if isinstance(t, dict) and t.get("status") in ACTIVE]
+    overdue = sum(1 for t in active if as_date(t.get("due", "")) and as_date(t["due"]) < today)
+    return f"{len(data)} tasks, {len(active)} open or waiting, {overdue} overdue"
+
+
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "docs/tasks.md"))
+    sys.exit(run(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_PATH))

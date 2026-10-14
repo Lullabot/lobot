@@ -66,7 +66,7 @@ sources:
     kind: file
     url: https://docs.google.com/spreadsheets/d/1QrS.../edit
     purpose: deliverable
-    record: docs/risks.md              # the Project Brain record it corresponds to
+    record: docs/risks.yaml            # the Project Brain record it corresponds to
     shared_with_client: true
     added: 2026-10-09
 not_used:
