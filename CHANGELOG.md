@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.0](https://github.com/Lullabot/lobot/compare/v0.6.0...v0.7.0) (2026-10-14)
+
+### Added
+
+* **engine:** browse every project record as tabs on a local, read-only dashboard ([5e79026](https://github.com/Lullabot/lobot/commit/5e79026ef0c9aadca1c8b465938d23f82282d737))
+* **engine:** file reviewed meeting notes as Google Docs in the shared drive, and correct Gemini notes instead of rewriting them ([d156919](https://github.com/Lullabot/lobot/commit/d156919ce6818ccabfcea639cd498348a7f78b61))
+* **engine:** get step-by-step help setting up and running Jira, checked against Atlassian's current docs ([23265e5](https://github.com/Lullabot/lobot/commit/23265e582d7cd6edb90e2f43e335a7ea85d89e82))
+* **engine:** keep one log of the questions only you can answer, and file each answer where it belongs ([79153b6](https://github.com/Lullabot/lobot/commit/79153b6096c2a874165635382a9bb61572e0ceb5))
+* **engine:** review and edit the risks, decisions, RACI, questions, and kickoff checklist on shared tracker pages ([b285314](https://github.com/Lullabot/lobot/commit/b285314816bd7fd0d29fe5b855d0008aa42b5d5b))
+
 ## [0.6.0](https://github.com/Lullabot/lobot/compare/v0.5.0...v0.6.0) (2026-10-09)
 
 ### Added
