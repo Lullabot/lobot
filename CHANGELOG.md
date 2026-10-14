@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.0](https://github.com/Lullabot/lobot/compare/v0.9.0...v0.10.0) (2026-10-14)
+
+### Added
+
+* **engine:** the assistant now saves the Project Brain to git for you ([614e5f1](https://github.com/Lullabot/lobot/commit/614e5f1308ef8db81f0794eb99bd6c35bca1cf83))
+* **engine:** your writing voice and preferences now follow you to every project ([1f8126c](https://github.com/Lullabot/lobot/commit/1f8126cff351099e017b1ebd44de66155705d06a))
+
+### Changed
+
+* **engine:** tracker pages are now the one place to see your records outside the chat; the local dashboard is retired for now ([d1f70f1](https://github.com/Lullabot/lobot/commit/d1f70f1661ea29d3c7e8064aadbcc94e6685ba44))
+
 ## [0.9.0](https://github.com/Lullabot/lobot/compare/v0.8.0...v0.9.0) (2026-10-14)
 
 ### Added
