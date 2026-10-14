@@ -29,6 +29,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **PM voice** | Learns how you write, so status updates, client email, and tickets it drafts for you sound like you. |
 | **ADR** | Writes up architecture decisions and hands them to the technical lead for review in the code repository. |
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
+| **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. |
 | **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
 
@@ -37,6 +38,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 Helpers the assistant hands work to.
 
 - **Lucy, the librarian.** Takes the material you hand her (transcripts, notes, documents) and files it: meeting notes, the people directory, the RACI matrix, the glossary, the decision log, the risk list, the questions log, the journal, and the map of the project's shared Google Drive. She works only inside the Project Brain and the project's Drive, asks before scanning the Drive or creating anything in it, and never touches GitHub, email, or other outside systems. Like a new hire, she starts out checking with you and earns more independence as you correct and promote her.
+- **Pepper, the process wrangler.** Keeps your GitHub and Jira tickets in order: writes and tidies tickets, keeps labels, links, and statuses honest, drafts comments, and tells you what's stale, unowned, or unclear on the board. She speaks fluent developer but never reviews code, and every change she'd make waits for your approval until you promote her.
 
 ### Ground rules
 
