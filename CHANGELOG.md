@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.16.0](https://github.com/Lullabot/lobot/compare/v0.15.1...v0.16.0) (2026-10-14)
+
+### Added
+
+* **engine:** the assistant now offers to report Lobot bugs and lessons from training agents as issues ([db592d2](https://github.com/Lullabot/lobot/commit/db592d23eb16cce524bd8cc5670628524b7f39ae))
+
 ## [0.15.1](https://github.com/Lullabot/lobot/compare/v0.15.0...v0.15.1) (2026-10-14)
 
 ### Fixed
