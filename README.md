@@ -26,6 +26,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **PM voice** | Learns how you write, so status updates, client email, and tickets it drafts for you sound like you. |
 | **ADR** | Writes up architecture decisions and hands them to the technical lead for review in the code repository. |
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
+| **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
 
 ### Agents
