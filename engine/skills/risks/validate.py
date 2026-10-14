@@ -3,16 +3,18 @@
 
 Usage: python3 validate.py [path/to/risks.yaml]
 
-Checks each entry: ID (R-###, unique, in order), required fields, scope,
-severity (High | Medium | Low | TBD), status (Open | Monitoring | Closed),
-and dated updates. Warns about open risks still at TBD severity.
+Checks each entry: ID (R-###, unique, in order), required fields, a short
+one-line risk summary, scope, severity (High | Medium | Low | TBD), status
+(Open | Monitoring | Closed), and dated updates. Warns about open risks still
+at TBD severity.
 Exit code 0 = valid (warnings may print), 1 = errors found.
 """
 DEFAULT_PATH = "docs/risks.yaml"
 EXAMPLE_ID = "R-001"
 REQUIRED = ["risk", "scope", "severity", "status", "source", "confirmed_by"]
-ALLOWED = set(REQUIRED) | {"raised", "next_step", "updates"}
-TEXT_FIELDS = ["risk", "source", "confirmed_by", "next_step"]
+ALLOWED = set(REQUIRED) | {"description", "raised", "next_step", "updates"}
+TEXT_FIELDS = ["risk", "description", "source", "confirmed_by", "next_step"]
+RISK_MAX = 80
 SEVERITIES = ("High", "Medium", "Low", "TBD")
 STATUSES = ("Open", "Monitoring", "Closed")
 
@@ -127,6 +129,9 @@ KEY_RE = re.compile(r"^R-(\d{3,})$")
 
 def check_entry(key, r, errors, warnings):
     where = f"[{key}]"
+    risk = r.get("risk")
+    if isinstance(risk, str) and (len(risk) > RISK_MAX or "\n" in risk):
+        errors.append(f"{where} risk must be a one-line summary of at most {RISK_MAX} characters; put the detail in 'description' (the Lobot migrate step does this for older entries)")
     if r.get("severity") not in SEVERITIES:
         errors.append(f"{where} severity must be one of: {', '.join(SEVERITIES)}")
     if r.get("status") not in STATUSES:

@@ -367,7 +367,7 @@ function card(t, d, closed){
   }
   else if (k === "risks") {
     const sev = d.severity || "TBD";
-    parts.push(...longText(id, d.risk), metaRow(d, [pill(sev === "High" ? "s-crit" : sev === "Medium" ? "s-prog" : sev === "Low" ? "s-scope" : "s-na", sev), pill(d.status === "Closed" ? "s-done" : "s-todo", d.status),
+    parts.push(el("div", {className: "title", textContent: d.risk, style: "font-weight:600"}), ...(d.description ? longText(id, d.description) : []), metaRow(d, [pill(sev === "High" ? "s-crit" : sev === "Medium" ? "s-prog" : sev === "Low" ? "s-scope" : "s-na", sev), pill(d.status === "Closed" ? "s-done" : "s-todo", d.status),
       ...(d.confirmedBy ? [el("span", {textContent: "Confirmed by " + d.confirmedBy})] : [])]));
     parts.push(el("div", {className: "controls"}, [
       el("label", {}, ["Severity", selectFor("sev-" + id, `Severity for ${id}`, RISK_SEV, sev, v => save(t, d, {severity: v}))]),
@@ -405,7 +405,7 @@ function scopeSelect(id){
 function addForm(t){
   if (!["questions", "mine", "others", "risks"].includes(t.key) || !canWrite) return null;
   const f = el("form", {className: "add", id: "add-" + t.key});
-  const text = el("textarea", {id: "new-" + t.key, required: true, placeholder: {questions: "What do you need answered?", mine: "What do you need to do?", others: "What does someone owe?", risks: "Describe the risk"}[t.key]});
+  const text = el("textarea", {id: "new-" + t.key, required: true, placeholder: {questions: "What do you need answered?", mine: "What do you need to do?", others: "What does someone owe?", risks: "The risk in a few words"}[t.key]});
   text.setAttribute("aria-label", "New item");
   const keep = (n, k) => { if (drafts[k] != null) n.value = drafts[k]; n.addEventListener("input", () => { drafts[k] = n.value; }); };
   keep(text, "new-" + t.key);
@@ -421,17 +421,23 @@ function addForm(t){
   if (t.key === "risks") { sev = selectFor("newsev", "Severity", RISK_SEV, "TBD", () => {}); sev.disabled = false; row.append(sev); }
   const btn = el("button", {className: "primary", type: "submit", textContent: {questions: "Add question", mine: "Add task", others: "Add follow-up", risks: "Add risk"}[t.key]});
   row.append(btn);
-  f.append(el("h2", {textContent: btn.textContent}), text, row);
+  let desc;
+  if (t.key === "risks") {
+    text.maxLength = 80; text.rows = 1; text.setAttribute("aria-label", "Risk summary");
+    desc = el("textarea", {id: "newdesc-risks", placeholder: "Description: what could go wrong, and what it would affect"}); desc.setAttribute("aria-label", "Risk description");
+    keep(desc, "newdesc-risks");
+  }
+  f.append(el("h2", {textContent: btn.textContent}), text, ...(desc ? [desc] : []), row);
   f.onsubmit = async e => {
     e.preventDefault();
     const v = text.value.trim(); if (!v || !db) return;
     const now = new Date().toISOString(), sc = HAS_SCOPES ? scope.value : "all";
     let id, doc;
     if (t.key === "questions") { id = nextId("questions", "Q-"); doc = {question: v, raised: today(), status: "open", answer: ""}; }
-    else if (t.key === "risks") { id = nextId("risks", "R-"); doc = {risk: v, severity: sev.value, status: "Open", nextStep: "", confirmedBy: ""}; }
+    else if (t.key === "risks") { id = nextId("risks", "R-"); doc = {risk: v, description: desc.value.trim(), severity: sev.value, status: "Open", nextStep: "", confirmedBy: ""}; }
     else { id = nextId("tasks", "T-"); doc = {task: v, owner: owner.value.trim() || CONFIG.pm, mine: t.key === "mine", due: due.value, status: "open", note: "", link: ""}; }
     btn.disabled = true;
-    try { await db.collection(t.coll).doc(id).set({id, ...doc, scope: sc, source: "Added on the review desk", synced: null, createdAt: now}); notice(""); ["new-", "newowner-", "newdue-"].forEach(p => delete drafts[p + t.key]); }
+    try { await db.collection(t.coll).doc(id).set({id, ...doc, scope: sc, source: "Added on the review desk", synced: null, createdAt: now}); notice(""); ["new-", "newowner-", "newdue-", "newdesc-"].forEach(p => delete drafts[p + t.key]); }
     catch (err) { notice("That wasn't added. You may only have view access to this page."); btn.disabled = false; }
   };
   return f;

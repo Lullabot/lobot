@@ -1,6 +1,6 @@
 ---
 name: risks
-description: Keep the risk tracker (docs/risks.yaml), the project's risks with severity, status, the people who confirmed them, a next step, and dated updates. Use when a meeting or document raises a risk, when something changes an existing risk, when the PM sets a severity or closes a risk, and when the PM asks what could go wrong or what the open risks are.
+description: Keep the risk tracker (docs/risks.yaml), the project's risks with a short summary, severity, status, the people who confirmed them, a next step, and dated updates. Use when a meeting or document raises a risk, when something changes an existing risk, when the PM sets a severity or closes a risk, and when the PM asks what could go wrong or what the open risks are.
 ---
 
 # Risk tracker
@@ -16,7 +16,7 @@ Risks come up in passing: a launch date over the holidays, a data feed nobody ha
 | Risk tracker | `docs/risks.yaml` |
 | Validator | `validate.py` in this skill's folder |
 
-If `docs/risks.yaml` doesn't exist, create it from the format below with no entries. A project that still has the old markdown table (`docs/risks.md`) converts it with the Lobot tool's `migrate` (lobot skill), with the PM's approval; dated additions in the old risk text become updates.
+If `docs/risks.yaml` doesn't exist, create it from the format below with no entries. A project that still has the old markdown table (`docs/risks.md`), or entries whose `risk` is a long text from an earlier version, converts them with the Lobot tool's `migrate` (lobot skill), with the PM's approval; dated additions in the old risk text become updates, and the rest is split into a short `risk` and a `description`. The short version is taken from the start of each risk, so reread them with the PM and reword any that read badly.
 
 ## Format
 
@@ -26,7 +26,8 @@ If `docs/risks.yaml` doesn't exist, create it from the format below with no entr
 # Validate after every edit: python3 .ai/general/skills/risks/validate.py docs/risks.yaml
 
 R-001:
-  risk: "The launch window falls over the holidays, and the client's funding depends on launching by year end."
+  risk: "Launch window falls over the holidays"
+  description: "The client's funding depends on launching by year end, which leaves no slack if the launch slips past the holidays."
   scope: all
   severity: High
   status: Open
@@ -43,7 +44,8 @@ R-001:
 | Field | Required | Holds |
 |---|---|---|
 | key | Yes | `R-` plus three digits, never reused. The file is ordered by ID. |
-| `risk` | Yes | What could go wrong and why it matters, as first confirmed. Keep it to the risk itself; later developments go in `updates`. Quoted. |
+| `risk` | Yes | A short summary of the risk, one line of at most 80 characters, that makes sense on its own in a list ("Launch window falls over the holidays"). Quoted. |
+| `description` | No | What could go wrong and why it matters, as first confirmed. Keep it to the risk itself; later developments go in `updates`. Leave it out when the summary says it all. Quoted. |
 | `scope` | Yes | `all`, or a site or program key (the same keys as `docs/raci.yaml`). |
 | `severity` | Yes | `High`, `Medium`, `Low`, or `TBD` until the PM sets it. |
 | `status` | Yes | `Open`, `Monitoring` (no action needed now, watching it), or `Closed`. |
@@ -51,7 +53,7 @@ R-001:
 | `source` | Yes | Where it was raised: meeting notes file and timestamp, document, or who stated it. Quoted. |
 | `confirmed_by` | Yes | The people who confirmed it is a risk, by name, comma-separated. Quoted. |
 | `next_step` | When open | Who does what next. Quoted. |
-| `updates` | No | Dated developments, oldest first: `date`, `note`, and `source` when it isn't obvious. Add an update rather than rewriting `risk`. |
+| `updates` | No | Dated developments, oldest first: `date`, `note`, and `source` when it isn't obvious. Add an update rather than rewriting `description`. |
 
 Quote every text field: unquoted text containing `: ` or starting with a special character breaks YAML.
 
@@ -75,4 +77,5 @@ Quote every text field: unquoted text containing `: ` or starting with a special
 
 - **Confirmed, not inferred.** A risk is listed only when a named person raised or confirmed it. Never infer a risk from silence or from the assistant's own reading.
 - **Updates, not rewrites.** The history of a risk is its updates. Correct a mistake in place, but add new facts as updates.
+- **Short summaries.** `risk` names the risk; `description` explains it. If the summary needs a second sentence, move it to the description.
 - **Closed risks stay.** They show what was managed.

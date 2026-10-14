@@ -61,5 +61,15 @@
         "to": "docs/tasks.yaml"
       }
     ]
+  },
+  {
+    "id": "risk-description",
+    "why": "Each risk is now a short one-line summary with the detail in a separate description, so lists and pages stay readable. The summaries are taken from the start of each risk, so reread them and reword any that read badly.",
+    "steps": [
+      {
+        "split": "docs/risks.yaml",
+        "field": "risk"
+      }
+    ]
   }
 ]

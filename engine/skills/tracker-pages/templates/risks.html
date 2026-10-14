@@ -61,9 +61,10 @@ li.risk:first-child{border-top:0;border-top-left-radius:10px}
 li.risk:last-child{border-bottom-left-radius:10px}
 li.risk.sev-high{border-left-color:var(--crit)} li.risk.sev-medium{border-left-color:var(--warn)}
 li.risk.sev-low{border-left-color:var(--calm)} li.risk.sev-tbd{border-left-color:var(--na)}
-li.risk.closed .text{color:var(--muted)}
+li.risk.closed .text,li.risk.closed .desc{color:var(--muted)}
 .body{min-width:0;display:grid;gap:6px}
-.text{font-weight:500;overflow-wrap:anywhere;white-space:pre-line}
+.text{font-weight:600;overflow-wrap:anywhere;white-space:pre-line}
+.desc{font-size:14px;overflow-wrap:anywhere;white-space:pre-line}
 .meta{font-size:13px;color:var(--muted);display:grid;gap:2px;overflow-wrap:anywhere}
 .meta b{font-weight:600;color:var(--fg)}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}
@@ -108,7 +109,9 @@ textarea{width:100%;min-height:64px;resize:vertical}
     <h2 id="ah">Add a risk</h2>
     <form id="addForm" class="list">
       <label class="field" for="newRisk">Risk
-        <textarea id="newRisk" required placeholder="What could go wrong, and what it would affect"></textarea></label>
+        <input type="text" id="newRisk" required maxlength="80" placeholder="The risk in a few words"></label>
+      <label class="field" for="newDesc">Description
+        <textarea id="newDesc" placeholder="What could go wrong, and what it would affect"></textarea></label>
       <div class="frow">
         <label class="field" for="newSev" style="flex:0 0 auto">Severity
           <select id="newSev"></select></label>
@@ -200,6 +203,7 @@ function render(){
       el("div", {className: "body"}, [
         el("div", {className: "tally"}, head),
         el("div", {className: "text", textContent: r.risk}),
+        ...(r.description ? [el("div", {className: "desc", textContent: r.description})] : []),
         ...(meta.length ? [el("div", {className: "meta"}, meta)] : []),
         el("div", {className: "controls"}, [sev, st, next]) ]) ]);
   }));
@@ -220,13 +224,13 @@ SEVERITIES.forEach(s => $("newSev").append(el("option", {value: s, textContent: 
 $("addForm").addEventListener("submit", async e => {
   e.preventDefault();
   const text = $("newRisk").value.trim();
-  if (!text) { notice("Describe the risk before adding it."); return; }
+  if (!text) { notice("Summarize the risk before adding it."); return; }
   if (!coll) { notice("Sign in to claude.ai to add a risk."); return; }
   const id = nextId();
   $("addBtn").disabled = true;
   try {
-    await coll.doc(id).set({id, risk: text, severity: $("newSev").value, status: "Open", source: "Added on the risk tracker page", confirmedBy: "", nextStep: $("newNext").value.trim(), synced: null, createdAt: new Date().toISOString()});
-    $("newRisk").value = ""; $("newNext").value = ""; $("newSev").value = "TBD"; notice("");
+    await coll.doc(id).set({id, risk: text, description: $("newDesc").value.trim(), severity: $("newSev").value, status: "Open", source: "Added on the risk tracker page", confirmedBy: "", nextStep: $("newNext").value.trim(), synced: null, createdAt: new Date().toISOString()});
+    $("newRisk").value = ""; $("newDesc").value = ""; $("newNext").value = ""; $("newSev").value = "TBD"; notice("");
   } catch (err) { notice("The risk wasn't added. You may only have view access to this page."); }
   $("addBtn").disabled = false;
 });
