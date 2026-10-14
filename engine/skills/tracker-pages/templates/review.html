@@ -68,10 +68,23 @@ details.waiting>summary{cursor:pointer;font-weight:600;font-size:14px;display:fl
 .panel{display:grid;gap:12px}
 .lead{color:var(--muted);font-size:14px;margin:0;max-width:72ch}
 ol.items{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
-li.item{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:14px 16px;border-top:1px solid var(--line);border-left:3px solid transparent}
+li.item{display:grid;grid-template-columns:9.5rem minmax(0,1fr);gap:6px 18px;padding:14px 16px;border-top:1px solid var(--line);border-left:3px solid transparent}
+.side{display:grid;gap:16px;align-content:start;font-size:13px;min-width:0}
+.kv{display:grid;gap:4px;min-width:0}
+.kv .k{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.kv .v{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:0;overflow-wrap:anywhere}
+.kv .v,.kv .v *{font-family:var(--f-body);font-size:13px;font-variant-numeric:normal}
+.side select,.side input{width:100%;font-size:13px;padding:3px 6px}
+input.late{border-color:var(--crit);color:var(--crit)}
+.summary{font-weight:600}
+details.detail>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--accent)}
+details.detail>.title{margin-top:6px;font-size:14px}
+.fn{font-size:12px;color:var(--muted);display:grid;gap:2px;border-top:1px dashed var(--line);padding-top:7px;margin-top:2px;overflow-wrap:anywhere}
+.fn a{color:var(--muted)}
 li.item:first-child{border-top:0}
 li.item.edge-crit{border-left-color:var(--crit)} li.item.edge-warn{border-left-color:var(--warn)} li.item.edge-calm{border-left-color:var(--calm)}
-.body{min-width:0;display:grid;gap:6px}
+.body{min-width:0;display:grid;gap:8px;align-content:start}
+.body>button{justify-self:start}
 .title{overflow-wrap:anywhere;white-space:pre-line}
 .clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .more{font-size:13px;padding:0;border:0;background:none;color:var(--accent);justify-self:start;cursor:pointer;font-weight:600}
@@ -95,15 +108,15 @@ form.add{background:var(--surface);border:1px solid var(--line);border-radius:10
 form.add .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 -4px}
 .foot{color:var(--muted);font-size:13px}
-@media (max-width:520px){li.item{grid-template-columns:1fr}.wrow{grid-template-columns:1fr}}
+@media (max-width:520px){li.item{grid-template-columns:1fr}.wrow{grid-template-columns:1fr}.side{display:flex;flex-wrap:wrap;gap:6px 14px}.kv{display:flex;gap:6px;align-items:center}.side select,.side input{width:auto}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="eyebrow">Project Brain</div>
+    <div class="eyebrow" id="eyebrow">Lobot</div>
     <h1>Review desk</h1>
-    <p class="sub">Everything that needs you, in one place: Lucy's proposals, open questions, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into the Project Brain.</p>
+    <p class="sub">Everything that needs you, in one place: Lucy's proposals, open questions, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
     <div class="processed" id="processed"></div>
   </header>
 
@@ -121,15 +134,15 @@ form.add .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   <nav class="tabs" role="tablist" aria-label="Records" id="tabs"></nav>
 
   <section class="panel" id="panel" role="tabpanel" aria-labelledby="tab-review">
-    <p class="empty">Loading the Project Brain records. If nothing shows, ask Claude to sync the review desk.</p>
+    <p class="empty">Loading the records from Lobot. If nothing shows, ask Claude to sync the review desk.</p>
   </section>
 
-  <p class="foot">The files in the Project Brain are the record. Changes here wait in the list above until Claude files them.</p>
+  <p class="foot">Lobot's files are the record. Changes here wait in the list above until Claude files them.</p>
 </div>
 
 <script>
 const CONFIG = {
-  project: "{{PROJECT_NAME}}",   // eyebrow: "<project> · Project Brain"
+  project: "{{PROJECT_NAME}}",   // eyebrow: "<project> · Lobot"
   scopes: {{SCOPES_JSON}},       // {} on a single-site project, else {"site-a": "Site A", ...}
   pm: "{{PM_NAME}}",             // the PM's name as in docs/people.yaml; new tasks default to this owner on "My tasks"
 };
@@ -177,7 +190,7 @@ const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(
 const show = v => v === "" || v == null ? "(blank)" : v;
 function notice(msg){ $("notice").textContent = msg || ""; $("notice").hidden = !msg; }
 
-$("eyebrow").textContent = `${CONFIG.project} · Project Brain`;
+$("eyebrow").textContent = `${CONFIG.project} · Lobot`;
 
 // ---- Waiting-to-file logic, shared by every record ----
 const tabOf = key => TABS.find(t => t.key === key);
@@ -312,83 +325,89 @@ function textSave(id, label, value, field, d, t, opts = {}){
   return opts.area ? [inp, el("button", {textContent: opts.button || "Save", disabled: !canWrite, onclick: commit})] : [inp];
 }
 
-function metaRow(d, extra){
-  return el("div", {className: "meta"}, [
-    ...(HAS_SCOPES && d.scope ? [pill("s-scope", SCOPES[d.scope] || d.scope)] : []),
-    ...extra,
-    ...(isPending(tabOf(current), d) ? [pill("s-sync", d.synced ? "Changed here" : "New")] : []),
-    ...(d.source ? [el("span", {className: "src", textContent: d.source})] : []) ]);
+// ---- Cards: metadata on the left, the item and its controls on the right, sources as a footnote ----
+const kv = (label, value) => value == null || value === "" ? null : el("div", {className: "kv"}, [el("span", {className: "k", textContent: label}), el("span", {className: "v"}, [].concat(value))]);
+const scopeName = d => SCOPES[d.scope || "all"] || d.scope;
+const statusPill = (s, map) => pill(map[s] || "s-todo", s);
+const footnote = lines => { const ls = lines.filter(Boolean); return ls.length ? el("div", {className: "fn"}, ls) : null; };
+const fnLine = (text, title) => { const n = el("div", {textContent: text}); if (title) n.title = title; return n; };
+// A source path reads better as the meeting's title when the review desk knows it (meta/info processed).
+function sourceTitle(path){
+  const info = (data.meta || [])[0], hit = info && (info.processed || []).find(p => p.file === path);
+  return hit ? hit.title : path;
 }
 
 function card(t, d, closed){
   const id = d.id, k = t.key, li = el("li", {className: "item" + (closed ? " dim" : "")});
-  const parts = [];
+  const side = [], main = [], foot = [];
+  const scope = HAS_SCOPES ? kv("Scope", scopeName(d)) : null;
   if (k === "review") {
     const chosen = d.decision || "";
-    parts.push(...longText(id, d.item), metaRow(d, [pill("s-kind", d.kind || "Proposal"), ...(d.ref ? [el("span", {className: "mono", textContent: d.ref})] : []),
-      ...(chosen ? [pill(chosen === "drop" ? "s-na" : "s-done", {approve: "Approved", change: "Approve with change", drop: "Dropped"}[chosen] || chosen)] : [])]));
+    side.push(kv("Type", d.kind || "Proposal"), scope,
+      chosen ? kv("Decision", pill(chosen === "drop" ? "s-na" : "s-done", {approve: "Approved", change: "With change", drop: "Dropped"}[chosen] || chosen)) : null);
     const note = el("textarea", {id: "note-" + id, value: drafts["note-" + id] ?? d.note ?? "", placeholder: "What to change, or why (optional for approve and drop)", disabled: !canWrite});
     note.setAttribute("aria-label", `Note for ${id}`); note.oninput = () => { drafts["note-" + id] = note.value; };
-    const decide = v => { const n = note.value.trim(); if (v === "change" && !n) { note.focus(); notice(`Say what to change for ${id} first.`); return; } save(t, d, {decision: v, note: n}, () => delete drafts["note-" + id]); };
+    const decide = v => { const n = note.value.trim(); if (v === "change" && !n) { note.focus(); notice(`Say what to change for this ${(d.kind || "proposal").toLowerCase()} first.`); return; } save(t, d, {decision: v, note: n}, () => delete drafts["note-" + id]); };
     const btn = (v, label) => el("button", {id: `dec-${v}-${id}`, className: chosen === v ? "chosen" : "", textContent: label, disabled: !canWrite, onclick: () => decide(v)});
-    parts.push(note, el("div", {className: "controls"}, [btn("approve", "Approve"), btn("change", "Approve with change"), btn("drop", "Drop"),
+    main.push(...longText(id, d.item), note, el("div", {className: "controls"}, [btn("approve", "Approve"), btn("change", "Approve with change"), btn("drop", "Drop"),
       ...(chosen ? [el("button", {textContent: "Undo", disabled: !canWrite, onclick: () => save(t, d, {decision: "", note: ""})})] : [])]));
-    li.classList.add(d.kind === "Risk" ? "edge-crit" : "edge-calm");
+    foot.push(d.source ? fnLine([sourceTitle(d.source), d.ref].filter(Boolean).join(" · "), d.source) : null, fnLine(id));
   }
   else if (k === "questions") {
     const answered = d.status === "answered";
-    parts.push(...longText(id, d.question), metaRow(d, [pill(answered ? "s-done" : "s-prog", answered ? "Answered" : "Open"), el("span", {textContent: "Raised " + (d.raised || "—")})]));
+    side.push(kv("ID", id), scope, kv("Status", pill(answered ? "s-done" : "s-prog", answered ? "Answered" : "Open")), kv("Raised", d.raised));
+    main.push(...longText(id, d.question));
     if (!answered || editing.has(id)) {
       const ta = el("textarea", {id: "ans-" + id, value: drafts["ans-" + id] ?? d.answer ?? "", placeholder: "Your answer", disabled: !canWrite});
       ta.setAttribute("aria-label", `Answer for ${id}`); ta.oninput = () => { drafts["ans-" + id] = ta.value; };
       const go = () => { const v = ta.value.trim(); if (!v) { ta.focus(); notice(`Type an answer for ${id} first.`); return; } save(t, d, {answer: v, status: "answered"}, () => { delete drafts["ans-" + id]; editing.delete(id); }); };
-      parts.push(ta, el("div", {className: "controls"}, [el("button", {className: "primary", id: "btn-" + id, textContent: answered ? "Save answer" : "Answer", disabled: !canWrite, onclick: go}),
+      main.push(ta, el("div", {className: "controls"}, [el("button", {className: "primary", id: "btn-" + id, textContent: answered ? "Save answer" : "Answer", disabled: !canWrite, onclick: go}),
         ...(answered ? [el("button", {textContent: "Cancel", onclick: () => { delete drafts["ans-" + id]; editing.delete(id); render(); }})] : [])]));
     } else {
-      parts.push(el("div", {className: "answer", textContent: d.answer || "(no answer text)"}), el("div", {className: "controls"}, [
+      main.push(el("div", {className: "answer", textContent: d.answer || "(no answer text)"}), el("div", {className: "controls"}, [
         el("button", {id: "edit-" + id, textContent: "Edit answer", disabled: !canWrite, onclick: () => { editing.add(id); render(); $("ans-" + id)?.focus(); }}),
         el("button", {id: "reopen-" + id, textContent: "Reopen", disabled: !canWrite, onclick: () => save(t, d, {status: "open"})}) ]));
     }
+    foot.push(d.source ? fnLine(d.source) : null);
   }
   else if (k === "mine" || k === "others") {
     const overdue = d.due && d.due < today() && t.attention(d);
-    parts.push(...longText(id, d.task), metaRow(d, [
-      ...(k === "others" ? [el("b", {textContent: d.owner || "No owner"})] : []),
-      pill(d.status === "waiting" ? "s-prog" : d.status === "done" ? "s-done" : d.status === "dropped" ? "s-na" : "s-todo", d.status),
-      ...(d.due ? [pill(overdue ? "s-crit" : "s-todo", (overdue ? "Overdue " : "Due ") + d.due)] : []),
-      ...(d.link ? [el("a", {href: d.link, target: "_blank", rel: "noopener", textContent: "Open task"})] : [])]));
-    const due = el("input", {id: "due-" + id, type: "date", value: d.due || "", disabled: !canWrite}); due.setAttribute("aria-label", `Due date for ${id}`);
-    due.onchange = () => save(t, d, {due: due.value});
-    parts.push(el("div", {className: "controls"}, [
-      el("label", {}, ["Status", selectFor("st-" + id, `Status for ${id}`, TASK_ST, d.status, v => save(t, d, {status: v}))]),
-      el("label", {}, ["Due", due]),
-      ...textSave("tnote-" + id, `Note for ${id}`, d.note, "note", d, t, {placeholder: "Note (who said it's done, new date, …)"}) ]));
+    const due = el("input", {id: "due-" + id, type: "date", value: d.due || "", disabled: !canWrite, className: overdue ? "late" : ""});
+    due.setAttribute("aria-label", `Due date for ${id}`); due.onchange = () => save(t, d, {due: due.value});
+    side.push(kv("ID", id), k === "others" ? kv("Owner", d.owner || "No owner") : null, scope,
+      kv("Status", selectFor("st-" + id, `Status for ${id}`, TASK_ST, d.status, v => save(t, d, {status: v}))),
+      kv("Due", [due, ...(overdue ? [pill("s-crit", "Overdue")] : [])]));
+    main.push(...longText(id, d.task), el("div", {className: "controls"}, textSave("tnote-" + id, `Note for ${id}`, d.note, "note", d, t, {placeholder: "Note (who said it's done, new date, …)"})));
+    foot.push(d.source ? fnLine(d.source) : null, d.link ? el("div", {}, [el("a", {href: d.link, target: "_blank", rel: "noopener", textContent: "Open in the task manager"})]) : null);
     if (overdue) li.classList.add("edge-crit");
   }
   else if (k === "risks") {
     const sev = d.severity || "TBD";
-    parts.push(el("div", {className: "title", textContent: d.risk, style: "font-weight:600"}), ...(d.description ? longText(id, d.description) : []), metaRow(d, [pill(sev === "High" ? "s-crit" : sev === "Medium" ? "s-prog" : sev === "Low" ? "s-scope" : "s-na", sev), pill(d.status === "Closed" ? "s-done" : "s-todo", d.status),
-      ...(d.confirmedBy ? [el("span", {textContent: "Confirmed by " + d.confirmedBy})] : [])]));
-    parts.push(el("div", {className: "controls"}, [
-      el("label", {}, ["Severity", selectFor("sev-" + id, `Severity for ${id}`, RISK_SEV, sev, v => save(t, d, {severity: v}))]),
-      el("label", {}, ["Status", selectFor("rst-" + id, `Status for ${id}`, RISK_ST, d.status, v => save(t, d, {status: v}))]) ]));
-    parts.push(...textSave("next-" + id, `Next step for ${id}`, d.nextStep, "nextStep", d, t, {area: true, button: "Save next step", placeholder: "Next step"}));
+    side.push(kv("ID", id), kv("Severity", selectFor("sev-" + id, `Severity for ${id}`, RISK_SEV, sev, v => save(t, d, {severity: v}))),
+      kv("Status", selectFor("rst-" + id, `Status for ${id}`, RISK_ST, d.status, v => save(t, d, {status: v}))), scope);
+    main.push(el("div", {className: "title summary", textContent: d.risk}));
+    if (d.description) {
+      const key = "det-" + id, det = el("details", {className: "detail", open: openText.has(key)}, [el("summary", {textContent: "Show details"}), el("div", {className: "title", textContent: d.description})]);
+      det.ontoggle = () => det.open ? openText.add(key) : openText.delete(key);
+      main.push(det);
+    }
+    main.push(...textSave("next-" + id, `Next step for ${id}`, d.nextStep, "nextStep", d, t, {area: true, button: "Save next step", placeholder: "Next step"}));
+    foot.push(d.source ? fnLine("Source: " + d.source) : null, d.confirmedBy ? fnLine("Confirmed by " + d.confirmedBy) : null);
     const edge = {High: "edge-crit", Medium: "edge-warn", Low: "edge-calm"}[sev]; if (edge) li.classList.add(edge);
   }
   else if (k === "decisions") {
-    parts.push(...longText(id, d.decision), metaRow(d, [pill(d.status === "pending" ? "s-prog" : d.status === "approved" ? "s-done" : "s-na", d.status),
-      ...(d.driver ? [el("span", {textContent: "Driver " + d.driver})] : []), ...(d.neededBy ? [pill("s-todo", "Needed by " + d.neededBy)] : [])]));
-    parts.push(el("div", {className: "controls"}, [
-      el("label", {}, ["Status", selectFor("dst-" + id, `Status for ${id}`, DEC_ST, d.status, v => save(t, d, {status: v}))]),
-      ...textSave("appr-" + id, `Approver for ${id}`, d.approver, "approver", d, t, {placeholder: "Approver"}) ]));
+    side.push(kv("ID", id), kv("Status", selectFor("dst-" + id, `Status for ${id}`, DEC_ST, d.status, v => save(t, d, {status: v}))),
+      kv("Driver", d.driver), kv("Needed by", d.neededBy), scope);
+    main.push(...longText(id, d.decision), el("div", {className: "controls"}, textSave("appr-" + id, `Approver for ${id}`, d.approver, "approver", d, t, {placeholder: "Approver"})));
+    foot.push(d.source ? fnLine(d.source) : null);
   }
   else if (k === "checklist") {
-    parts.push(...longText(id, d.task), metaRow(d, [pill(d.status === "Done" ? "s-done" : d.status === "In progress" ? "s-prog" : "s-todo", d.status), el("span", {className: "mono", textContent: "Row " + d.row})]));
-    parts.push(el("div", {className: "controls"}, [
-      el("label", {}, ["Status", selectFor("cst-" + id, `Status for ${id}`, CHECK_ST, d.status, v => save(t, d, {status: v}))]),
-      ...textSave("cnote-" + id, `Note for ${id}`, d.note, "note", d, t, {placeholder: "Note"}) ]));
+    side.push(kv("Site", scopeName(d)), kv("Row", String(d.row)), kv("Status", selectFor("cst-" + id, `Status for ${id}`, CHECK_ST, d.status, v => save(t, d, {status: v}))));
+    main.push(...longText(id, d.task), el("div", {className: "controls"}, textSave("cnote-" + id, `Note for ${id}`, d.note, "note", d, t, {placeholder: "Note"})));
   }
-  li.append(el("span", {className: "mono", textContent: k === "checklist" ? (d.scope || "") : id}), el("div", {className: "body"}, parts));
+  if (isPending(t, d)) side.push(el("div", {className: "kv"}, [pill("s-sync", d.synced ? "Not filed yet" : "New, not filed")]));
+  const fn = footnote(foot); if (fn) main.push(fn);
+  li.append(el("div", {className: "side"}, side.filter(Boolean)), el("div", {className: "body"}, main));
   return li;
 }
 
@@ -452,7 +471,7 @@ async function save(t, d, patch, after){
 render();
 (async () => {
   db = await window.claude?.use?.("db");
-  if (!db) { notice("This view can't load the Project Brain records. Sign in to claude.ai to see and work on them."); return; }
+  if (!db) { notice("This view can't load the records from Lobot. Sign in to claude.ai to see and work on them."); return; }
   const user = await window.claude.use("user");
   if (user) { const w = await user.can("data.write"); if (w === false) canWrite = false; }
   const seen = new Set();
