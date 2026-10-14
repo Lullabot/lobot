@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.0](https://github.com/Lullabot/lobot/compare/v0.11.1...v0.12.0) (2026-10-14)
+
+### Added
+
+* **engine:** Lucy keeps a project dossier: one folder per site with its background, audiences, content, data, and migration, so questions about the project are answered from cited files instead of old meeting notes ([2063848](https://github.com/Lullabot/lobot/commit/2063848b9b0a19884a27ac920210b5a87867ba67))
+
 ## [0.11.1](https://github.com/Lullabot/lobot/compare/v0.11.0...v0.11.1) (2026-10-14)
 
 ### Fixed
