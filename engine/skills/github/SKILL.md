@@ -1,6 +1,6 @@
 ---
 name: github
-description: Work with the project's GitHub repo and GitHub Projects through the gh CLI — read and update issues, PRs, and project boards. Use whenever a task involves GitHub issues, pull requests, project status, sprint/board reporting, or GitHub usernames.
+description: Work with the project's GitHub repo and GitHub Projects through the gh CLI — read and update issues, PRs, and project boards — and save the Project Brain itself with git. Use whenever a task involves GitHub issues, pull requests, project status, sprint/board reporting, or GitHub usernames, and when the PM asks to save, commit, sync, or back up the Project Brain.
 ---
 
 # GitHub
@@ -65,6 +65,37 @@ If the PM pastes a token into the chat anyway, don't use it: it's now in the con
 - If command output could contain it, redact `gh[pousr]_…` before showing it.
 - Never write the token anywhere except the PM's own `.env`.
 
+## Saving the Project Brain
+
+The Project Brain is its own git repository, separate from the code in `repo/`. The PM shouldn't need a terminal or git knowledge to keep it saved: the assistant does the git work, in plain language, with the PM's approval. Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
+
+**Before the first git command in a session:**
+
+1. **Cowork: ask for delete permission.** Git deletes its own temporary lock files, which a connected folder blocks until the PM allows deleting there. Without it, git leaves lock files behind that break the next git command, the PM's own included. Ask once per session for the Project Brain folder, and tell the PM it also allows other deletes in that folder for the session. If they decline, don't run git commands that write; say what's left unsaved.
+2. **Set who the commits are from.** Check `git config user.name` and `git config user.email`. The shell often has no git settings of its own (Cowork's always starts empty), so if either is empty, set both for this repository only with `git config user.name` and `git config user.email`, no `--global`. Take them from, in order: the owner in the PM's personal profile (`~/.lobot/`, pm-profile skill), the PM's entry in the people directory, or the PM, asked once. Tell the PM in one line. They're saved in the Project Brain's `.git/config`, which isn't committed, so each PM's copy keeps its own.
+
+**Getting changes (pull) and sending them (push):**
+
+- Prefer HTTPS with the `GH_TOKEN` already loaded by `gh-env.sh`. In Cowork, the shell on the PM's computer usually has no SSH key, so an `origin` that starts with `git@github.com:` fails there with "Host key verification failed". Don't change `origin` (the PM's own tools may use SSH); pass the HTTPS address instead:
+
+  ```sh
+  source .ai/general/skills/github/gh-env.sh
+  url="https://github.com/OWNER/REPO.git"   # origin's repo, over HTTPS
+  git -c credential.helper= -c credential.helper='!gh auth git-credential' pull --ff-only "$url" main
+  git fetch -q "$url" main:refs/remotes/origin/main     # so status compares against the right origin/main
+  git -c credential.helper= -c credential.helper='!gh auth git-credential' push "$url" HEAD:main
+  ```
+
+  The token is passed by `gh` for that one command. Never put it in a URL, `.git/config`, or a credential store.
+- If a pull can't fast-forward (someone else saved changes too), stop and explain it to the PM in plain terms. Never force-push, rebase, or reset without their explicit approval.
+
+**Committing:**
+
+- Commit when the PM asks ("save my work", "commit this"), and offer to at the end of a session that changed files. Show what's included in a line or two, and wait for approval.
+- Stage files by name, never `.env` or anything else git-ignored. Check `git status` first, and if `.env` shows up as a change to commit, stop (see "Connecting GitHub").
+- Write the message in plain language ("Process the 14 October client meeting"). Lobot updates use "Update Lobot to x.y.z".
+- Push only when the PM asks, or has said they want every save pushed.
+
 ## Reading (no approval needed)
 
 ```sh
@@ -106,7 +137,7 @@ gh project item-edit --project-id PROJECT_NODE_ID --id ITEM_ID \
   --field-id FIELD_ID --single-select-option-id OPTION_ID
 ```
 
-Never: merge PRs, push code, create/delete branches, change repo or project settings, or delete anything. Those are for the dev team.
+Never, in the project's code repository: merge PRs, push code, create/delete branches, change repo or project settings, or delete anything. Those are for the dev team. (Saving the Project Brain is different; see "Saving the Project Brain".)
 
 One exception: the adr skill (`.ai/general/skills/adr/SKILL.md`) adds an ADR file on its own branch and opens a draft pull request for it, with the PM's approval. It touches nothing else in the repo and never merges.
 
