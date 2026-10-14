@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.15.1](https://github.com/Lullabot/lobot/compare/v0.15.0...v0.15.1) (2026-10-14)
+
+### Fixed
+
+* **engine:** review desk cards are easier to scan, with each item's details down the left and sources and IDs as a footnote under the buttons ([6a6226f](https://github.com/Lullabot/lobot/commit/6a6226f1ee1463e240238aa44aa8f09574954bd5))
+
 ## [0.15.0](https://github.com/Lullabot/lobot/compare/v0.14.0...v0.15.0) (2026-10-14)
 
 ### ⚠ BREAKING CHANGES
