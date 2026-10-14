@@ -685,7 +685,7 @@ function cmdInit(project, opts) {
     'Next steps:',
     '  1. git init, and push to a private repository (it will hold transcripts and a people directory).',
     '  2. Clone the project\'s code repository into repo/ and point the drive symlink at the shared Drive folder.',
-    '  3. Copy .env.example to .env and add your token.',
+    '  3. Copy .env.example to .env and add your token, or ask your assistant to "connect GitHub".',
     '  4. Fill in the TODOs in CLAUDE.md and .ai/project/adr.md.',
     '  5. Follow README.md to set up your assistant.',
   ].join('\n'));
