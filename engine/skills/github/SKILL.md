@@ -21,6 +21,8 @@ Run this at the start of **every** shell command that uses `gh` (each Cowork she
 source .ai/general/skills/github/gh-env.sh
 ```
 
+In Cowork, run `gh` in the shell on the PM's computer (the one with the Project Brain folder mounted), from the Project Brain root. Not the cloud workspace's shell: it has its own `gh` with an unrelated `GH_TOKEN`, it can't see the PM's `.env`, and its proxy blocks the GraphQL API that `gh project` commands use. If `gh` reports "command not found" or a bad token, first check you're in the right shell and sourced this script.
+
 Source it directly in the same shell that runs `gh`. Don't pipe it (`source … | sed`) or wrap it in `( … )`: that runs it in a subshell, and `PATH` and `GH_TOKEN` are lost (symptom: `gh: command not found`). Don't fall back to `gh auth login` or a device-code login; if the script can't authenticate, report why.
 
 It works for both tools:
@@ -86,6 +88,17 @@ Anything the team or client can see is a write: creating, editing, commenting on
 2. Wait for explicit approval, unless the PM's request is itself the instruction ("move #612 to Done").
 3. Make the change, then confirm with a link.
 
+Creating an issue under an epic, on a board:
+
+```sh
+gh issue create -R OWNER/REPO --type Task --title "…" --body-file body.md   # prints the URL
+gh api -X POST repos/OWNER/REPO/issues/EPIC/sub_issues -F sub_issue_id="$(gh api repos/OWNER/REPO/issues/N --jq .id)"
+gh api -X POST repos/OWNER/REPO/issues/N/dependencies/blocked_by -F issue_id="$(gh api repos/OWNER/REPO/issues/BLOCKER --jq .id)"
+gh project item-add BOARD --owner ORG --url ISSUE_URL
+```
+
+Sub-issue and dependency calls take the issue's numeric `id`, not its number.
+
 Setting project fields needs IDs from `.ai/project/github.md`:
 
 ```sh
@@ -115,7 +128,21 @@ gh project view N --owner ORG --format json
 gh project field-list N --owner ORG --format json
 ```
 
-Record the repo, each board (number, title, purpose, URL, node ID), and the Status/Priority/Size fields with option IDs.
+Also check for org-level issue fields. These are set on the issue itself, not on a board, and an org may use them instead of a board's own Priority field:
+
+```sh
+gh api orgs/ORG/issue-fields --jq '.[] | {id, name, data_type, options: [.options[]? | {id, name}]}'
+gh api repos/OWNER/REPO/issues/N --jq .issue_field_values   # what an issue has set
+```
+
+Set one with the option's name (not its ID):
+
+```sh
+echo '{"issue_field_values":[{"field_id":FIELD_ID,"value":"Medium"}]}' \
+  | gh api -X POST repos/OWNER/REPO/issues/N/issue-field-values --input -
+```
+
+Record the repo, each board (number, title, purpose, URL, node ID), the Status/Priority/Size fields with option IDs, and any org issue fields with option IDs. When a board and the org both have a field with the same name (Priority is common), look at recent issues to see which one the team fills in, and note in `.ai/project/github.md` which one to use.
 
 ## Handoff
 
