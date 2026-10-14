@@ -43,7 +43,7 @@ When the PM asks to see a record that has a template above, in any wording ("pul
 3. **Open it** (in Claude: the Artifact tool's `open` action). If the record has a template but no page yet, publish it ("Publish a page"), then open it.
 4. **Summarize in chat**, briefly: counts, and the few items most likely to need the PM's attention first. Don't reprint the whole record.
 
-If the assistant can't open pages, answer from the file and say the page link is in the root `CLAUDE.md`. A record with no template (people, glossary, journal, meetings) is answered from the file, or with the dashboard skill when the PM wants to browse.
+If the assistant can't open pages, answer from the file and say the page link is in the root `CLAUDE.md`. A record with no template (people, glossary, journal, meetings) is answered from the file.
 
 ## Keep them in sync
 
