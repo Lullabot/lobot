@@ -21,6 +21,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **Decision log** | Records what was decided, why, who drove it, and who approved it, and tracks what is still waiting on approval. |
 | **Questions log** | Keeps one list of the questions only you can answer (a surname, who owns something, whether a SOW is signed), so you can answer them in a batch and the assistant files each answer where it belongs. |
 | **Tracker pages** | Gives you a working page for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist (in Claude, as an artifact). Change things there; the assistant files your changes into the Project Brain at the start and end of each session. |
+| **Dashboard** | Opens a read-only page in your browser with every record (questions, risks, decisions, RACI, checklists, people, glossary, journal, meetings) as a tab, updated as the files change. Run `python3 .ai/general/skills/dashboard/dashboard.py` from the project. |
 | **People** | Keeps a directory of everyone on the project: roles, time zones, and the usernames the assistant needs to look them up in other tools. |
 | **RACI** | Keeps track of who is responsible, accountable, consulted, and informed for each area of work, on your team and the client's, site by site, and produces a "who to go to" table you can share with the client. |
 | **Glossary** | Keeps track of acronyms, product names, and words that mean something specific on this project, so the assistant reads them correctly. |
