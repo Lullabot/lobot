@@ -32,7 +32,30 @@ It works for both tools:
 
 Token: classic PAT, scopes `repo`, `project`, `read:org`, SSO-authorized for the org, short expiry. See `.env.example`.
 
-Check with `gh auth status`. If it fails, tell the PM what's missing (no `.env`, expired token, missing scope, SSO not authorized) rather than retrying.
+Check with `gh auth status`. If it fails, or `gh` isn't installed, follow "Connecting GitHub" below rather than retrying.
+
+## Connecting GitHub
+
+Use this when the PM asks to set up or connect GitHub, or when the check above fails. Run from the Project Brain root:
+
+```sh
+bash .ai/general/skills/github/gh-setup.sh
+```
+
+It's safe to run again. It makes sure `.env` is git-ignored (adding it to `.gitignore` if not), installs `gh` if missing, and checks the login. Without a login, it creates `.env` from `.env.example` with owner-only permissions. It never prints the token. Act on its output:
+
+- **`ignore: added …`**: tell the PM `.gitignore` changed and should be committed.
+- **`ignore: STOP …`**: `.env` is tracked by git. Stop and tell the PM; any token it ever held must be revoked.
+- **`token: missing`**: walk the PM through creating a token, then run the script again once they say it's in:
+  1. Open https://github.com/settings/tokens/new (Settings → Developer settings → Personal access tokens → Tokens (classic)).
+  2. Name it for the project and tool (for example "Lobot, Cowork"), set a short expiration, and tick the `repo`, `project`, and `read:org` scopes.
+  3. Generate it. If the org uses SSO, choose **Configure SSO** next to the token and authorize it for the org.
+  4. Open `.env` at the top of the Project Brain folder (in Finder, Cmd+Shift+. shows hidden files) and paste the token right after `GH_TOKEN=`, with no quotes or spaces. Save.
+  5. Tell the assistant it's done. Never paste the token into the chat.
+- **`auth: failed …`**: name the likely cause from the message and stop; don't retry in a loop.
+- **`auth: ok as <login>`**: confirm with a read-only call on the project's repo (`gh issue list -R OWNER/REPO --limit 1`). If `.ai/project/github.md` is missing, continue with "Discovering a project's setup".
+
+If the PM pastes a token into the chat anyway, don't use it: it's now in the conversation history. Ask them to revoke it and make a new one.
 
 ## Token safety
 

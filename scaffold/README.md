@@ -30,7 +30,7 @@ Everything important lives in files here. Chat history, Claude memory, and accou
 
 ### 2. Add your credentials
 
-Copy `.env.example` to `.env` (gitignored) and fill in your own values, then `chmod 600 .env`. Currently: a GitHub personal access token (`GH_TOKEN`), needed only for Cowork or other tools that can't use your own `gh auth login`. Never commit `.env`.
+Copy `.env.example` to `.env` (gitignored) and fill in your own values, then `chmod 600 .env`. Currently: a GitHub personal access token (`GH_TOKEN`), needed only for Cowork or other tools that can't use your own `gh auth login`. Or ask your assistant to "connect GitHub": it creates `.env`, installs what it needs, and tells you where to paste the token. Never commit `.env`.
 
 ### 3. Set up your assistant
 
