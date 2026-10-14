@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.14.0](https://github.com/Lullabot/lobot/compare/v0.13.0...v0.14.0) (2026-10-14)
+
+### ⚠ BREAKING CHANGES
+
+* **engine:** questions, risks, and tasks are now kept as YAML like the decision log, risks get their own skill with a dated history, and your existing files are converted for you
+
+### Added
+
+* **engine:** questions, risks, and tasks are now kept as YAML like the decision log, risks get their own skill with a dated history, and your existing files are converted for you ([bffaf0a](https://github.com/Lullabot/lobot/commit/bffaf0a99bc86dea8ddd7e3fa0be8d6817f35c0e))
+* **tool:** updates can now convert a record kept as a table to YAML and fix the links to it, with your approval ([be5ec8b](https://github.com/Lullabot/lobot/commit/be5ec8b087ad748f22d8e2dfdd0be6f756bea2ac))
+
 ## [0.13.0](https://github.com/Lullabot/lobot/compare/v0.12.0...v0.13.0) (2026-10-14)
 
 ### Added
