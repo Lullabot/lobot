@@ -1,0 +1,83 @@
+# Standard shared drive layout: the folders and files every Lullabot project's shared drive is expected to have.
+# Lucy compares a project's shared drive to this list (drive-sources skill, "Map the shared drive").
+# Each key is also the source key used in a project's docs/sources.yaml, so the same thing has the same name on every project.
+#
+# Fields:
+#   name       the name to give it when Lucy creates it
+#   look_for   other names it often goes by, to match an existing folder or file
+#   parent     where it belongs: root (the top level of the shared drive, or of each scope's root)
+#              or the key of the layout folder it sits in. No parent: anywhere in the drive.
+#   kind       folder | file
+#   file_type  document | spreadsheet | presentation (files only: what to create)
+#   purpose    transcripts | reference | deliverable | output
+#   handler, copy_to, record: copied into the project's entry (see SKILL.md)
+#   why        one line Lucy can use to explain it to the PM
+items:
+  # Every project's root holds at least these three folders.
+  project-management:
+    name: "Project Management"
+    look_for: ["PM", "Management"]
+    parent: root
+    kind: folder
+    purpose: reference
+    why: "Running the project: meeting transcripts, status, plans, and trackers."
+  client-assets:
+    name: "Client Assets"
+    look_for: ["Assets", "From client", "Client files", "Brand"]
+    parent: root
+    kind: folder
+    purpose: reference
+    why: "Material the client hands over: brand files, content, access details, existing docs."
+  strategy-design:
+    name: "Strategy & Design"
+    look_for: ["Strategy and Design", "Strategy", "Design", "UX"]
+    parent: root
+    kind: folder
+    purpose: reference
+    why: "Discovery, strategy, and design work: research, IA, wireframes, designs."
+  kickoff-checklist:
+    name: "Kickoff tasks: <project name>"
+    look_for: ["Kickoff tasks", "Kickoff checklist", "Project Kickoff Checklist", "Project initiation"]
+    parent: root
+    kind: file
+    file_type: spreadsheet
+    purpose: deliverable
+    record: docs/kickoff-checklist.md
+    why: "Lullabot's new-project checklist and kickoff agendas. Copied from the template and named for the project so searches tell them apart."
+  contracts:
+    name: "Contracts"
+    look_for: ["SOW", "Statement of work", "MSA", "Legal", "Agreements"]
+    kind: folder
+    purpose: reference
+    why: "Signed SOWs, change orders, and agreements. Read before scope questions."
+  meeting-transcripts:
+    name: "Meeting transcripts"
+    look_for: ["Meet Recordings", "Transcripts", "Recordings"]
+    parent: project-management
+    kind: folder
+    purpose: transcripts
+    handler: meeting-notes
+    copy_to: docs/transcripts/
+    why: "Where Google Meet saves call transcripts, so new ones can be found and filed."
+  meeting-notes:
+    name: "Meeting Notes"
+    look_for: ["Meeting notes", "Notes", "Call notes", "Meeting summaries"]
+    parent: project-management
+    kind: folder
+    purpose: output
+    record: docs/meetings/
+    why: "Shareable copies of reviewed meeting notes, filed next to the transcripts they came from, so the team can read them without the Project Brain."
+  risk-register:
+    name: "Risk register"
+    look_for: ["Risks", "RAID log", "Risk log"]
+    kind: file
+    file_type: spreadsheet
+    purpose: deliverable
+    record: docs/risks.md
+    why: "The risk list the client sees. docs/risks.md stays the record of truth for now."
+  status-reports:
+    name: "Status reports"
+    look_for: ["Status", "Weekly updates", "Reports"]
+    kind: folder
+    purpose: reference
+    why: "Status updates sent to the client, for history and consistency."

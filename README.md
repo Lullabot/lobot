@@ -17,21 +17,27 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | Skill | What it does for you |
 |---|---|
 | **Meeting notes** | Turns a meeting transcript into notes with a summary, action items, and flags, and suggests the decisions, tasks, and risks that came out of it. |
+| **Drive sources** | Maps the project's shared Google Drive against Lullabot's standard layout (offering to create what's missing), checks it for new transcripts and changed documents, and reads them straight from Drive so you no longer export them by hand. |
 | **Decision log** | Records what was decided, why, who drove it, and who approved it, and tracks what is still waiting on approval. |
+| **Questions log** | Keeps one list of the questions only you can answer (a surname, who owns something, whether a SOW is signed), so you can answer them in a batch and the assistant files each answer where it belongs. |
+| **Tracker pages** | Gives you a working page for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist (in Claude, as an artifact). Change things there; the assistant files your changes into the Project Brain at the start and end of each session. |
+| **Dashboard** | Opens a read-only page in your browser with every record (questions, risks, decisions, RACI, checklists, people, glossary, journal, meetings) as a tab, updated as the files change. Run `python3 .ai/general/skills/dashboard/dashboard.py` from the project. |
 | **People** | Keeps a directory of everyone on the project: roles, time zones, and the usernames the assistant needs to look them up in other tools. |
+| **RACI** | Keeps track of who is responsible, accountable, consulted, and informed for each area of work, on your team and the client's, site by site, and produces a "who to go to" table you can share with the client. |
 | **Glossary** | Keeps track of acronyms, product names, and words that mean something specific on this project, so the assistant reads them correctly. |
 | **Journal** | Logs the work as it happens, closes out each day, and recaps where things stand when you start a new session. |
 | **PM voice** | Learns how you write, so status updates, client email, and tickets it drafts for you sound like you. |
 | **ADR** | Writes up architecture decisions and hands them to the technical lead for review in the code repository. |
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
 | **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. |
+| **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
 
 ### Agents
 
 Helpers the assistant hands work to.
 
-- **Lucy, the librarian.** Takes the material you hand her (transcripts, notes, documents) and files it: meeting notes, the people directory, the glossary, the decision log, the risk list, and the journal. She works only inside the Project Brain and never touches GitHub, email, or other outside systems. Like a new hire, she starts out checking with you and earns more independence as you correct and promote her.
+- **Lucy, the librarian.** Takes the material you hand her (transcripts, notes, documents) and files it: meeting notes, the people directory, the RACI matrix, the glossary, the decision log, the risk list, the questions log, the journal, and the map of the project's shared Google Drive. She works only inside the Project Brain and the project's Drive, asks before scanning the Drive or creating anything in it, and never touches GitHub, email, or other outside systems. Like a new hire, she starts out checking with you and earns more independence as you correct and promote her.
 - **Pepper, the process wrangler.** Keeps your GitHub and Jira tickets in order: writes and tidies tickets, keeps labels, links, and statuses honest, drafts comments, and tells you what's stale, unowned, or unclear on the board. She speaks fluent developer but never reviews code, and every change she'd make waits for your approval until you promote her.
 
 ### Ground rules
@@ -51,7 +57,7 @@ The assistant also has a personality: calm, direct, and to the point when it tal
 
 Open your assistant in the Project Brain folder and talk to it the way you would talk to a project coordinator. At the start of each session it reads the rules, catches up on the latest journal entry, and tells you where things stand.
 
-**After a client call.** Drop the transcript into the Project Brain and say "process today's meeting with the client." Lucy writes the meeting notes. The assistant then shows you the action items, any decisions that should be logged, and anything that looks like a risk, and waits for your approval before adding them.
+**After a client call.** Drop the transcript into the Project Brain and say "process today's meeting with the client." If the project's Google Meet transcript folder is mapped (Drive sources), skip the drop: Lucy finds the new transcript in Drive and saves a copy for you. Lucy writes the meeting notes. The assistant then shows you the action items, any decisions that should be logged, and anything that looks like a risk, and waits for your approval before adding them.
 
 **Before a status update.** Ask "what did we decide about the launch date, and what's still waiting on approval?" The assistant answers from the decision log. Then ask it to "draft this week's status update for the client," and it writes one in your voice for you to edit and send.
 
