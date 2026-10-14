@@ -32,29 +32,62 @@ Refer to tickets by key: `#123` in GitHub, `PROJ-123` in Jira. Link them in repo
 
 ## Descriptions
 
-Write for a developer who wasn't in the meeting. Use the sections that apply and drop the rest:
+Write for a developer who wasn't in the meeting. Start from the project's issue template for the ticket type (in GitHub, `.github/ISSUE_TEMPLATE/`), keep its headings, and add the common sections below where they apply. Drop sections that would be empty.
+
+### Order
 
 ```markdown
-## Context
-Why this work exists and who asked for it. Link the source (meeting, decision, design).
-
-## What
-The change, described as behavior, not implementation. Leave the how to the developer unless the team already decided it.
-
-## Acceptance criteria
-- [ ] Testable statements. Each one passes or fails, with no judgment calls.
-
-## Out of scope
-What this ticket deliberately does not cover, with links to tickets that do.
-
-## References
-Designs, related tickets, documentation.
+## Description            (or the template's equivalent: Summary, Context and What, steps to reproduce)
+## Design concerns        only when the ticket questions or departs from the design
+## Questions
+## Resources              only when there are external links
+## Out of scope           only when it prevents a likely misunderstanding
+## Acceptance criteria    always last above the divider
+---
+## Implementation notes   only when the project uses them
 ```
 
-Bugs add **Steps to reproduce**, **Expected**, **Actual**, and **Environment** (URL, browser, role, data), plus a screenshot or recording when there is one.
+**Description.** Why this work exists, who asked for it, and the change described as behavior, not implementation. Bugs add **Steps to reproduce**, **Expected**, **Actual**, and **Environment** (URL, browser, role, data), plus a screenshot or recording when there is one.
 
-- If acceptance criteria need technical knowledge you don't have, draft what you can, mark the gap, and ask the developer. Never invent technical detail.
-- Keep the description current. When scope changes in a comment thread, update the description and note the change with a date, so readers don't have to reconstruct it from comments.
+**Acceptance criteria.** Testable statements as checkboxes; each passes or fails with no judgment calls. Merge like items into one line and cut anything another line already covers; aim for five or fewer. More than that usually means the ticket should be split. State the requirement, not a proposed fix that hasn't been approved: "Donate Now's text meets 4.5:1 contrast, using colors the designer approves", not "Donate Now uses black text". If criteria need technical knowledge you don't have, draft what you can, mark the gap, and ask the developer. Never invent technical detail.
+
+### Common sections (any ticket type)
+
+**Design concerns.** Add when a ticket questions or departs from the design, limited to accessibility violations you can verify against a specific WCAG criterion, privacy or personal-data problems, and functional gaps (a state, screen, or behavior the design doesn't cover). Leave subjective or unverifiable concerns (a font that looks small, a color you don't like) for user acceptance testing. Developers and PMs suggest; the designer decides (with a design file, there is always a designer who made the call, even when roles vary by project). A numbered list, one item per concern: a bold title that states the problem, then one paragraph with what and why (numbers and the WCAG criterion for accessibility), who raised it, and the suggestion with who made it.
+
+```markdown
+1. **Donate Now color contrast ratio is too low**
+The comp has white text on green, a 2.27:1 contrast ratio. WCAG 2.2 AA requires 4.5:1 for text (1.4.3), so many visitors with low vision can't read it. Raised by @pm-handle. @dev-handle suggests the design system's primary button, black text on the same green (9.25:1).
+```
+
+Credit the person who actually raised it. Every concern also gets a question (below) so its resolution is tracked.
+
+**Questions.** Everything that must be answered before the ticket is ready, as checkboxes, each starting with the @username of the person who has the authority to answer (from the people directory; never guess a username). Business, copy, and naming questions go to the client; design questions go to the designer, or, when the designer isn't on the ticket system, to the client lead to get the designer's decision. Follow the list with this line:
+
+```markdown
+*Please update the description, acceptance criteria, and implementation notes as questions are answered.*
+```
+
+While questions are open, set the ticket to the status and assignee the project uses for that (in `.ai/project/tickets.md` or `.ai/project/github.md`; often a research or review status, assigned to the client lead). When every box is checked and the ticket reflects the answers, it can move to the team's ready state.
+
+**Resources.** External links only: designs, documents, recordings. Parent, epic, blocking, and blocked-by tickets go in the system's relationship fields (GitHub sub-issues and dependencies; Jira parent and issue links), not in the body.
+
+### Implementation notes (optional per project)
+
+When developers rely on coding agents, ask the PM whether the project's issue templates should end with a `---` divider and an **Implementation notes** section. Above the divider is the work; below it, how to build it, written short enough for a developer to skim and specific enough for an agent to follow:
+
+- the branch to start from and where the pull request goes;
+- existing code, components, and config to reuse, by path or name;
+- conventions that apply (where config lives, frameworks to use or avoid);
+- what not to touch;
+- how to verify (commands, preview checks).
+
+Read the code before writing them, and keep design choices out: anything that changes what users see belongs in Design concerns until the designer approves it. Don't make this standard for every project.
+
+### Keeping it current
+
+- Don't use first person (I, we, my, our) for something someone else said or decided: the ticket posts under the PM's account, so it reads as theirs. Cite the person ("decided by @handle", "@handle suggests") or use the passive voice ("This ticket assumes ...").
+- When scope changes in a comment thread, update the description and note the change with a date, so readers don't have to reconstruct it from comments.
 - Client-visible tickets contain no internal notes, budget talk, or Project Brain paths.
 
 ## Size
