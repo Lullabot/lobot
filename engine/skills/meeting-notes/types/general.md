@@ -6,7 +6,7 @@ Default template. Use for onboarding, kickoffs, syncs, and status calls: meeting
 
 - **What the meeting was for** and what it covered, by topic.
 - **Action items:** who will do what, and when if stated. Expect many to be clerical in onboarding meetings (access requests, invites, sharing files). Owner is the person who committed or was asked; if unclear, mark the owner *(unverified)*.
-- **Context:** facts about the project, its people, systems, process, and history that a newcomer or the assistant would need. These feed the people, glossary, and overview updates.
+- **Context:** facts about the project, its people, systems, process, and history that a newcomer or the assistant would need. These feed the people, glossary, and dossier updates.
 - **Flags:** risks, concerns, decisions, and architecture choices mentioned, even in passing. Decisions that pass the decision-log skill's entry test are proposed as log entries (pending when no approver is shown); most things called a decision in a meeting won't pass, and stay in the notes. Risks and architecture choices are usually too thin for a full record; each becomes a follow-up.
 - **Open questions:** things raised but not answered.
 
@@ -50,7 +50,7 @@ Short paragraphs or bullets grouped by topic, a few hundred words at most. Who s
 
 ## Context updates
 
-- People, glossary, and overview changes made from this meeting, with links. Filled in after PM review.
+- People, glossary, and dossier changes made from this meeting, with links. Filled in after PM review.
 
 ## People mentioned
 

@@ -1,6 +1,6 @@
 # Writing context docs
 
-Rules for files the assistant writes in `docs/` to give itself (and new PMs) project context.
+Rules for files the assistant writes in `docs/` to give itself (and new PMs) project context. The main one is the project dossier in `docs/overview/`; the dossier skill (`.ai/general/skills/dossier/SKILL.md`) applies these rules to it: its layout, standard topics, and how facts get in.
 
 ## Progressive disclosure
 

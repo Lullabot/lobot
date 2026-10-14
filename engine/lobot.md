@@ -35,7 +35,7 @@ The one thing kept outside it is the PM's **personal profile** in `~/.lobot/`: t
 | `~/.lobot/` | Outside the Project Brain, in the PM's home folder: their personal profile (`voice.md`, `preferences.md`), shared by every project they work on. Nothing project-specific. See the pm-profile skill. | PM + assistant |
 | `.ai/project/task-management.md` | Where tasks go for this project (tool, project, labels) and which items become tasks. Set per PM. | PM |
 | `docs/` | Context artifacts: the material the assistant reads to do tasks (people, glossary, notes, derived summaries, journal). | Assistant, reviewed by PM |
-| `docs/overview/` | Project overview: `index.md` (read first) → topic files → `reference/` (generated detail). | Assistant, reviewed by PM |
+| `docs/overview/` | Project dossier: `index.md` (read first) → one folder per site (`sites/<site>/`: index, topic files such as the current site's background, audiences, content, data, migration) → `reference/` (exhaustive or generated detail). Every fact cites its source. See the dossier skill. | Lucy, reviewed by PM |
 | `docs/people.yaml` | Canonical people directory: active participants, roles, timezones, third-party usernames/IDs. See the people skill. | Assistant |
 | `docs/glossary.yaml` | Project glossary: terms with a meaning specific to this project (client acronyms, internal names, jargon). Overrides the shared glossary on conflicts. See the glossary skill. | Assistant |
 | `docs/raci.yaml` | RACI matrix: who is Responsible, Accountable, Consulted, and Informed for each area of work, agency and client, per site or program. See the raci skill. | Assistant, reviewed by PM |
@@ -57,7 +57,7 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 1. Read the root `CLAUDE.md`, then this file.
 2. Read the rule files (`*.md`) at the top level of `.ai/general/` and `.ai/project/`, and the `description` of each skill in their `skills/` folders (skip the descriptions if your tool already lists these skills as available). Load a full skill, glossary, or script only when needed.
 3. Read the PM's preferences in `~/.lobot/preferences.md` if it exists and can be read, and start from its Lobot settings (pm-profile skill). If it can't be read, say so in one line.
-4. Read `docs/overview/index.md` (Level 1 project summary). Open deeper overview files only as the task needs.
+4. Read `docs/overview/index.md` (Level 1 of the project dossier). Open a site's index and topic files only as the task needs.
 5. Run the journal skill's catch-up mode (`.ai/general/skills/journal/SKILL.md`): read the latest file in `docs/journals/` and recap it.
 6. If a Google Drive connector is available: when `docs/sources.yaml` maps sources, run the drive-sources skill's check and list what's new or changed in one line per source, processing nothing yet; when it has no `shared_drive`, offer once to have Lucy map the project's shared drive.
 7. If the project has tracker pages (listed in the root `CLAUDE.md`) and the assistant can read them, run the tracker-pages skill's sync and list what the PM changed on each page, filing nothing yet.
@@ -69,6 +69,7 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 - **Write it down.** Decisions, findings, and context that come out of a session are captured in `docs/` (or the journal) before the session ends, not left in chat.
 - **Look people up.** Whenever a person is named or involved, or an API call needs a username/ID, use the people skill (`.ai/general/skills/people/SKILL.md`). Never guess IDs.
 - **Know who owns what.** When the question is who decides, approves, or should be asked about an area, check the RACI matrix with the raci skill (`.ai/general/skills/raci/SKILL.md`). Point people named in a meeting are recorded there.
+- **Know the project.** Answer questions about the project or a site from the dossier with the dossier skill (`.ai/general/skills/dossier/SKILL.md`): project index, then site index, then the topic file. Facts learned in meetings, research, or answers go into the dossier, not only into meeting notes, so the next question finds them.
 - **Know the vocabulary.** When a term might have a project-specific meaning (or looks mistranscribed), check the glossary skill (`.ai/general/skills/glossary/SKILL.md`) before interpreting it.
 - **Log decisions.** Business decisions about the project (a choice between options, agreed on our watch, with a driver and an approver) go in the decision log via the decision-log skill (`.ai/general/skills/decision-log/SKILL.md`), which has the full entry test. Architecture decisions are ADRs in the code repo, never log entries: use the adr skill (`.ai/general/skills/adr/SKILL.md`), which asks the developer first and goes through a draft pull request the technical lead merges. Check the log before reopening a question. Approval is never inferred from silence.
 - **Save to git for the PM.** The PM never needs a terminal to keep the Project Brain saved. Committing, pulling, and pushing it, including setting who commits are from, follow the github skill's "Saving the Project Brain", with the PM's approval.
