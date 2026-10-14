@@ -44,7 +44,8 @@ function usage() {
     'link    Makes skills in .ai/general/skills/ and .ai/project/skills/ discoverable.',
     '        Run it after adding a project skill.',
     'migrate Applies the steps a breaking change needs in the project\'s own files (moving',
-    '        or renaming a folder, updating a name). status and update list them first.',
+    '        or renaming a folder, updating a name, converting a record to a new format).',
+    '        status and update list them first.',
     '        Run it after update, once the PM has approved the steps.',
     '',
     '--harnesses  Which assistants to set up: claude (.claude/skills, .claude/agents)',
@@ -394,6 +395,10 @@ function copyAgents(project) {
  *   { "move": "<path>", "to": "<path>" }                 move a file or folder
  *   { "replace": "<file>", "from": "<text>", "to": "<text>" }   replace text in a file
  *   { "delete": "<file>" }                               delete a file
+ *   { "convert": "<file.md>", "to": "<file.yaml>", "as": "<converter>" }
+ *        turn a markdown table record into a YAML record (see TABLE_CONVERTERS), then delete it
+ *   { "relink": "<old path>", "to": "<new path>" }      point references to a moved record at its
+ *        new name, in the project's own markdown and YAML files (not transcripts)
  */
 function loadMigrations() {
   let list;
@@ -409,7 +414,9 @@ function loadMigrations() {
   };
   for (const m of list) {
     for (const step of m.steps) {
-      const paths = 'move' in step ? [step.move, step.to] : 'replace' in step ? [step.replace] : [step.delete];
+      const paths = 'move' in step ? [step.move, step.to] : 'replace' in step ? [step.replace]
+        : 'convert' in step ? [step.convert, step.to] : 'relink' in step ? [step.relink, step.to] : [step.delete];
+      if ('convert' in step && !TABLE_CONVERTERS[step.as]) fail('migration ' + m.id + ' names an unknown converter: ' + step.as);
       if (!paths.every(safe)) fail('migration ' + m.id + ' has a step outside the project\'s own files: ' + JSON.stringify(step));
     }
   }
@@ -434,6 +441,21 @@ function pendingMigrations(project) {
         if (!fs.existsSync(file) || !fs.readFileSync(file, 'utf8').includes(step.from)) continue;
         item = { text: 'replace  "' + step.from + '" with "' + step.to + '" in ' + step.replace };
         if (pendingMove && pendingMove.state === 'blocked') item.reason = 'waits on the move above';
+      } else if ('convert' in step) {
+        if (!fs.existsSync(at(step.convert))) continue;
+        item = { text: 'convert  ' + step.convert + ' -> ' + step.to };
+        if (fs.existsSync(at(step.to))) item.reason = step.to + ' already exists; merge them by hand';
+        else {
+          try {
+            convertTable(fs.readFileSync(at(step.convert), 'utf8'), step.as);
+          } catch (e) {
+            item.reason = e.message;
+          }
+        }
+      } else if ('relink' in step) {
+        const files = relinkTargets(project, step.relink);
+        if (!files.length) continue;
+        item = { text: 'relink   ' + path.posix.basename(step.relink) + ' -> ' + path.posix.basename(step.to) + ' in ' + files.join(', ') };
       } else {
         if (!fs.existsSync(at(step.delete))) continue;
         item = { text: 'delete   ' + step.delete };
@@ -443,6 +465,131 @@ function pendingMigrations(project) {
     }
   }
   return out;
+}
+
+/**
+ * Markdown table records that a "convert" migration step turns into YAML. Each converter names the
+ * table's columns and the YAML fields they become. The ID column becomes the entry key; empty cells
+ * are left out; dates and single words stay unquoted and other text is quoted.
+ */
+const TABLE_CONVERTERS = {
+  questions: {
+    header: ['ID', 'Question', 'Scope', 'Raised', 'Source', 'Status', 'Answer'],
+    fields: { Question: 'question', Scope: 'scope', Raised: 'raised', Source: 'source', Status: 'status', Answer: 'answer' },
+    intro: [
+      '# Questions log: questions only the PM can answer, and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.',
+      '# Managed by the questions skill: .ai/general/skills/questions/SKILL.md',
+      '# Validate after every edit: python3 .ai/general/skills/questions/validate.py docs/questions.yaml',
+    ],
+  },
+  risks: {
+    header: ['ID', 'Risk', 'Severity', 'Status', 'Source', 'Confirmed by', 'Next step'],
+    fields: { Risk: 'risk', Severity: 'severity', Status: 'status', Source: 'source', 'Confirmed by': 'confirmed_by', 'Next step': 'next_step' },
+    defaults: { scope: 'all' },
+    order: ['risk', 'scope', 'severity', 'status', 'source', 'confirmed_by', 'next_step', 'updates'],
+    // Dated additions written into the risk text ("2026-10-14: ..." or "2026-10-14 (source): ...") become updates.
+    updatesFrom: 'risk',
+    intro: [
+      '# Risk tracker: project risks, each confirmed by a named person. Ordered by ID (R-001, R-002, ...); IDs are never reused.',
+      '# Managed by the risks skill: .ai/general/skills/risks/SKILL.md',
+      '# Validate after every edit: python3 .ai/general/skills/risks/validate.py docs/risks.yaml',
+    ],
+  },
+  tasks: {
+    header: ['ID', 'Task', 'Owner', 'Scope', 'Due', 'Status', 'Source', 'Link'],
+    fields: { Task: 'task', Owner: 'owner', Scope: 'scope', Due: 'due', Status: 'status', Source: 'source', Link: 'link' },
+    intro: [
+      '# Task list: every action item, the PM\'s own and the ones others owe. Ordered by ID (T-001, T-002, ...); IDs are never reused.',
+      '# Managed by the tasks skill: .ai/general/skills/tasks/SKILL.md',
+      '# Validate after every edit: python3 .ai/general/skills/tasks/validate.py docs/tasks.yaml',
+    ],
+  },
+};
+
+function yamlScalar(value) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value) || /^[A-Za-z][A-Za-z0-9-]*$/.test(value)) {
+    return /^(true|false|yes|no|on|off|null|y|n)$/i.test(value) ? JSON.stringify(value) : value;
+  }
+  return JSON.stringify(value);
+}
+
+/** Returns the YAML for a markdown table record, or throws when the table isn't the expected one. */
+function convertTable(text, as) {
+  const conv = TABLE_CONVERTERS[as];
+  const cells = (line) => line.trim().slice(1, -1).split('|').map((c) => c.trim());
+  const lines = text.split(/\r?\n/);
+  const start = lines.findIndex((l) => l.trim().startsWith('|') && cells(l).join('|') === conv.header.join('|'));
+  if (start < 0) throw new Error('no table with the header | ' + conv.header.join(' | ') + ' |; convert it by hand');
+  const entries = [];
+  for (const line of lines.slice(start + 2)) {
+    if (!line.trim().startsWith('|')) break;
+    const row = cells(line);
+    if (row.length !== conv.header.length) throw new Error('row ' + row[0] + ' has ' + row.length + ' cells, expected ' + conv.header.length + '; fix the table first');
+    const entry = Object.assign({ id: row[0] }, conv.defaults || {});
+    conv.header.slice(1).forEach((col, i) => {
+      if (row[i + 1]) entry[conv.fields[col]] = row[i + 1];
+    });
+    if (conv.updatesFrom && entry[conv.updatesFrom]) {
+      const parts = entry[conv.updatesFrom].split(/(?:^|\s)(?=\d{4}-\d{2}-\d{2}(?: \([^)]*\))?: )/);
+      entry[conv.updatesFrom] = parts.shift().trim();
+      const updates = parts.map((p) => {
+        const m = p.match(/^(\d{4}-\d{2}-\d{2})(?: \(([^)]*)\))?: ([\s\S]*)$/);
+        return Object.assign({ date: m[1] }, m[2] ? { source: m[2] } : {}, { note: m[3].trim() });
+      });
+      if (updates.length) entry.updates = updates;
+    }
+    entries.push(entry);
+  }
+  const ids = new Set();
+  for (const e of entries) {
+    if (ids.has(e.id)) throw new Error('duplicate ID ' + e.id + '; fix the table first');
+    ids.add(e.id);
+  }
+  entries.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+  const out = conv.intro.slice();
+  for (const e of entries) {
+    out.push('', e.id + ':');
+    const keys = conv.order || Object.keys(e);
+    for (const k of keys) {
+      if (k === 'id' || e[k] === undefined) continue;
+      if (k === 'updates') {
+        out.push('  updates:');
+        for (const u of e.updates) {
+          out.push('    - date: ' + u.date);
+          if (u.source) out.push('      source: ' + yamlScalar(u.source));
+          out.push('      note: ' + yamlScalar(u.note));
+        }
+      } else {
+        out.push('  ' + k + ': ' + yamlScalar(e[k]));
+      }
+    }
+  }
+  return out.join('\n') + '\n';
+}
+
+/** A reference to a file name: after a path separator, space, bracket, or quote, and not part of a longer name. */
+function linkPattern(name) {
+  return new RegExp('(^|[\\s/(\\[`\'"])' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\w.-])', 'gm');
+}
+
+/** The project's own markdown and YAML files that mention the old name (never transcripts or .ai/general). */
+function relinkTargets(project, oldPath) {
+  const name = path.posix.basename(oldPath);
+  const roots = ['CLAUDE.md', 'AGENTS.md', 'docs', '.ai/project'];
+  const found = [];
+  const visit = (rel) => {
+    const abs = path.join(project, rel);
+    if (!fs.existsSync(abs)) return;
+    const st = fs.statSync(abs);
+    if (st.isDirectory()) {
+      if (rel === 'docs/transcripts') return;
+      for (const child of fs.readdirSync(abs).sort()) visit(path.posix.join(rel, child));
+    } else if (rel !== oldPath && TEXT_EXT.has(path.extname(rel)) && linkPattern(name).test(fs.readFileSync(abs, 'utf8'))) {
+      found.push(rel);
+    }
+  };
+  roots.forEach(visit);
+  return found;
 }
 
 function printMigrations(pending, heading) {
@@ -485,6 +632,17 @@ function cmdMigrate(project, opts) {
       } else if ('replace' in step) {
         const file = path.join(project, step.replace);
         fs.writeFileSync(file, fs.readFileSync(file, 'utf8').split(step.from).join(step.to));
+      } else if ('convert' in step) {
+        const yaml = convertTable(fs.readFileSync(path.join(project, step.convert), 'utf8'), step.as);
+        fs.writeFileSync(path.join(project, step.to), yaml);
+        fs.unlinkSync(path.join(project, step.convert));
+      } else if ('relink' in step) {
+        const from = path.posix.basename(step.relink);
+        const to = path.posix.basename(step.to);
+        for (const rel of relinkTargets(project, step.relink)) {
+          const file = path.join(project, rel);
+          fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(linkPattern(from), '$1' + to));
+        }
       } else {
         fs.unlinkSync(path.join(project, step.delete));
       }
