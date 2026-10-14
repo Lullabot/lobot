@@ -6,6 +6,8 @@ This file is the same in every Project Brain. It is part of Lobot (`.ai/general/
 
 **Portability rule:** the Project Brain directory is the single source of truth. Nothing critical may live only in a Claude account, chat history, Claude memory, or a Claude Project. If a decision, fact, or piece of context matters, it gets written to a file here. A new PM on a different account should be able to open this folder and be fully operational.
 
+The one thing kept outside it is the PM's **personal profile** in `~/.lobot/`: their writing voice and their preferences for how Lobot works with them, which follow them from project to project (pm-profile skill). It is about the person, not the project, so it holds nothing about any project, and a project works fully without it.
+
 ## Directory map
 
 | Path | What it is | Who maintains it |
@@ -29,7 +31,8 @@ This file is the same in every Project Brain. It is part of Lobot (`.ai/general/
 | `.ai/project/tickets.md` | The team's ticket conventions: labels, types, workflow, definition of done, stale threshold (used by the tickets skill). | PM + assistant |
 | `.ai/project/jira.md` | The project's Jira site, spaces, reference space and shared schemes, boards, and conventions (used by the jira skill). | PM + assistant |
 | `.ai/project/adr.md` | The project's ADR setup: ADR directory, base branch, branch naming, technical lead (used by the adr skill). | PM + assistant |
-| `.ai/project/voice/` | One voice profile per PM (`<people-key>.md`): how they write, so drafts sent under their name sound like them. See the pm-voice skill. | PM + assistant |
+| `.ai/project/voice/` | One file per PM (`<people-key>.md`) with how their voice differs on this project (a client's register, a team's norms), layered over their personal voice. See the pm-voice skill. | PM + assistant |
+| `~/.lobot/` | Outside the Project Brain, in the PM's home folder: their personal profile (`voice.md`, `preferences.md`), shared by every project they work on. Nothing project-specific. See the pm-profile skill. | PM + assistant |
 | `.ai/project/task-management.md` | Where tasks go for this project (tool, project, labels) and which items become tasks. Set per PM. | PM |
 | `docs/` | Context artifacts: the material the assistant reads to do tasks (people, glossary, notes, derived summaries, journal). | Assistant, reviewed by PM |
 | `docs/overview/` | Project overview: `index.md` (read first) → topic files → `reference/` (generated detail). | Assistant, reviewed by PM |
@@ -53,11 +56,12 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 
 1. Read the root `CLAUDE.md`, then this file.
 2. Read the rule files (`*.md`) at the top level of `.ai/general/` and `.ai/project/`, and the `description` of each skill in their `skills/` folders (skip the descriptions if your tool already lists these skills as available). Load a full skill, glossary, or script only when needed.
-3. Read `docs/overview/index.md` (Level 1 project summary). Open deeper overview files only as the task needs.
-4. Run the journal skill's catch-up mode (`.ai/general/skills/journal/SKILL.md`): read the latest file in `docs/journals/` and recap it.
-5. If a Google Drive connector is available: when `docs/sources.yaml` maps sources, run the drive-sources skill's check and list what's new or changed in one line per source, processing nothing yet; when it has no `shared_drive`, offer once to have Lucy map the project's shared drive.
-6. If the project has tracker pages (listed in the root `CLAUDE.md`) and the assistant can read them, run the tracker-pages skill's sync and list what the PM changed on each page, filing nothing yet.
-7. Only then start the task.
+3. Read the PM's preferences in `~/.lobot/preferences.md` if it exists and can be read, and start from its Lobot settings (pm-profile skill). If it can't be read, say so in one line.
+4. Read `docs/overview/index.md` (Level 1 project summary). Open deeper overview files only as the task needs.
+5. Run the journal skill's catch-up mode (`.ai/general/skills/journal/SKILL.md`): read the latest file in `docs/journals/` and recap it.
+6. If a Google Drive connector is available: when `docs/sources.yaml` maps sources, run the drive-sources skill's check and list what's new or changed in one line per source, processing nothing yet; when it has no `shared_drive`, offer once to have Lucy map the project's shared drive.
+7. If the project has tracker pages (listed in the root `CLAUDE.md`) and the assistant can read them, run the tracker-pages skill's sync and list what the PM changed on each page, filing nothing yet.
+8. Only then start the task.
 
 ## Working rules
 
@@ -75,6 +79,7 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 - **Pages are inboxes, files are records.** Tracker pages (`.ai/general/skills/tracker-pages/SKILL.md`) are where the PM works with records outside the chat. Changes made there are filed into `docs/` through each record's skill, and every change to a record with a page is copied to the page.
 - **Journal as you go, close every session.** Log completed tasks and decisions with the journal skill during the session, and run its close mode at the end of every session (after filing any tracker page changes).
 - **Write as the PM.** Anything the PM will send or publish as themselves is drafted in their voice with the pm-voice skill (`.ai/general/skills/pm-voice/SKILL.md`), never in the assistant's personality. Learned voice changes are proposed, not applied, until the PM approves.
+- **Personal or project?** When the PM approves a voice change or states a preference, ask whether it's for them everywhere (`~/.lobot/`) or just this project, with the pm-profile skill (`.ai/general/skills/pm-profile/SKILL.md`). Nothing about a client, project, or person goes in `~/.lobot/`.
 - **Read Drive in place.** For material in Google Drive, use the drive-sources skill (`.ai/general/skills/drive-sources/SKILL.md`) to read it with the Drive connector rather than asking the PM to export it. Map anything the project will use more than once in `docs/sources.yaml`, using the standard layout's names so every project's drive reads the same.
 - **Source vs. derived.** Files in Google Drive, `drive`, and `repo` are sources; never modify them for PM work (the one exception is an ADR pull request via the adr skill; creating a missing standard folder or blank file in Drive through the drive-sources skill, with the PM's approval, doesn't count as modifying one). Anything the assistant produces from them (summaries, extracts, analyses) goes in `docs/`, with a note of which source it came from.
 - **One fact, one home.** People go in `docs/people.yaml`, who owns what in `docs/raci.yaml`, terms in `docs/glossary.yaml`, project decisions in `docs/decisions.yaml`. Other files reference them rather than duplicating.

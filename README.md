@@ -26,7 +26,8 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **RACI** | Keeps track of who is responsible, accountable, consulted, and informed for each area of work, on your team and the client's, site by site, and produces a "who to go to" table you can share with the client. |
 | **Glossary** | Keeps track of acronyms, product names, and words that mean something specific on this project, so the assistant reads them correctly. |
 | **Journal** | Logs the work as it happens, closes out each day, and recaps where things stand when you start a new session. |
-| **PM voice** | Learns how you write, so status updates, client email, and tickets it drafts for you sound like you. |
+| **PM voice** | Learns how you write, so status updates, client email, and tickets it drafts for you sound like you. It can learn a different style for tickets, client email, and team chat. |
+| **PM profile** | Keeps your voice and your preferences (how chatty Lobot is, how you like reports laid out) in `~/.lobot/` on your computer, so they follow you to every project instead of being relearned. Each time it learns something, it asks whether it's for you everywhere or just this project. |
 | **ADR** | Writes up architecture decisions and hands them to the technical lead for review in the code repository. |
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
 | **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. |
@@ -51,7 +52,9 @@ Every Project Brain follows the same rules, so you can count on them on any proj
 - **No secrets.** Passwords, keys, and sensitive personal details never go in the Project Brain.
 - **Approval is never assumed.** Silence doesn't mean a decision was approved.
 
-The assistant also has a personality: calm, direct, and to the point when it talks to you. Records stay neutral, and drafts you send go out in your own voice.
+The assistant also has a personality: calm, direct, and to the point when it talks to you, with settings for humor, verbosity, and formality that you can adjust and keep. Records stay neutral, and drafts you send go out in your own voice.
+
+Your voice and preferences live in `~/.lobot/`, outside any one project. In Claude Code, add `~/.lobot` to `permissions.additionalDirectories` in `~/.claude/settings.json` so the assistant can read it without asking; in Claude Cowork, connect the folder to your session. Nothing about a client or project is saved there.
 
 ## How to use it
 
