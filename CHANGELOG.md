@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.0](https://github.com/Lullabot/lobot/compare/v0.10.0...v0.11.0) (2026-10-14)
+
+### Added
+
+* **engine:** browse every project record as tabs on a local, read-only dashboard ([48496a7](https://github.com/Lullabot/lobot/commit/48496a727974db2987ca2dab87f0c788993bb55d))
+
 ## [0.10.0](https://github.com/Lullabot/lobot/compare/v0.9.0...v0.10.0) (2026-10-14)
 
 ### Added
