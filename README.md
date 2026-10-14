@@ -20,7 +20,8 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **Drive sources** | Maps the project's shared Google Drive against Lullabot's standard layout (offering to create what's missing), checks it for new transcripts and changed documents, and reads them straight from Drive so you no longer export them by hand. |
 | **Decision log** | Records what was decided, why, who drove it, and who approved it, and tracks what is still waiting on approval. |
 | **Questions log** | Keeps one list of the questions only you can answer (a surname, who owns something, whether a SOW is signed), so you can answer them in a batch and the assistant files each answer where it belongs. |
-| **Tracker pages** | Gives you a working page for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist (in Claude, as an artifact). Change things there; the assistant files your changes into the Project Brain at the start and end of each session. |
+| **Task list** | Keeps every action item from your meetings in one list, yours and the ones others owe, with due dates, so you can see what's late and who to chase. |
+| **Tracker pages** | Gives you a working page for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist (in Claude, as an artifact), plus a review desk: one page with a tab for everything that needs you (Lucy's proposals, questions, your tasks, what others owe, risks, pending decisions, checklists). The assistant opens the review desk after processing a transcript or file. Change things there; the assistant files your changes into the Project Brain. |
 | **People** | Keeps a directory of everyone on the project: roles, time zones, and the usernames the assistant needs to look them up in other tools. |
 | **RACI** | Keeps track of who is responsible, accountable, consulted, and informed for each area of work, on your team and the client's, site by site, and produces a "who to go to" table you can share with the client. |
 | **Glossary** | Keeps track of acronyms, product names, and words that mean something specific on this project, so the assistant reads them correctly. |
@@ -59,7 +60,7 @@ Your voice and preferences live in `~/.lobot/`, outside any one project. In Clau
 
 Open your assistant in the Project Brain folder and talk to it the way you would talk to a project coordinator. At the start of each session it reads the rules, catches up on the latest journal entry, and tells you where things stand.
 
-**After a client call.** Drop the transcript into the Project Brain and say "process today's meeting with the client." If the project's Google Meet transcript folder is mapped (Drive sources), skip the drop: Lucy finds the new transcript in Drive and saves a copy for you. Lucy writes the meeting notes. The assistant then shows you the action items, any decisions that should be logged, and anything that looks like a risk, and waits for your approval before adding them.
+**After a client call.** Drop the transcript into the Project Brain and say "process today's meeting with the client." If the project's Google Meet transcript folder is mapped (Drive sources), skip the drop: Lucy finds the new transcript in Drive and saves a copy for you. Lucy writes the meeting notes. The assistant then opens your review desk with the proposed decisions, risks, and record changes, the new questions, and the action items, and waits for your approval before applying them.
 
 **Before a status update.** Ask "what did we decide about the launch date, and what's still waiting on approval?" The assistant answers from the decision log. Then ask it to "draft this week's status update for the client," and it writes one in your voice for you to edit and send.
 

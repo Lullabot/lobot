@@ -52,6 +52,10 @@ Short paragraphs or bullets grouped by topic, a few hundred words at most. Who s
 
 - People, glossary, and dossier changes made from this meeting, with links. Filled in after PM review.
 
+## Review
+
+1. [Kind] The proposed change in full, with its reason and ref. *(proposed)*, then *(approved)*, *(changed: what)*, or *(dropped)* once the PM decides on the review desk.
+
 ## People mentioned
 
 - Named people who didn't speak: in the directory (link) or not tracked.
