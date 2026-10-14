@@ -399,6 +399,8 @@ function copyAgents(project) {
  *        turn a markdown table record into a YAML record (see TABLE_CONVERTERS), then delete it
  *   { "relink": "<old path>", "to": "<new path>" }      point references to a moved record at its
  *        new name, in the project's own markdown and YAML files (not transcripts)
+ *   { "split": "<file.yaml>", "field": "<field>" }      shorten a YAML record's long one-line field
+ *        to a summary and move the detail into a `description` (see splitTitle)
  */
 function loadMigrations() {
   let list;
@@ -415,7 +417,9 @@ function loadMigrations() {
   for (const m of list) {
     for (const step of m.steps) {
       const paths = 'move' in step ? [step.move, step.to] : 'replace' in step ? [step.replace]
-        : 'convert' in step ? [step.convert, step.to] : 'relink' in step ? [step.relink, step.to] : [step.delete];
+        : 'convert' in step ? [step.convert, step.to] : 'relink' in step ? [step.relink, step.to]
+        : 'split' in step ? [step.split] : [step.delete];
+      if ('split' in step && !/^[a-z_]+$/.test(step.field)) fail('migration ' + m.id + ' has a split step with an invalid field: ' + step.field);
       if ('convert' in step && !TABLE_CONVERTERS[step.as]) fail('migration ' + m.id + ' names an unknown converter: ' + step.as);
       if (!paths.every(safe)) fail('migration ' + m.id + ' has a step outside the project\'s own files: ' + JSON.stringify(step));
     }
@@ -452,6 +456,19 @@ function pendingMigrations(project) {
             item.reason = e.message;
           }
         }
+      } else if ('split' in step) {
+        const file = at(step.split);
+        if (!fs.existsSync(file)) continue;
+        const text = fs.readFileSync(file, 'utf8');
+        if (!new RegExp('^  ' + step.field + ':', 'm').test(text)) continue;
+        item = { text: 'split    ' + step.field + ' into a short ' + step.field + ' and a description in ' + step.split };
+        try {
+          const { count } = splitYaml(text, step.field);
+          if (!count) continue;
+          item.text = 'split    ' + step.field + ' into a short ' + step.field + ' and a description for ' + count + (count === 1 ? ' entry' : ' entries') + ' in ' + step.split;
+        } catch (e) {
+          item.reason = e.message;
+        }
       } else if ('relink' in step) {
         const files = relinkTargets(project, step.relink);
         if (!files.length) continue;
@@ -486,9 +503,12 @@ const TABLE_CONVERTERS = {
     header: ['ID', 'Risk', 'Severity', 'Status', 'Source', 'Confirmed by', 'Next step'],
     fields: { Risk: 'risk', Severity: 'severity', Status: 'status', Source: 'source', 'Confirmed by': 'confirmed_by', 'Next step': 'next_step' },
     defaults: { scope: 'all' },
-    order: ['risk', 'scope', 'severity', 'status', 'source', 'confirmed_by', 'next_step', 'updates'],
+    order: ['risk', 'description', 'scope', 'severity', 'status', 'source', 'confirmed_by', 'next_step', 'updates'],
     // Dated additions written into the risk text ("2026-10-14: ..." or "2026-10-14 (source): ...") become updates.
     updatesFrom: 'risk',
+    // The risk text is shortened to a summary and the detail moves to a description (see splitTitle).
+    splitInto: 'risk',
+    alwaysQuote: ['risk', 'description'],
     intro: [
       '# Risk tracker: project risks, each confirmed by a named person. Ordered by ID (R-001, R-002, ...); IDs are never reused.',
       '# Managed by the risks skill: .ai/general/skills/risks/SKILL.md',
@@ -511,6 +531,85 @@ function yamlScalar(value) {
     return /^(true|false|yes|no|on|off|null|y|n)$/i.test(value) ? JSON.stringify(value) : value;
   }
   return JSON.stringify(value);
+}
+
+const TITLE_MAX = 80;
+
+/**
+ * Splits one long text into a short summary (title) and a description. The title is the text's first
+ * sentence, or its first clause when the sentence is longer than TITLE_MAX; nothing is lost. The
+ * description is whatever the title leaves out, or the whole text when the title is a cut-down
+ * sentence. A single short sentence needs no description.
+ */
+function splitTitle(text) {
+  text = text.trim();
+  const m = text.match(/^([\s\S]*?[.!?])(?=\s|$)/);
+  const sentence = (m ? m[1] : text).replace(/\.$/, '');
+  const rest = m ? text.slice(m[0].length).trim() : '';
+  if (sentence.length <= TITLE_MAX) return { title: sentence, description: rest };
+  const head = sentence.slice(0, TITLE_MAX + 1);
+  const clause = Math.max(...[', ', '; ', ': ', ' - ', ' \u2014 '].map((d) => head.lastIndexOf(d)));
+  if (clause >= 20) return { title: sentence.slice(0, clause), description: text };
+  let cut = sentence.slice(0, TITLE_MAX - 1);
+  const space = cut.lastIndexOf(' ');
+  if (space > 20) cut = cut.slice(0, space);
+  return { title: cut.replace(/[\s,;:]+$/, '') + '\u2026', description: text };
+}
+
+/** The value of a one-line YAML scalar (plain, 'single', or "double" quoted), or null when it is anything else. */
+function readScalar(raw) {
+  if (!raw) return null;
+  let m;
+  if (raw[0] === '"') {
+    m = raw.match(/^"((?:[^"\\]|\\.)*)"$/);
+    if (!m) return null;
+    try {
+      return JSON.parse('"' + m[1] + '"');
+    } catch (e) {
+      return null;
+    }
+  }
+  if (raw[0] === "'") {
+    m = raw.match(/^'((?:[^']|'')*)'$/);
+    return m ? m[1].replace(/''/g, "'") : null;
+  }
+  return /^[|>\[{&*!%@`#]/.test(raw) || /\s#/.test(raw) ? null : raw;
+}
+
+/**
+ * Shortens each entry's `  <field>: <text>` line in a YAML record to a summary and adds a
+ * `  description:` line with the detail. An entry that already has a description, or whose text is
+ * already one short sentence, is left alone, so running it twice changes nothing. Returns
+ * { text, count } (count = entries changed); throws, naming the entry, when a value is not a
+ * one-line scalar, so the PM can split that one by hand.
+ */
+function splitYaml(text, field) {
+  const eol = text.includes('\r\n') ? '\r\n' : '\n';
+  const lines = text.split(/\r?\n/);
+  const isTop = (l) => /^[A-Za-z0-9_-]+:\s*$/.test(l);
+  const pattern = new RegExp('^  ' + field + ':[ \\t]*(.*?)[ \\t]*$');
+  const out = [];
+  let key = null;
+  let count = 0;
+  lines.forEach((line, i) => {
+    if (isTop(line)) key = line.replace(/:\s*$/, '');
+    const m = line.match(pattern);
+    if (!m) return out.push(line);
+    let from = i;
+    while (from > 0 && !isTop(lines[from])) from--;
+    let to = i + 1;
+    while (to < lines.length && !isTop(lines[to])) to++;
+    if (lines.slice(from, to).some((l) => /^  description:/.test(l))) return out.push(line);
+    const where = key || 'line ' + (i + 1);
+    const value = readScalar(m[1]);
+    if (value === null || /^ {3,}\S/.test(lines[i + 1] || '')) throw new Error(where + ': ' + field + ' is not a one-line text; shorten it and add a description by hand');
+    const parts = splitTitle(value);
+    if (!parts.description) return out.push(line);
+    out.push('  ' + field + ': ' + JSON.stringify(parts.title));
+    out.push('  description: ' + JSON.stringify(parts.description));
+    count++;
+  });
+  return { text: out.join(eol), count };
 }
 
 /** Returns the YAML for a markdown table record, or throws when the table isn't the expected one. */
@@ -538,6 +637,11 @@ function convertTable(text, as) {
       });
       if (updates.length) entry.updates = updates;
     }
+    if (conv.splitInto && entry[conv.splitInto]) {
+      const parts = splitTitle(entry[conv.splitInto]);
+      entry[conv.splitInto] = parts.title;
+      if (parts.description) entry.description = parts.description;
+    }
     entries.push(entry);
   }
   const ids = new Set();
@@ -560,7 +664,7 @@ function convertTable(text, as) {
           out.push('      note: ' + yamlScalar(u.note));
         }
       } else {
-        out.push('  ' + k + ': ' + yamlScalar(e[k]));
+        out.push('  ' + k + ': ' + ((conv.alwaysQuote || []).includes(k) ? JSON.stringify(e[k]) : yamlScalar(e[k])));
       }
     }
   }
@@ -636,6 +740,9 @@ function cmdMigrate(project, opts) {
         const yaml = convertTable(fs.readFileSync(path.join(project, step.convert), 'utf8'), step.as);
         fs.writeFileSync(path.join(project, step.to), yaml);
         fs.unlinkSync(path.join(project, step.convert));
+      } else if ('split' in step) {
+        const file = path.join(project, step.split);
+        fs.writeFileSync(file, splitYaml(fs.readFileSync(file, 'utf8'), step.field).text);
       } else if ('relink' in step) {
         const from = path.posix.basename(step.relink);
         const to = path.posix.basename(step.to);
