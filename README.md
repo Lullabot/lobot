@@ -34,6 +34,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. |
 | **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
+| **Lobot feedback** | Notices when a correction or a rough edge would help every project, and offers to report it to Lobot as an issue. It writes the report without any project details and posts it only after you approve the exact text. |
 
 ### Agents
 
@@ -134,7 +135,7 @@ Most improvements are discovered while working on a real project. The goal is to
 
 ### From a project, with your assistant
 
-The quickest route: ask the assistant in your Project Brain to contribute the change. The lobot skill strips project details and prepares an issue or pull request.
+The quickest route: ask the assistant in your Project Brain to contribute the change. The lobot skill strips project details and prepares an issue or pull request, and the assistant will offer to report a bug or a lesson from training an agent on its own (the lobot-feedback skill).
 
 ### From a checkout of this repository
 

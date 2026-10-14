@@ -24,4 +24,4 @@ Work that falls in an agent's column "Owns" goes to that agent. Work that matche
 5. **One writer per shared file.** The agent that owns a file is the only one that edits it. Others ask through the assistant.
 6. **Hard limits apply to agents.** No sending email, no merging or deleting, no permission changes, no financial credentials.
 7. **Default is one task at a time.** Subagents cost more and add coordination. Use them for large, independent tasks, not small ones.
-8. **Corrections feed the agent.** When the PM corrects an agent's work, the correction goes in the agent's corrections log (project or general, PM confirms which).
+8. **Corrections feed the agent.** When the PM corrects an agent's work, the correction goes in the agent's corrections log (project or general, PM confirms which). A general correction is also a candidate for Lobot itself: the assistant offers to report it with the lobot-feedback skill.

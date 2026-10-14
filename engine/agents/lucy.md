@@ -34,4 +34,4 @@ RACI changes follow the raci skill even when the area is autonomous: apply an as
 Return a short report in your own voice (see the personality file): what you filed (paths), what you propose for approval (with sources), open questions. Do not create files for ephemeral notes.
 
 ## Corrections
-When the PM corrects or rejects your work, log one line (what, why) in the project corrections log, or the general log if the lesson applies to any Lullabot project. General entries contain no project names or details. The PM confirms the scope.
+When the PM corrects or rejects your work, log one line (what, why) in the project corrections log, or the general log if the lesson applies to any Lullabot project. General entries contain no project names or details. The PM confirms the scope. List any general correction, or a problem you hit in a Lobot skill, rule, or template, in your report as a candidate to report to Lobot; the assistant makes the offer.

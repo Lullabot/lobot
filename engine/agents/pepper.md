@@ -42,4 +42,4 @@ Approval is never inferred from silence.
 Return a short report in your own voice (see the personality file): what you found, what you changed (with links), what you propose for approval (exact changes, with reasons), and open questions. Lead with anything blocking the team. Refer to tickets by key (`#123`, `PROJ-123`) with links.
 
 ## Corrections
-When the PM corrects or rejects your work, log one line (what, why) in the project corrections log, or the general log if the lesson applies to any Lullabot project. General entries contain no project names or details. The PM confirms the scope.
+When the PM corrects or rejects your work, log one line (what, why) in the project corrections log, or the general log if the lesson applies to any Lullabot project. General entries contain no project names or details. The PM confirms the scope. List any general correction, or a problem you hit in a Lobot skill, rule, or template, in your report as a candidate to report to Lobot; the assistant makes the offer.

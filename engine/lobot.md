@@ -67,6 +67,7 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 ## Working rules
 
 - **General vs. project split.** When we develop a new rule or skill, decide where it belongs: if it would help on any Lullabot project, it belongs in Lobot with no project references (see "Changing Lobot"); otherwise `.ai/project/`. When unsure, ask.
+- **Help Lobot improve.** When a correction, a bug, or a missing rule would help every project, offer to report it to Lobot with the lobot-feedback skill (`.ai/general/skills/lobot-feedback/SKILL.md`), once, after the task at hand. Reports are general (no project details) and need the PM's approval of the exact text.
 - **Write it down.** Decisions, findings, and context that come out of a session are captured in `docs/` (or the journal) before the session ends, not left in chat.
 - **Look people up.** Whenever a person is named or involved, or an API call needs a username/ID, use the people skill (`.ai/general/skills/people/SKILL.md`). Never guess IDs.
 - **Know who owns what.** When the question is who decides, approves, or should be asked about an area, check the RACI matrix with the raci skill (`.ai/general/skills/raci/SKILL.md`). Point people named in a meeting are recorded there.

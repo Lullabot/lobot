@@ -1,6 +1,6 @@
 ---
 name: lobot
-description: Check, update, and contribute to Lobot, the shared system in .ai/general/ that this Project Brain is built on. Use when the PM says "update Lobot", asks which Lobot version this project has or whether it is current, adds a project skill that should become discoverable, or wants to send a general improvement back to Lobot; and when a session has changed anything in .ai/general/.
+description: Check, update, and contribute to Lobot, the shared system in .ai/general/ that this Project Brain is built on. Use when the PM says "update Lobot", asks which Lobot version this project has or whether it is current, adds a project skill that should become discoverable, or wants to send a general improvement back to Lobot (use the lobot-feedback skill to report a bug or suggestion); and when a session has changed anything in .ai/general/.
 ---
 
 # Lobot
@@ -97,7 +97,7 @@ For each one, show the PM the difference and ask which applies:
 
 ## Contribute
 
-A change goes back to Lobot as an issue or pull request on its repository. Both are visible to other people, so prepare the content and get the PM's approval before creating anything (see the github skill).
+A change goes back to Lobot as an issue or pull request on its repository. Both are visible to other people, so prepare the content and get the PM's approval before creating anything (see the github skill). To report a bug or suggest a change without writing it yourself, use the lobot-feedback skill (`.ai/general/skills/lobot-feedback/SKILL.md`), which also covers noticing when a report is worth offering.
 
 1. Make sure the change has no project names, people, or details in it.
 2. Describe what changed and why, and include the full new content of each changed file under `engine/` (this project's `.ai/general/<path>` is Lobot's `engine/<path>`).
