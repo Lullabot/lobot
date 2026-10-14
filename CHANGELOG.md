@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.0](https://github.com/Lullabot/lobot/compare/v0.12.0...v0.13.0) (2026-10-14)
+
+### Added
+
+* **engine:** a review desk page gathers everything that needs you (Lucy's proposals, questions, your tasks, what others owe, risks, pending decisions, checklists) and opens after each processed transcript; a new task list tracks every action item, yours and others' ([84760e6](https://github.com/Lullabot/lobot/commit/84760e6410cd46c1e6fb2929f45d4df015b4a10a))
+
 ## [0.12.0](https://github.com/Lullabot/lobot/compare/v0.11.1...v0.12.0) (2026-10-14)
 
 ### Added
