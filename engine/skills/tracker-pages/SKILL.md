@@ -70,6 +70,8 @@ Every document gets `synced` for its editable fields (`decision`, `note` for a p
 
 On a project without the review desk, publish it the first time Lucy finishes processing a file, then open it.
 
+**Filing on a schedule.** The page tells the PM to ask Claude to "process the review desk changes", and suggests a scheduled task. When the PM wants one, create it with the assistant's scheduled-task tools if it has them; otherwise give the PM a prompt to schedule themselves: work in the Project Brain, follow `.ai/general/lobot.md`, run this skill's sync on every page in the root `CLAUDE.md`, file each change through its record's skill (decided proposals as meeting-notes step 8 says), turn anything unclear into a question rather than guessing, update `synced`, run the validators, journal it, change nothing when nothing is waiting, and never commit, push, or send anything outside the Project Brain. The PM's computer must be on at that time if the Project Brain is a folder on it.
+
 ## Keep them in sync
 
 **Page to Project Brain.** At the start of a session (after the drive-sources check) and at session close, read each page's database. Anything waiting to be filed shows up as:

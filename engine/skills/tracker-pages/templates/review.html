@@ -48,6 +48,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 .s-done{color:var(--done);background:var(--done-bg)} .s-na{color:var(--na);background:var(--na-bg)}
 .s-sync{color:var(--sync);background:var(--sync-bg)} .s-crit{color:var(--crit);background:var(--crit-bg)}
 .s-scope,.s-kind{color:var(--accent);background:var(--accent-soft)}
+.wnote{margin:-10px 0 0;padding:0 4px;font-size:13px;color:var(--muted)}
 .notice{background:var(--sync-bg);color:var(--sync);border-radius:8px;padding:10px 12px;font-size:14px}
 details.waiting{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
 details.waiting>summary{cursor:pointer;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -126,6 +127,7 @@ form.add .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
     <summary id="waitingSum">Waiting for Claude to file</summary>
     <div class="wlist" id="waitingList"></div>
   </details>
+  <p class="wnote" id="waitingNote" hidden></p>
 
   <div class="toolbar" id="scopeBar" role="group" aria-label="Filter by scope">
     <span class="lbl">Scope</span>
@@ -245,6 +247,8 @@ function render(){
   const waiting = [];
   TABS.forEach(t => rows(t).forEach(d => { if (isPending(t, d) && !waiting.some(w => w.d === d)) waiting.push({t, d}); }));
   $("waitingBox").hidden = !waiting.length;
+  $("waitingNote").hidden = !waiting.length;
+  $("waitingNote").textContent = "To file them, ask Claude to “process the review desk changes”. Tip: Claude can also set up a scheduled task that does this for you, such as every weekday afternoon.";
   $("waitingSum").replaceChildren(pill("s-sync", `${waiting.length} waiting`), el("span", {textContent: "Changes Claude hasn't filed yet"}));
   $("waitingList").replaceChildren(...waiting.map(({t, d}) => el("div", {className: "wrow"}, [
     el("span", {className: "mono", textContent: d.id}),
