@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.15.0](https://github.com/Lullabot/lobot/compare/v0.14.0...v0.15.0) (2026-10-14)
+
+### ⚠ BREAKING CHANGES
+
+* **engine:** each risk is now a short one-line summary with the detail in a separate description, and your existing risks are split for you
+
+### Added
+
+* **engine:** each risk is now a short one-line summary with the detail in a separate description, and your existing risks are split for you ([d1a3b56](https://github.com/Lullabot/lobot/commit/d1a3b5604c60f1b1001f2d962f26ce64fefd83ef))
+* **tool:** migrations can shorten a long text field and move the detail to a description ([c5d2065](https://github.com/Lullabot/lobot/commit/c5d206508ef40085fc8d1bda65236d99c153887c))
+
 ## [0.14.0](https://github.com/Lullabot/lobot/compare/v0.13.0...v0.14.0) (2026-10-14)
 
 ### ⚠ BREAKING CHANGES
