@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.20.1](https://github.com/Lullabot/lobot/compare/v0.20.0...v0.20.1) (2026-10-15)
+
+### Fixed
+
+* **engine:** keep the Claude app's "Claude outputs" folder out of git ([03f164b](https://github.com/Lullabot/lobot/commit/03f164b3a6de73633a84c13647b75a08e6f82546))
+
 ## [0.20.0](https://github.com/Lullabot/lobot/compare/v0.19.0...v0.20.0) (2026-10-15)
 
 ### Added
