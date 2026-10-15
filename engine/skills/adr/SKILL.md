@@ -99,14 +99,14 @@ R=OWNER/REPO; BASE=main; BR=adr--short-name; F=docs/adr/YYYYMMDD-short-name.md
 SHA=$(gh api "repos/$R/git/ref/heads/$BASE" -q .object.sha)
 gh api "repos/$R/git/refs" -f ref="refs/heads/$BR" -f sha="$SHA"
 
-# Add the skeleton ADR (written to a scratch file outside the Project Brain)
+# Add the skeleton ADR (drafted in tmp/, which is never committed)
 gh api -X PUT "repos/$R/contents/$F" -f branch="$BR" \
   -f message="ADR: <title> (draft)" \
-  -f content="$(base64 < /path/to/scratch/adr.md | tr -d '\n')"
+  -f content="$(base64 < tmp/adr.md | tr -d '\n')"
 
 # Draft pull request, technical lead as reviewer
 gh pr create -R "$R" --draft --base "$BASE" --head "$BR" \
-  --title "ADR: <title>" --body-file /path/to/scratch/pr-body.md \
+  --title "ADR: <title>" --body-file tmp/pr-body.md \
   --reviewer TECH_LEAD_GITHUB_USERNAME
 ```
 
@@ -134,12 +134,12 @@ Read the answers, then update the file on the branch:
 gh pr view N -R "$R" --comments
 gh api "repos/$R/pulls/N/comments" -q '.[] | {user: .user.login, body: .body}'
 
-# Fetch the current file and its blob SHA, edit the scratch copy, push the update
-gh api "repos/$R/contents/$F?ref=$BR" -q .content | base64 -d > /path/to/scratch/adr.md
+# Fetch the current file and its blob SHA, edit the copy in tmp/, push the update
+gh api "repos/$R/contents/$F?ref=$BR" -q .content | base64 -d > tmp/adr.md
 BLOB=$(gh api "repos/$R/contents/$F?ref=$BR" -q .sha)
 gh api -X PUT "repos/$R/contents/$F" -f branch="$BR" -f sha="$BLOB" \
   -f message="ADR: fill in from review answers" \
-  -f content="$(base64 < /path/to/scratch/adr.md | tr -d '\n')"
+  -f content="$(base64 < tmp/adr.md | tr -d '\n')"
 ```
 
 - Write what the developer said, in their meaning. Don't strengthen or extend it.

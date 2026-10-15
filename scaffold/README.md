@@ -15,6 +15,7 @@ Everything important lives in files here. Chat history, Claude memory, and accou
 | `docs/` | Context artifacts the assistant reads and maintains (people, glossary, notes, journal). |
 | `repo/` | The project's code repository (its own git repo, not tracked here). |
 | `drive` | Symlink to the project's shared Google Drive folder (machine-specific, not tracked here). |
+| `tmp/` | The assistant's working files (drafts, diffs, extracts). Never committed; cleared at the end of each session. |
 
 ## Getting started
 
