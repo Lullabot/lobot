@@ -19,6 +19,7 @@ The one thing kept outside it is the PM's **personal profile** in `~/.lobot/`: t
 | `.ai/general/lobot.md` | This file: directory map, start-of-session routine, working rules. | Lobot |
 | `.ai/general/personality.md` | How the assistant (Lobot) sounds when talking to the PM: tone, proactiveness, humor, adjustable settings. Applies to conversation only, never to records or drafts in the PM's voice. | Lobot |
 | `.ai/general/glossary.yaml` | Shared glossary: Drupal, Lullabot tooling, and Agile terms that mean the same on any project. | Lobot |
+| `.ai/general/reference/` | Reference pages for people outside the project, e.g. `security.md`: what Lobot needs access to and why, for a security team. Not rules. | Lobot |
 | `.ai/general/research/` | Reference research behind the skills (e.g. industry criteria for ADRs, decision logs, risk registers, RACI). Suggestions in it are not rules until a PM adopts them. | Lobot |
 | `.ai/general/context-docs.md` | Where everything in `docs/` goes (living records vs. dated files, reports, naming), and how to write context docs (progressive disclosure, frontmatter, generated files). | Lobot |
 | `.ai/general/delegation.md` | Roster of named agents and the rules for handing work to them (routing, briefs, approvals, sequencing). | Lobot |

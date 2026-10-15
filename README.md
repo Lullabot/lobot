@@ -138,6 +138,8 @@ Files already in the folder are kept, including a `README.md` of your own. In th
 
 Always use the full name `github:Lullabot/lobot`. An unrelated package is published on npm as plain `lobot`.
 
+If your security team wants to know what Lobot will access, send them [`engine/reference/security.md`](engine/reference/security.md).
+
 ### Update Lobot
 
 Tell your assistant "update Lobot." Or, from the Project Brain folder:

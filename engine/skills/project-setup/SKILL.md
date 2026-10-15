@@ -99,7 +99,7 @@ If a call still fails, the `X-Accepted-GitHub-Permissions` header names what's m
 
 > Could you create a private repository in the Lullabot org named example-site-pm, empty (no README), and give me write access? It holds my working files for the project: meeting notes, decisions, risks, and a people directory. There is no code in it. Nothing else is needed.
 
-**Request to approve a token.** Give the PM these points for whoever reviews it, to put in their own words:
+**Request to approve a token.** Point the reviewer to `.ai/general/reference/security.md` (or its copy on GitHub, https://github.com/Lullabot/lobot/blob/main/engine/reference/security.md), which explains all of Lobot's access. For the token itself, give the PM these points to put in their own words:
 
 - What it's for: saving the project's working files to one private repository (and, if asked for, reading and updating issues on one code repository).
 - Scope and permissions: the exact list, with one line of reason each.
