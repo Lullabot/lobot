@@ -79,7 +79,54 @@ You'll need [Node 18 or later](https://nodejs.org/). Some skills also need Pytho
 
 ### Add Lobot to a project folder
 
-From the folder you want to use as the Project Brain (new or existing), run:
+The easiest way is to let your assistant do it. Make an empty folder for the Project Brain, open your assistant in it (in Claude Cowork, connect the folder to the session), and paste one of these prompts. You can paste them as they are; the assistant asks for the details.
+
+#### Starting a new project
+
+```text
+## Goal
+Set up a new Lobot Project Brain in this folder. Lobot: https://github.com/Lullabot/lobot
+
+## What I'll do
+- Give you the project's name, a short project key (like EXU), and its code repository.
+- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Approve anything other people will see, like creating the GitHub repository.
+
+## What you'll do
+1. Check that Node 18 or later is installed, and help me install it if it isn't.
+2. Install Lobot here with: npx --yes github:Lullabot/lobot init --name "<name>" --key <KEY>
+3. Clone the code repository into repo/.
+4. Read the new CLAUDE.md, then follow the project-setup skill to put this Project Brain on GitHub.
+5. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
+
+## How
+Do the terminal work for me, explain what's happening in plain language, and stop to ask when you need me.
+```
+
+#### Joining a project that already has a Project Brain
+
+```text
+## Goal
+Join a project whose Project Brain is already on GitHub, and set it up in this folder.
+
+## What I'll do
+- Tell you the Project Brain's repository (it ends in -pm, like Lullabot/example-site-pm).
+- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Approve anything other people will see.
+
+## What you'll do
+1. Read the project-setup skill: https://github.com/Lullabot/lobot/blob/main/engine/skills/project-setup/SKILL.md
+2. Follow its "Join a project" section to bring the Project Brain into this folder and set up what it leaves out.
+3. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
+4. Run the start-of-session routine and catch me up on the project.
+
+## How
+Do the terminal work for me, explain what's happening in plain language, and stop to ask when you need me.
+```
+
+If GitHub won't let you create the repository, or your token needs approval, the assistant explains what's happening and drafts the request for whoever can help.
+
+To install it yourself instead, run this from the folder you want to use as the Project Brain (new or existing):
 
 ```sh
 npx --yes github:Lullabot/lobot init --name "Example University" --key EXU
