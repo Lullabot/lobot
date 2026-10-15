@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.0](https://github.com/Lullabot/lobot/compare/v0.16.0...v0.17.0) (2026-10-15)
+
+### Added
+
+* **engine:** the assistant now files everything in docs/ by one guide, with dated reports in docs/reports/ and working files in tmp/ ([bc34099](https://github.com/Lullabot/lobot/commit/bc3409999ea1d9298a380f4cbc01dc84e82c9983))
+
 ## [0.16.0](https://github.com/Lullabot/lobot/compare/v0.15.1...v0.16.0) (2026-10-14)
 
 ### Added
