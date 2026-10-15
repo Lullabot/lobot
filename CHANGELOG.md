@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.18.0](https://github.com/Lullabot/lobot/compare/v0.17.1...v0.18.0) (2026-10-15)
+
+### Added
+
+* **engine:** draft your weekly Project Journal Entry for leadership ([773b8a0](https://github.com/Lullabot/lobot/commit/773b8a03d877cca484679c8a6afe3371ab3d1ab6)), closes [#opportunity](https://github.com/Lullabot/lobot/issues/opportunity) [#share](https://github.com/Lullabot/lobot/issues/share)
+
 ## [0.17.1](https://github.com/Lullabot/lobot/compare/v0.17.0...v0.17.1) (2026-10-15)
 
 ### Fixed
