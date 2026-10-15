@@ -398,7 +398,7 @@ function copyAgents(project) {
  *   { "convert": "<file.md>", "to": "<file.yaml>", "as": "<converter>" }
  *        turn a markdown table record into a YAML record (see TABLE_CONVERTERS), then delete it
  *   { "relink": "<old path>", "to": "<new path>" }      point references to a moved record at its
- *        new name, in the project's own markdown and YAML files (not transcripts)
+ *        new name, in the project's own markdown and YAML files (not transcripts or journals)
  *   { "split": "<file.yaml>", "field": "<field>" }      shorten a YAML record's long one-line field
  *        to a summary and move the detail into a `description` (see splitTitle)
  */
@@ -676,7 +676,12 @@ function linkPattern(name) {
   return new RegExp('(^|[\\s/(\\[`\'"])' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\w.-])', 'gm');
 }
 
-/** The project's own markdown and YAML files that mention the old name (never transcripts or .ai/general). */
+/**
+ * The project's own markdown and YAML files that mention the old name. Never transcripts (sources),
+ * journals (a dated history that is never rewritten, where an old path is correct for its day), or .ai/general.
+ */
+const RELINK_SKIP = new Set(['docs/transcripts', 'docs/journals']);
+
 function relinkTargets(project, oldPath) {
   const name = path.posix.basename(oldPath);
   const roots = ['CLAUDE.md', 'AGENTS.md', 'docs', '.ai/project'];
@@ -686,7 +691,7 @@ function relinkTargets(project, oldPath) {
     if (!fs.existsSync(abs)) return;
     const st = fs.statSync(abs);
     if (st.isDirectory()) {
-      if (rel === 'docs/transcripts') return;
+      if (RELINK_SKIP.has(rel)) return;
       for (const child of fs.readdirSync(abs).sort()) visit(path.posix.join(rel, child));
     } else if (rel !== oldPath && TEXT_EXT.has(path.extname(rel)) && linkPattern(name).test(fs.readFileSync(abs, 'utf8'))) {
       found.push(rel);
