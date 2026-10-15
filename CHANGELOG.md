@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.20.0](https://github.com/Lullabot/lobot/compare/v0.19.0...v0.20.0) (2026-10-15)
+
+### Added
+
+* **engine:** set up the Project Brain's GitHub repository for you, and find another route when access is blocked ([bb20009](https://github.com/Lullabot/lobot/commit/bb200098c0aa6691528de3e35ff8aac6b9575b8a))
+
+### Wording and documentation
+
+* add prompts to start or join a Project Brain without a terminal ([b48f04c](https://github.com/Lullabot/lobot/commit/b48f04cd00e183869367538a4139b94a8f9e74f6))
+* **engine:** add a page for security teams on what Lobot accesses and why ([2297b0a](https://github.com/Lullabot/lobot/commit/2297b0a2d69388548b47f8544e4e4f79eb1985bc))
+* **engine:** the project's Drive is read through the connector, so the drive symlink is no longer needed ([c3fdaf0](https://github.com/Lullabot/lobot/commit/c3fdaf0b6e56280901ced03302447fa741d8edda))
+* **tool:** after installing, the next steps have you ask your assistant to set up the GitHub repository ([babc527](https://github.com/Lullabot/lobot/commit/babc52748aeca6fbb3818b288aaedf0fdaffa5ec))
+
 ## [0.19.0](https://github.com/Lullabot/lobot/compare/v0.18.0...v0.19.0) (2026-10-15)
 
 ### Added
