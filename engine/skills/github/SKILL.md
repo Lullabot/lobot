@@ -32,7 +32,7 @@ It works for both tools:
 | Claude Code on the PM's machine | PM's own `gh auth login` (token in OS keychain) | Nothing; uses the installed, logged-in `gh`. |
 | Cowork / cloud sandbox | Personal access token in the Project Brain's gitignored `.env` (`GH_TOKEN=`) | Installs `gh` into `~/.local/gh` if missing, loads `GH_TOKEN` from `.env`. |
 
-Token: classic PAT, scopes `repo`, `project`, `read:org`, SSO-authorized for the org, short expiry. See `.env.example`.
+Token: classic PAT, scopes `repo`, `project`, `read:org`, SSO-authorized for the org, short expiry. See `.env.example`. If the org blocks classic tokens, or the PM would rather use a fine-grained one, follow the access ladder in the project-setup skill (`.ai/general/skills/project-setup/SKILL.md`).
 
 Check with `gh auth status`. If it fails, or `gh` isn't installed, follow "Connecting GitHub" below rather than retrying.
 
@@ -54,7 +54,7 @@ It's safe to run again. It makes sure `.env` is git-ignored (adding it to `.giti
   3. Generate it. If the org uses SSO, choose **Configure SSO** next to the token and authorize it for the org.
   4. Open `.env` at the top of the Project Brain folder (in Finder, Cmd+Shift+. shows hidden files) and paste the token right after `GH_TOKEN=`, with no quotes or spaces. Save.
   5. Tell the assistant it's done. Never paste the token into the chat.
-- **`auth: failed …`**: name the likely cause from the message and stop; don't retry in a loop.
+- **`auth: failed …`**: name the likely cause from the message and stop; don't retry in a loop. If the cause is the org's token policy, follow the access ladder in the project-setup skill.
 - **`auth: ok as <login>`**: confirm with a read-only call on the project's repo (`gh issue list -R OWNER/REPO --limit 1`). If `.ai/project/github.md` is missing, continue with "Discovering a project's setup".
 
 If the PM pastes a token into the chat anyway, don't use it: it's now in the conversation history. Ask them to revoke it and make a new one.
@@ -67,7 +67,7 @@ If the PM pastes a token into the chat anyway, don't use it: it's now in the con
 
 ## Saving the Project Brain
 
-The Project Brain is its own git repository, separate from the code in `repo/`. The PM shouldn't need a terminal or git knowledge to keep it saved: the assistant does the git work, in plain language, with the PM's approval. Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
+The Project Brain is its own git repository, separate from the code in `repo/`. The PM shouldn't need a terminal or git knowledge to keep it saved: the assistant does the git work, in plain language, with the PM's approval. If it isn't in git yet or has no GitHub repository, use the project-setup skill first. Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
 
 **Before the first git command in a session:**
 
@@ -94,7 +94,7 @@ The Project Brain is its own git repository, separate from the code in `repo/`. 
 - Commit when the PM asks ("save my work", "commit this"), and offer to at the end of a session that changed files. Show what's included in a line or two, and wait for approval.
 - Stage files by name, never `.env` or anything else git-ignored. Check `git status` first, and if `.env` shows up as a change to commit, stop (see "Connecting GitHub").
 - Write the message in plain language ("Process the 14 October client meeting"). Lobot updates use "Update Lobot to x.y.z".
-- Push only when the PM asks, or has said they want every save pushed.
+- Push only when the PM asks, or has said they want every save pushed (the project-setup skill's "Keeping it saved" records that choice).
 
 ## Reading (no approval needed)
 
@@ -177,4 +177,4 @@ Record the repo, each board (number, title, purpose, URL, node ID), the Status/P
 
 ## Handoff
 
-When a PM rolls off: delete their `.env` token line and revoke the token in GitHub settings. The next PM follows `README.md` setup with their own token.
+When a PM rolls off: delete their `.env` token line and revoke the token in GitHub settings. The next PM follows `README.md` setup with their own token, or the project-setup skill's "Join a project".

@@ -32,6 +32,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **PM profile** | Keeps your voice and your preferences (how chatty Lobot is, how you like reports laid out) in `~/.lobot/` on your computer, so they follow you to every project instead of being relearned. Each time it learns something, it asks whether it's for you everywhere or just this project. |
 | **ADR** | Writes up architecture decisions and hands them to the technical lead for review in the code repository. |
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
+| **Project setup** | Puts the Project Brain in a private GitHub repository for you, helps a new PM join an existing one, and when GitHub says no, walks you through the next route and drafts the request for whoever has to approve it. |
 | **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. |
 | **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
