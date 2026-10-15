@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.19.0](https://github.com/Lullabot/lobot/compare/v0.18.0...v0.19.0) (2026-10-15)
+
+### Added
+
+* **engine:** weekly journal entries leave out what leadership can't act on ([251f1cc](https://github.com/Lullabot/lobot/commit/251f1cc52739ecbaa108c680fd743673fe3b43a2))
+
 ## [0.18.0](https://github.com/Lullabot/lobot/compare/v0.17.1...v0.18.0) (2026-10-15)
 
 ### Added
