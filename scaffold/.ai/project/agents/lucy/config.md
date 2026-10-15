@@ -12,7 +12,6 @@ Promote an area by moving it to Autonomous. Promote when the PM has had a run of
 ## Sources (read-only)
 
 - `docs/transcripts/`
-- `drive` (symlink to the project's shared Drive folder)
 - The project's shared Google Drive and the sources mapped in `docs/sources.yaml` (read through the Drive connector)
 
 ## Notes

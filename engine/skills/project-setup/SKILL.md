@@ -127,7 +127,6 @@ For a PM taking over or joining a project that already has a repository. Their f
    - **If it's refused**, the PM needs access to the repository. Whoever owns it or an org admin gives it; draft the request as in rung 3.
 3. **Set up what git leaves out**, one at a time, asking before each:
    - `repo/`: clone the code repository named in the root `CLAUDE.md`;
-   - `drive`: link it to the PM's own mount of the project's shared Drive folder (`README.md`, "Get the files");
    - the PM's personal profile in `~/.lobot/` (pm-profile skill).
 4. **Check the Lobot version** (lobot skill) and offer an update if one is waiting.
 5. **Hand over**: run the start-of-session routine, then recap the journal from the latest handoff entry.

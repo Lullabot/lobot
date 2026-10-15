@@ -14,7 +14,6 @@ Everything important lives in files here. Chat history, Claude memory, and accou
 | `.ai/project/` | Assistant rules and skills that apply to **this** project only. |
 | `docs/` | Context artifacts the assistant reads and maintains (people, glossary, notes, journal). |
 | `repo/` | The project's code repository (its own git repo, not tracked here). |
-| `drive` | Symlink to the project's shared Google Drive folder (machine-specific, not tracked here). |
 | `tmp/` | The assistant's working files (drafts, diffs, extracts). Never committed; cleared at the end of each session. |
 
 ## Getting started
@@ -23,11 +22,8 @@ Everything important lives in files here. Chat history, Claude memory, and accou
 
 1. Clone this Project Brain repository.
 2. Clone the project's code repository into `repo/`.
-3. Point `drive` at your own local mount of the project's shared Google Drive folder (Google Drive for desktop):
 
-   ```sh
-   ln -sfn "/path/to/your/Google Drive/Shared drives/Projects/<Project Folder>" drive
-   ```
+The project's shared Google Drive isn't copied here. The assistant reads it through a Google Drive connector (the drive-sources skill), so connect one in your assistant if it offers it.
 
 ### 2. Add your credentials
 
@@ -55,7 +51,7 @@ Cowork does **not** read `CLAUDE.md` from connected folders automatically. It lo
 
 1. In the Claude desktop app, create a Cowork project for this engagement (or reuse one).
 2. Connect this Project Brain folder to the project.
-3. Connect the project's Google Drive folder directly as well. Cowork can't follow the `drive` symlink into a folder that isn't connected.
+3. Turn on the Google Drive connector, so the assistant can read the project's shared Drive.
 4. Paste this into the project's instructions:
 
    ```

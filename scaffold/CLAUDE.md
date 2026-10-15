@@ -11,7 +11,6 @@ This directory is the **Project Brain** for Lullabot's {{PROJECT_NAME}} ({{PROJE
 | Path | What it is |
 |---|---|
 | `repo/` | TODO: the code repository (GitHub org/name, default branch, anything a PM should know before reading it). |
-| `drive` | TODO: which shared Google Drive folder the symlink points at. |
 
 Add a row for any file or folder that exists only in this Project Brain.
 
