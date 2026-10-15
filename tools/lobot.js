@@ -952,12 +952,12 @@ function cmdInit(project, opts) {
   console.log('Skills:');
   printLinks(links, false);
   console.log([
-    'Next steps:',
-    '  1. git init, and push to a private repository (it will hold transcripts and a people directory).',
-    '  2. Clone the project\'s code repository into repo/ and point the drive symlink at the shared Drive folder.',
-    '  3. Copy .env.example to .env and add your token, or ask your assistant to "connect GitHub".',
-    '  4. Fill in the TODOs in CLAUDE.md and .ai/project/adr.md.',
-    '  5. Follow README.md to set up your assistant.',
+    'Next steps (your assistant can do each of these for you):',
+    '  1. Clone the project\'s code repository into repo/.',
+    '  2. Ask your assistant to "set up the repository". It saves this Project Brain to a private GitHub',
+    '     repository named after the code repository, and connects GitHub if it isn\'t yet (project-setup skill).',
+    '  3. Fill in the TODOs in CLAUDE.md and .ai/project/adr.md.',
+    '  4. Follow README.md to set up your assistant.',
   ].join('\n'));
 }
 
