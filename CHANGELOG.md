@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.1](https://github.com/Lullabot/lobot/compare/v0.17.0...v0.17.1) (2026-10-15)
+
+### Fixed
+
+* **tool:** updates no longer rewrite old file names in past journal entries ([b26622c](https://github.com/Lullabot/lobot/commit/b26622c59c195c2d921a7e2fc0a0a976dae0b5c3))
+
 ## [0.17.0](https://github.com/Lullabot/lobot/compare/v0.16.0...v0.17.0) (2026-10-15)
 
 ### Added
