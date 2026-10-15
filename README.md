@@ -54,7 +54,7 @@ Every Project Brain follows the same rules, so you can count on them on any proj
 - **Never guess.** The assistant looks people and terms up instead of guessing, and says when it is unsure.
 - **Sources stay untouched.** Transcripts, shared drive files, and the code repository are read, never edited. Summaries go in the Project Brain with a note of where they came from.
 - **No secrets.** Passwords, keys, and sensitive personal details never go in the Project Brain.
-- **Scratch stays out of the record.** Drafts and working files go in a `tmp/` folder that's never saved to git and is cleared when you wrap up.
+- **Scratch stays out of the record.** Drafts and working files go in a `tmp/` folder that's never saved to git and is cleared when you wrap up. The same goes for the `Claude outputs` folder the Claude app creates: anything in it worth keeping is filed in `docs/` or Drive.
 - **Approval is never assumed.** Silence doesn't mean a decision was approved.
 
 The assistant also has a personality: calm, direct, and to the point when it talks to you, with settings for humor, verbosity, and formality that you can adjust and keep. Records stay neutral, and drafts you send go out in your own voice.

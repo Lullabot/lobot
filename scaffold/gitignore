@@ -1,6 +1,8 @@
 # Code repo is its own git repository
 /repo/
 # Local tool state
+# Files the Claude app saves on its own; anything worth keeping is filed in docs/ or Drive
+/Claude outputs/
 .DS_Store
 .claude/settings.local.json
 # Local secrets (per-PM tokens). Never commit. See .env.example

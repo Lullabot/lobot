@@ -4,6 +4,8 @@ __pycache__/
 node_modules/
 *.tgz
 /project/
+# Files the Claude app saves on its own
+/Claude outputs/
 
 # Local secrets (GitHub token for the assistant)
 .env
