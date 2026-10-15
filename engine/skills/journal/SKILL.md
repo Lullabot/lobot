@@ -76,7 +76,11 @@ Short, lowercase, grep-able. Standard set:
 - `#blocker` — work cannot proceed
 - `#client` — involves client communication or client-side action
 - `#people` — someone joined, left, or changed role
+- `#opportunity` — a chance for work beyond the current scope: an extension, new work, a renewal signal, a Lullabot tool or service the client could use
+- `#share` — something other Lullabot projects could use: a reusable tool, a pattern, a contrib candidate, a lesson
 - `#brain-kit` — work on the Project Brain pattern itself (rules, skills, structure), as opposed to project delivery
+
+The project-journal-entry skill builds the weekly entry for leadership from `#risk`, `#blocker`, `#opportunity`, and `#share`, so tag as you log.
 
 Add project-specific tags in `.ai/project/` rules, not here.
 

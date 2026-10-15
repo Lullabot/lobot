@@ -149,7 +149,7 @@ Run this when the PM asks, during the start-of-session routine (report only; pro
    - New: files whose ID is not in `processed`, created on or after `since`. Filter by ID, not by date alone: a transcript moved into the folder late keeps its original created date.
    - Changed: files in `processed` whose current `modifiedTime` is later than the latest `modified` recorded for them.
    - A shortcut (`application/vnd.google-apps.shortcut`) points at another file. Get its metadata to find the target; if the target can't be read, list it as a question for the PM.
-3. **Files:** get each file's metadata and compare `modifiedTime` with its latest `processed` entry. A file with no entry has never been read.
+3. **Files** (skip `project-journal`: it changes every week and is read when the PJE is drafted): get each file's metadata and compare `modifiedTime` with its latest `processed` entry. A file with no entry has never been read.
 4. **Report** in one short list per source: title, date, and why it's listed (new, changed, can't read). Say nothing else when there's nothing new.
 
 ## Process new files
@@ -203,7 +203,8 @@ Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the k
    python3 .ai/general/skills/drive-sources/validate.py docs/sources.yaml
    ```
    (Requires PyYAML: `pip install pyyaml`.)
-4. To stop using a source, delete its entry and leave its `processed` entries; the validator warns about them but keeps them as history.
+4. **The project journal doc** (the weekly entry for Lullabot leadership, project-journal-entry skill) is mapped as `project-journal`: `kind: file`, `purpose: reference`, and a note that it is internal to Lullabot. It usually lives in Lullabot's own Drive, not the client's: never create it in, copy it to, or link it from the client's shared drive.
+5. To stop using a source, delete its entry and leave its `processed` entries; the validator warns about them but keeps them as history.
 
 ## Rules
 

@@ -27,6 +27,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **RACI** | Keeps track of who is responsible, accountable, consulted, and informed for each area of work, on your team and the client's, site by site, and produces a "who to go to" table you can share with the client. |
 | **Glossary** | Keeps track of acronyms, product names, and words that mean something specific on this project, so the assistant reads them correctly. |
 | **Journal** | Logs the work as it happens, closes out each day, and recaps where things stand when you start a new session. |
+| **Project journal entry** | Drafts your weekly Project Journal Entry for leadership from the week's journals and last week's entry: status, progress, problems, opportunities, and things to share. It carries open threads forward and suggests a status color for you to confirm. You copy the draft into your journal doc. |
 | **PM voice** | Learns how you write, so status updates, client email, and tickets it drafts for you sound like you. It can learn a different style for tickets, client email, and team chat. |
 | **PM profile** | Keeps your voice and your preferences (how chatty Lobot is, how you like reports laid out) in `~/.lobot/` on your computer, so they follow you to every project instead of being relearned. Each time it learns something, it asks whether it's for you everywhere or just this project. |
 | **ADR** | Writes up architecture decisions and hands them to the technical lead for review in the code repository. |
