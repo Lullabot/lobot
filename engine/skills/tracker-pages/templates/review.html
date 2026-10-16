@@ -117,7 +117,7 @@ form.add .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   <header>
     <div class="eyebrow" id="eyebrow">Lobot</div>
     <h1>Review desk</h1>
-    <p class="sub">Everything that needs you, in one place: Lucy's proposals, open questions, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
+    <p class="sub">Everything that needs you, in one place: Lucy's proposals, your questions, product questions to chase, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
     <div class="processed" id="processed"></div>
   </header>
 
@@ -160,8 +160,11 @@ const TABS = [
   {key: "review", label: "Lucy's proposals", coll: "review", edit: ["decision", "note"],
    lead: "Changes Lucy proposes from the material she processed. Approve, approve with a change (say what), or drop each one. Claude applies the approved ones.",
    attention: d => !d.decision, closedLabel: "Decided"},
-  {key: "questions", label: "Questions", coll: "questions", edit: ["status", "answer"],
-   lead: "Questions only you can answer. Type an answer and Claude files it into the record it affects.",
+  {key: "questions", label: "Questions for you", coll: "questions", edit: ["status", "answer"], filter: d => d.about !== "product",
+   lead: "Questions about the project that only you can answer. Type an answer and Claude files it into the record it affects.",
+   attention: d => d.status !== "answered", closedLabel: "Answered"},
+  {key: "product", label: "Product questions", coll: "questions", edit: ["status", "answer"], filter: d => d.about === "product",
+   lead: "Questions the team needs a stakeholder to answer about the product. Chase them with whoever is named; when you have an answer, record it here and Claude files it.",
    attention: d => d.status !== "answered", closedLabel: "Answered"},
   {key: "mine", label: "My tasks", coll: "tasks", edit: ["status", "due", "note"], filter: d => !!d.mine,
    lead: "Your action items. Set a status or date; done and dropped items fold away.",
@@ -296,7 +299,7 @@ function list(items, t, closed){
 }
 function emptyText(t){
   return {review: "No proposals waiting. Lucy's next batch shows up here after she processes a file or transcript.",
-    questions: "No open questions.", mine: "Nothing on your plate here.", others: "Nobody owes you anything right now.",
+    questions: "No open questions for you.", product: "No open product questions.", mine: "Nothing on your plate here.", others: "Nobody owes you anything right now.",
     risks: "No open risks.", decisions: "No pending decisions.", checklist: "Every checklist row is done or not applicable."}[t.key];
 }
 
@@ -357,9 +360,10 @@ function card(t, d, closed){
       ...(chosen ? [el("button", {textContent: "Undo", disabled: !canWrite, onclick: () => save(t, d, {decision: "", note: ""})})] : [])]));
     foot.push(d.source ? fnLine([sourceTitle(d.source), d.ref].filter(Boolean).join(" · "), d.source) : null, fnLine(id));
   }
-  else if (k === "questions") {
+  else if (k === "questions" || k === "product") {
     const answered = d.status === "answered";
-    side.push(kv("ID", id), scope, kv("Status", pill(answered ? "s-done" : "s-prog", answered ? "Answered" : "Open")), kv("Raised", d.raised));
+    side.push(kv("ID", id), k === "product" ? kv("Ask", d.ask || "Nobody named") : null, scope,
+      kv("Status", pill(answered ? "s-done" : "s-prog", answered ? "Answered" : "Open")), kv("Raised", d.raised));
     main.push(...longText(id, d.question));
     if (!answered || editing.has(id)) {
       const ta = el("textarea", {id: "ans-" + id, value: drafts["ans-" + id] ?? d.answer ?? "", placeholder: "Your answer", disabled: !canWrite});
@@ -372,7 +376,7 @@ function card(t, d, closed){
         el("button", {id: "edit-" + id, textContent: "Edit answer", disabled: !canWrite, onclick: () => { editing.add(id); render(); $("ans-" + id)?.focus(); }}),
         el("button", {id: "reopen-" + id, textContent: "Reopen", disabled: !canWrite, onclick: () => save(t, d, {status: "open"})}) ]));
     }
-    foot.push(d.source ? fnLine(d.source) : null);
+    foot.push(d.source ? fnLine(d.source) : null, d.link ? el("div", {}, [el("a", {href: d.link, target: "_blank", rel: "noopener", textContent: "Open the ticket"})]) : null);
   }
   else if (k === "mine" || k === "others") {
     const overdue = d.due && d.due < today() && t.attention(d);
@@ -426,15 +430,16 @@ function scopeSelect(id){
   s.hidden = !HAS_SCOPES; return s;
 }
 function addForm(t){
-  if (!["questions", "mine", "others", "risks"].includes(t.key) || !canWrite) return null;
+  if (!["questions", "product", "mine", "others", "risks"].includes(t.key) || !canWrite) return null;
   const f = el("form", {className: "add", id: "add-" + t.key});
-  const text = el("textarea", {id: "new-" + t.key, required: true, placeholder: {questions: "What do you need answered?", mine: "What do you need to do?", others: "What does someone owe?", risks: "The risk in a few words"}[t.key]});
+  const text = el("textarea", {id: "new-" + t.key, required: true, placeholder: {questions: "What do you need answered?", product: "What does the team need to know about the product?", mine: "What do you need to do?", others: "What does someone owe?", risks: "The risk in a few words"}[t.key]});
   text.setAttribute("aria-label", "New item");
   const keep = (n, k) => { if (drafts[k] != null) n.value = drafts[k]; n.addEventListener("input", () => { drafts[k] = n.value; }); };
   keep(text, "new-" + t.key);
   const scope = scopeSelect("newscope-" + t.key);
   const row = el("div", {className: "row"}, [scope]);
-  let owner, due, sev;
+  let owner, due, sev, ask;
+  if (t.key === "product") { ask = el("input", {id: "newask-product", type: "text", placeholder: "Who answers it", className: "grow"}); ask.setAttribute("aria-label", "Who answers it"); keep(ask, "newask-product"); row.append(ask); }
   if (t.key === "mine" || t.key === "others") {
     owner = el("input", {id: "newowner-" + t.key, type: "text", placeholder: "Owner", value: t.key === "mine" ? CONFIG.pm : "", required: true, className: "grow"}); owner.setAttribute("aria-label", "Owner");
     due = el("input", {id: "newdue-" + t.key, type: "date"}); due.setAttribute("aria-label", "Due date");
@@ -442,7 +447,7 @@ function addForm(t){
     row.append(owner, due);
   }
   if (t.key === "risks") { sev = selectFor("newsev", "Severity", RISK_SEV, "TBD", () => {}); sev.disabled = false; row.append(sev); }
-  const btn = el("button", {className: "primary", type: "submit", textContent: {questions: "Add question", mine: "Add task", others: "Add follow-up", risks: "Add risk"}[t.key]});
+  const btn = el("button", {className: "primary", type: "submit", textContent: {questions: "Add question", product: "Add product question", mine: "Add task", others: "Add follow-up", risks: "Add risk"}[t.key]});
   row.append(btn);
   let desc;
   if (t.key === "risks") {
@@ -456,11 +461,12 @@ function addForm(t){
     const v = text.value.trim(); if (!v || !db) return;
     const now = new Date().toISOString(), sc = HAS_SCOPES ? scope.value : "all";
     let id, doc;
-    if (t.key === "questions") { id = nextId("questions", "Q-"); doc = {question: v, raised: today(), status: "open", answer: ""}; }
+    if (t.key === "questions") { id = nextId("questions", "Q-"); doc = {question: v, about: "project", raised: today(), status: "open", answer: ""}; }
+    else if (t.key === "product") { id = nextId("questions", "Q-"); doc = {question: v, about: "product", ask: ask.value.trim(), link: "", raised: today(), status: "open", answer: ""}; }
     else if (t.key === "risks") { id = nextId("risks", "R-"); doc = {risk: v, description: desc.value.trim(), severity: sev.value, status: "Open", nextStep: "", confirmedBy: ""}; }
     else { id = nextId("tasks", "T-"); doc = {task: v, owner: owner.value.trim() || CONFIG.pm, mine: t.key === "mine", due: due.value, status: "open", note: "", link: ""}; }
     btn.disabled = true;
-    try { await db.collection(t.coll).doc(id).set({id, ...doc, scope: sc, source: "Added on the review desk", synced: null, createdAt: now}); notice(""); ["new-", "newowner-", "newdue-", "newdesc-"].forEach(p => delete drafts[p + t.key]); }
+    try { await db.collection(t.coll).doc(id).set({id, ...doc, scope: sc, source: "Added on the review desk", synced: null, createdAt: now}); notice(""); ["new-", "newowner-", "newdue-", "newdesc-", "newask-"].forEach(p => delete drafts[p + t.key]); }
     catch (err) { notice("That wasn't added. You may only have view access to this page."); btn.disabled = false; }
   };
   return f;

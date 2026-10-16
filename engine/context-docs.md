@@ -12,7 +12,7 @@ Every file has one home, by what it is. Use the first row that fits.
 | Who is responsible for or approves an area of work | `docs/raci.yaml` | raci skill |
 | A term with a meaning specific to the project | `docs/glossary.yaml` | glossary skill |
 | A project decision, made or pending | `docs/decisions.yaml` (architecture decisions are ADRs in the code repo) | decision-log skill, adr skill |
-| A risk, a question only the PM can answer, an action item | `docs/risks.yaml`, `docs/questions.yaml`, `docs/tasks.yaml` | risks, questions, tasks skills |
+| A risk, an open question (for the PM, or about the product), an action item | `docs/risks.yaml`, `docs/questions.yaml`, `docs/tasks.yaml` | risks, questions, tasks skills |
 | Where things live in the project's shared Drive | `docs/sources.yaml` | drive-sources skill |
 | What is true now about the project or a site | `docs/overview/` (the dossier) | dossier skill |
 | A meeting transcript (source; never edited) | `docs/transcripts/` | meeting-notes skill |

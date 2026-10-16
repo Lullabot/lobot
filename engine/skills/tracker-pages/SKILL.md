@@ -22,9 +22,9 @@ Templates are in `templates/` in this skill's folder. Each has a `CONFIG` object
 | `risks.html` | `docs/risks.yaml` | `risks/<R-###>` | Set severity, status, next step; add a risk |
 | `decisions.html` | `docs/decisions.yaml` | `decisions/<D-###>` | Set status and approver; propose a decision (marked as a proposal) |
 | `raci.html` | `docs/raci.yaml` (people from `docs/people.yaml`) | `roles`, `rows`, `meta/info`, `requests` | View the matrix (Responsibility, then R, A, C, I with the people in each cell, grouped by area) per scope, or one page per site; request a change (no direct edits: RACI changes need a source) |
-| `questions.html` | `docs/questions.yaml` | `questions/<Q-###>` | Answer, reopen, add a question |
+| `questions.html` | `docs/questions.yaml` | `questions/<Q-###>` | Filter project and product questions; answer, reopen, add a question |
 | `checklist.html` | `docs/kickoff-checklist[-<scope>].md` (drive-sources skill, "Mirror a Sheet locally") | `kickoff/<scope or all>/tasks` | Set status and note; mark rows copied into the Sheet |
-| `review.html` | The review desk: several records, one tab each (see "Review desk") | `review`, `questions`, `tasks`, `risks`, `decisions`, `checklist`, `meta/info` | Approve, change, or drop Lucy's proposals; answer questions; set task status and dates; set risk severity, status, next step; settle pending decisions; set checklist status; add a question, task, or risk |
+| `review.html` | The review desk: several records, one tab each (see "Review desk") | `review`, `questions`, `tasks`, `risks`, `decisions`, `checklist`, `meta/info` | Approve, change, or drop Lucy's proposals; answer questions (yours and the product's, on separate tabs); set task status and dates; set risk severity, status, next step; settle pending decisions; set checklist status; add a question, task, or risk |
 
 ## Publish a page
 
@@ -53,7 +53,7 @@ The review desk is the PM's one stop for everything that needs them, and what "t
 | Tab | Seeded from | What goes in |
 |---|---|---|
 | Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank) |
-| Questions | `docs/questions.yaml` | Every entry, as on the questions page |
+| Questions for you, Product questions | `docs/questions.yaml` (questions skill) | Every entry, as on the questions page, with `about` (`project` when the record leaves it out), and `ask` and `link` for a product question |
 | My tasks, Others owe | `docs/tasks.yaml` (tasks skill) | Every entry, with `mine: true` when the PM is the owner, plus `due`, `status`, `link`, and a blank `note` |
 | Risks | `docs/risks.yaml` | Every entry, as on the risk page |
 | Decisions | `docs/decisions.yaml` | Pending entries only, with `driver`, `approver`, `neededBy` |
@@ -64,7 +64,7 @@ Every document gets `synced` for its editable fields (`decision`, `note` for a p
 **After processing a new file or transcript** (meeting notes, a Drive source, a document Lucy filed):
 1. Write the review list into the notes file, as the meeting-notes skill says, and add its items to the `review` collection.
 2. Sync every tab from the files, set `meta/info`, and file anything already waiting on the page first.
-3. Open the review desk and say in one line what's new on it (for example "7 proposals, 3 new questions, 2 tasks for you"). The PM works through it there instead of a long list in chat.
+3. Open the review desk and say in one line what's new on it (for example "7 proposals, 3 questions for you, 4 product questions, 2 tasks for you"). The PM works through it there instead of a long list in chat.
 
 **Filing a proposal decision.** `approve` applies the item as proposed; `change` applies it with the PM's note; `drop` leaves it out. Apply them as meeting-notes step 8 says (approval is the PM's; never infer it from an untouched item), record the outcome in the notes file's review list, then delete the proposal's document. When a notes file has no undecided items left, it can be set to reviewed.
 
@@ -90,4 +90,4 @@ List them for the PM in one short list per page. Then file each through its reco
 
 - **The file is the record.** Pages are views and inboxes. Nothing on a page is part of the project's history until it is filed.
 - **No secrets on a page**, and nothing beyond work contact details about people.
-- **Page structure is the template's.** To change how a page works for every project, change the template here; a one-off tweak for one project goes in `.ai/project/`.
+- **Page structure is the template's.** To change how a page works for every project, change the template here; a one-off tweak for one project goes in `.ai/project/`. When a Lobot update changes a template, republish each page made from it to its existing link (refill the placeholders as in "Publish a page"); the database stays, so nothing is reseeded unless the update says so.

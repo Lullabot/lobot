@@ -102,6 +102,12 @@ details.answered>ol{margin-top:10px}
   <section class="list" aria-labelledby="lh">
     <div class="lhead"><h2 id="lh">Open questions</h2></div>
     <div class="filterbar">
+      <div class="filters" role="group" aria-label="Filter by kind">
+        <span class="lbl">Kind</span>
+        <button id="ab-any" data-ab="any" aria-pressed="true">All</button>
+        <button id="ab-project" data-ab="project" aria-pressed="false">For you</button>
+        <button id="ab-product" data-ab="product" aria-pressed="false">Product</button>
+      </div>
       <div class="filters" role="group" aria-label="Filter by scope" id="scopeFilters">
         <span class="lbl">Scope</span>
         <button id="sc-any" data-sc="any" aria-pressed="true">All</button>
@@ -125,6 +131,9 @@ details.answered>ol{margin-top:10px}
     <form class="addgrid" id="addForm">
       <textarea id="newQ" aria-label="Question text" placeholder="What do you need answered?" required></textarea>
       <div class="addrow">
+        <label for="newAbout">Kind</label>
+        <select id="newAbout"><option value="project" selected>For you (project)</option><option value="product">Product</option></select>
+        <input type="text" id="newAsk" aria-label="Who answers it" placeholder="Who answers it" hidden>
         <label for="newScope" id="newScopeLbl">Scope</label>
         <select id="newScope"></select>
         <button class="primary" type="submit" id="addBtn">Add question</button>
@@ -143,7 +152,8 @@ const CONFIG = {
 const HAS_SCOPES = Object.keys(CONFIG.scopes || {}).length > 0;   // no scopes: hide scope UI, everything is "all"
 const SCOPES = {...(CONFIG.scopes || {}), all: "Project-wide"};
 const FIELDS = {status: "Status", answer: "Answer"};
-let qs = [], scopeF = "any", statusF = "any", coll = null, canWrite = true;
+let qs = [], scopeF = "any", statusF = "any", aboutF = "any", coll = null, canWrite = true;
+const aboutOf = q => q.about === "product" ? "product" : "project";
 const drafts = {};          // unsaved answer text, keyed by question id
 const editing = new Set();  // answered questions with the answer editor open
 
@@ -181,11 +191,13 @@ function render(){
 
   // Summary
   const open = qs.filter(q => q.status !== "answered");
+  const openProduct = open.filter(q => aboutOf(q) === "product").length;
   const pending = qs.filter(isPending);
   $("tally").replaceChildren(
     ...(HAS_SCOPES
       ? Object.entries(SCOPES).map(([k, label]) => { const n = open.filter(q => q.scope === k).length; return pill(n ? "s-prog" : "s-todo", `${label}: ${n} open`); })
       : [pill(open.length ? "s-prog" : "s-todo", `${open.length} open`)]),
+    pill("s-scope", `${open.length - openProduct} for you, ${openProduct} product`),
     pill("s-done", `${qs.length - open.length} answered`),
     ...(pending.length ? [pill("s-sync", `${pending.length} waiting for Claude`)] : []));
 
@@ -200,7 +212,7 @@ function render(){
   }));
 
   // Lists
-  const match = q => scopeF === "any" || q.scope === scopeF;
+  const match = q => (scopeF === "any" || q.scope === scopeF) && (aboutF === "any" || aboutOf(q) === aboutF);
   const openVis = statusF === "answered" ? [] : open.filter(match);
   const ansVis = statusF === "open" ? [] : qs.filter(q => q.status === "answered" && match(q));
   if (!qs.length) return;
@@ -219,7 +231,10 @@ function render(){
 function card(q){
   const answered = q.status === "answered";
   const meta = el("div", {className: "meta"}, [
+    pill("s-scope flag", aboutOf(q) === "product" ? "Product" : "For you"),
     ...(HAS_SCOPES ? [pill("s-scope flag", SCOPES[q.scope] || q.scope)] : []), statusPill(q.status),
+    ...(aboutOf(q) === "product" ? [el("span", {textContent: "Ask: " + (q.ask || "nobody named")})] : []),
+    ...(q.link ? [el("a", {href: q.link, target: "_blank", rel: "noopener", textContent: "Ticket"})] : []),
     ...(isPending(q) ? [pill("s-sync flag", q.synced ? "Changed here" : "New")] : []),
     el("span", {textContent: "Raised " + (q.raised || "—")}),
     ...(q.source ? [el("span", {className: "src", textContent: q.source})] : []) ]);
@@ -263,8 +278,9 @@ $("addForm").addEventListener("submit", async e => {
   const id = nextId();
   $("addBtn").disabled = true;
   try {
-    await coll.doc(id).set({id, question: text, scope: HAS_SCOPES ? $("newScope").value : "all", raised: today(), source: "Questions Log page", status: "open", answer: "", synced: null, updatedAt: new Date().toISOString()});
-    $("newQ").value = ""; notice("");
+    const about = $("newAbout").value;
+    await coll.doc(id).set({id, question: text, about, ...(about === "product" ? {ask: $("newAsk").value.trim(), link: ""} : {}), scope: HAS_SCOPES ? $("newScope").value : "all", raised: today(), source: "Questions Log page", status: "open", answer: "", synced: null, updatedAt: new Date().toISOString()});
+    $("newQ").value = ""; $("newAsk").value = ""; notice("");
   } catch (err) { notice("The question wasn't added. You may only have view access to this page."); }
   $("addBtn").disabled = !canWrite;
 });
@@ -275,6 +291,8 @@ function wireFilters(attr, set){
 }
 wireFilters("sc", v => scopeF = v);
 wireFilters("st", v => statusF = v);
+wireFilters("ab", v => aboutF = v);
+$("newAbout").onchange = () => { $("newAsk").hidden = $("newAbout").value !== "product"; };
 
 (async () => {
   const db = await window.claude?.use?.("db");
