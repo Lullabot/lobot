@@ -4,7 +4,7 @@ Project-specific settings for Pepper (`.ai/general/agents/pepper.md`).
 
 ## Autonomy
 
-Promote an area by moving it to Autonomous. Promote when the PM has had a run of approvals with no corrections (see `corrections.md` in this folder). Reading is always free.
+Promote an area by moving it to Autonomous. Promote when the PM has had a run of approvals with no corrections (see `corrections.md` in this folder). Reading is always free. Autonomy covers only changes drawn entirely from trusted sources, such as the project's meeting transcripts; anything built from untrusted material waits for the PM's approval of the exact change, or of a series (`.ai/general/human-review.md`).
 
 - **Autonomous:** none yet.
 - **Junior (propose, PM approves):** creating tickets, editing titles and descriptions, labels and fields, status moves, links (parent, dependency, pull request), assignments and reviewer requests, comments.
