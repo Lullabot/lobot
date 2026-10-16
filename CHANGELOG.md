@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/Lullabot/lobot/compare/v0.20.1...v0.21.0) (2026-10-16)
+
+### Added
+
+* **engine:** draft your weekly client status report ([026b4f2](https://github.com/Lullabot/lobot/commit/026b4f2599c09abe82e2b12a868babc3683f01c3))
+* **engine:** drafts built from outside material wait for the PM's approval ([5d1378f](https://github.com/Lullabot/lobot/commit/5d1378f386a315fd4f0134a53d643f84ab2a08d7))
+
 ## [0.20.1](https://github.com/Lullabot/lobot/compare/v0.20.0...v0.20.1) (2026-10-15)
 
 ### Fixed
