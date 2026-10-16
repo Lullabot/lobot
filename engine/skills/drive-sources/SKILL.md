@@ -35,7 +35,7 @@ When Lucy runs as a subagent she can't talk to the PM mid-run. "Lucy asks" means
 
 - **The Google Drive connector.** Tool names differ by assistant; the steps below name what each call does. If no Drive connector is available, say so once, skip the Drive steps, and fall back to files the PM drops in `docs/transcripts/`. Never ask the PM to export a file you could read once the connector is set up; tell them which connector would remove that step.
 - **Access through the PM's own Google account.** Only what that account can open is visible. A file missing from a check may not be shared with the PM.
-- **Reading, not editing, Docs and Sheets.** The Drive connector reads files and can create folders and blank files, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, everything the assistant and Lucy produce stays in the Project Brain (`docs/`), as before. The one exception is an `output` folder (see `purpose`): Lucy files new Docs there, copied from a Project Brain record, and the record stays the source of truth.
+- **Reading, not editing, Docs and Sheets.** The Drive connector reads files and can create folders, blank files, and new Docs, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, records stay in the Project Brain (`docs/`). The exception is an `output` folder (see `purpose`): Lucy files new Docs there, either copies of a Project Brain record (the record stays the source of truth) or deliverables whose only home is that folder (see "Where a deliverable lives").
 
 ## Format
 
@@ -62,6 +62,12 @@ sources:
     since: 2026-10-01                  # ignore files created before this date
     subfolders: false                  # also check folders inside it
     added: 2026-10-09
+  status-reports:
+    kind: folder
+    url: https://drive.google.com/drive/folders/1GhI...
+    purpose: output
+    filed_by: client-status-report     # the skill that files its deliverables here; no copy in docs/
+    added: 2026-10-16
   risk-register:
     kind: file
     url: https://docs.google.com/spreadsheets/d/1QrS.../edit
@@ -70,7 +76,7 @@ sources:
     shared_with_client: true
     added: 2026-10-09
 not_used:
-  status-reports: "Status goes out by email; no folder."   # standard items this project doesn't have, and why
+  contracts: "Contracts stay in Lullabot's own Drive."   # standard items this project doesn't have, and why
 processed:
   - id: 1MnO...                        # Drive file ID
     title: "Weekly sync - 2026-10-08 - Transcript"
@@ -89,7 +95,7 @@ Field rules:
   - `transcripts`: a folder of meeting transcripts. Needs `handler: meeting-notes`.
   - `reference`: material to read and cite (SOW, specs, client docs). Changes are reported, not processed.
   - `deliverable`: a client-facing Doc or Sheet that corresponds to a Project Brain record (`record`). Until the Docs and Sheets connectors are available, the Project Brain file stays the record of truth, and the Doc or Sheet is checked for client edits so the PM can reconcile them.
-  - `output`: a folder where Lucy files shareable copies of Project Brain records, one Doc per record (`record` is the `docs/` folder they come from, e.g. `docs/meetings/` for the meeting-notes folder). The skill that owns the record says when to file a copy, and the record file notes its copy's link. Every copy Lucy files is recorded in `processed` (its `result` is the record it was copied from), so her own copies never come up as new. Checks skip an output folder unless it also has a `handler`: some PMs drop Google Meet's Gemini notes straight into the Meeting Notes folder, so that folder then also takes `handler: meeting-notes`, `copy_to`, and `since`, like a transcripts folder.
+  - `output`: a folder Lucy files new Docs in. Either shareable copies of Project Brain records, one Doc per record (`record` is the `docs/` folder they come from, e.g. `docs/meetings/` for the meeting-notes folder), or deliverables that live only in Drive (`filed_by` names the skill that writes them, e.g. `client-status-report` for the status-reports folder; no `record`, because nothing is kept in `docs/`). The skill that owns the record says when to file a copy, and the record file notes its copy's link. Every copy of a record Lucy files is recorded in `processed` (its `result` is the record it was copied from), so her own copies never come up as new. Checks skip an output folder unless it also has a `handler`: some PMs drop Google Meet's Gemini notes straight into the Meeting Notes folder, so that folder then also takes `handler: meeting-notes`, `copy_to`, and `since`, like a transcripts folder.
 - **`since`** keeps the first check from turning up years of old transcripts. Set it to the date the PM wants to start from.
 - **`not_used`** lists standard layout items the PM said this project doesn't have, with the reason, so they stop coming up.
 - **`processed`** holds one entry per file handled, in the order handled. `result` is the file it became (`docs/meetings/...`), or `skipped: <reason>` when the PM chose not to process it. A file edited after it was handled gets a new entry with the new `modified` when it is handled again.
@@ -206,12 +212,21 @@ Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the k
 4. **The project journal doc** (the weekly entry for Lullabot leadership, project-journal-entry skill) is mapped as `project-journal`: `kind: file`, `purpose: reference`, and a note that it is internal to Lullabot. It usually lives in Lullabot's own Drive, not the client's: never create it in, copy it to, or link it from the client's shared drive.
 5. To stop using a source, delete its entry and leave its `processed` entries; the validator warns about them but keeps them as history.
 
+## Where a deliverable lives
+
+Everything the assistant produces has one home, and the PM chooses it. Lobot has a default home for each kind of deliverable (a folder in the standard layout, or a path in `docs/` from "Where things go" in `.ai/general/context-docs.md`), and the PM can choose another. Lucy settles it the first time a skill produces that kind of deliverable on the project (for example, the first client status report), and whenever the PM asks to move one.
+
+1. **Say the default.** Name the deliverable, Lobot's default home for it, and why, in one or two lines: "Status reports go in a *Status reports* folder inside Project Management in the shared drive, one Doc per week. That folder is their only copy; last week's report is read from there."
+2. **Ask about an override.** "Use that, or put them somewhere else?" The PM can point to an existing folder, have Lucy create the default (at her autonomy level for Drive changes), or say the project doesn't produce it (`not_used`, with the reason).
+3. **Record it** in `docs/sources.yaml` under the layout key, with the scope when the project has scopes, and run the validator. A home in Drive for a deliverable kept only there is an `output` folder with `filed_by`. If the item was mapped before with an older purpose (the validator warns), update it now with the PM's approval.
+4. **Keep to it.** From then on the skill files that deliverable there and nowhere else: no second copy in `docs/`, and no copy in Drive of something whose home is `docs/` unless the PM asked for one (as with meeting notes). If the PM moves the home later, Lucy updates the entry; files already filed stay where they are unless the PM moves them.
+
 ## Rules
 
 - **Ask before scanning.** Mapping the shared drive starts with the PM's go-ahead, every time. Checking already-mapped sources doesn't need one.
 - **Changes in Drive follow Lucy's autonomy.** Creating a folder or blank file is a change in the client's drive, so it is its own autonomy area in Lucy's project config (junior by default). At junior, she names exactly what she'll create and where, and waits for the PM's yes on each item.
 - **Never delete, move, rename, or share in Drive,** and never change permissions. Ask the PM to do it.
-- **Outputs stay local, copies go to `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the copies a record's skill files in a mapped `output` folder (e.g. reviewed meeting notes), until the Docs and Sheets connectors are available and the PM approves writing elsewhere.
+- **Records stay local; Drive gets only `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the Docs a skill files in a mapped `output` folder: copies of a record (reviewed meeting notes) or deliverables whose home is that folder (client status reports), until the Docs and Sheets connectors are available and the PM approves writing elsewhere.
 - **Nothing is processed without the PM.** A check reports; the PM chooses what to process or skip.
 - **Ledger, not timestamps.** "New" means not in `processed`. Never infer that a file was handled from its date.
 - **No secrets in snapshots.** If a file contains credentials or keys, don't save a snapshot of it. Tell the PM and work from Drive directly.

@@ -19,6 +19,7 @@ Every file has one home, by what it is. Use the first row that fits.
 | Notes from one meeting | `docs/meetings/YYYY-MM-DD-<slug>.md` | meeting-notes skill |
 | What was done in a session, and why | `docs/journals/YYYY-MM-DD.md` | journal skill |
 | A report: an analysis, audit, status snapshot, briefing, or list prepared for someone, true as of a date | `docs/reports/YYYY-MM-DD-<slug>.md` | see "Reports" below |
+| A deliverable whose home is Drive, such as the weekly client status report | Its mapped `output` folder in Drive, not `docs/` | its skill; the PM chooses the home (drive-sources skill, "Where a deliverable lives") |
 | A working file, needed only until its work is done (a ticket draft before it's posted, a diff for review, a filled template) | `tmp/` at the Project Brain root, never committed | see the working rules in `.ai/general/lobot.md` |
 
 - **Living or dated.** Records and the dossier are living: they always say what is true now, and are corrected in place. Meetings, journals, and reports are dated: each says what was true or said on its date, and is not rewritten later.

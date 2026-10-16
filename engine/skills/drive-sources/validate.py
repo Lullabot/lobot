@@ -25,13 +25,18 @@ SCOPED_KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*(@[a-z0-9]+(-[a-z0-9]+)*)?$"
 KINDS = {"folder", "file"}
 PURPOSES = {"transcripts", "reference", "deliverable", "output"}
 SOURCE_FIELDS = {"kind", "url", "purpose", "handler", "copy_to", "since", "subfolders",
-                 "record", "shared_with_client", "added", "notes"}
+                 "record", "filed_by", "shared_with_client", "added", "notes"}
 PROCESSED_REQUIRED = ["id", "title", "source", "modified", "processed", "result"]
 FOLDER_URL = re.compile(r"^https://drive\.google\.com/drive/(?:u/\d+/)?folders/([A-Za-z0-9_-]{10,})")
 FILE_URL = re.compile(
     r"^https://(?:docs\.google\.com/(?:document|spreadsheets|presentation|forms)/(?:u/\d+/)?d/"
     r"|drive\.google\.com/(?:file/d/|open\?id=))([A-Za-z0-9_-]{10,})")
 DRIVE_ID = re.compile(r"^[A-Za-z0-9_-]{10,}$")
+# Standard items whose purpose changed in a Lobot update: the old purpose is a warning, not an error,
+# so projects mapped before the change keep validating until the PM moves them over.
+LEGACY_PURPOSES = {"status-reports": {"reference": "Lobot now files client status reports here "
+                                                  "(client-status-report skill): set purpose: output "
+                                                  "and filed_by: client-status-report"}}
 TOP_LEVEL = ("scopes", "shared_drive", "sources", "not_used", "processed")
 LAYOUT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "layout.yaml")
 
@@ -147,13 +152,17 @@ def check_scope_suffix(key, scopes, where, errors):
         errors.append(f"{where} scope '{scope}' is not declared in scopes")
 
 
-def check_layout_match(key, s, layout, where, errors):
+def check_layout_match(key, s, layout, where, errors, warnings):
     item = layout.get(key)
     if not item:
         return
     for field in ("kind", "purpose"):
         if s.get(field) != item.get(field):
-            errors.append(f"{where} is a standard layout item: {field} must be '{item.get(field)}'")
+            legacy = LEGACY_PURPOSES.get(key, {}).get(s.get(field)) if field == "purpose" else None
+            if legacy:
+                warnings.append(f"{where} purpose '{s.get(field)}' is out of date: {legacy}")
+            else:
+                errors.append(f"{where} is a standard layout item: {field} must be '{item.get(field)}'")
 
 
 def check_not_used(not_used, sources, layout, scopes, errors):
@@ -217,7 +226,7 @@ def check_sources(sources, layout, scopes, errors, warnings):
             errors.append(f"{where} copy_to must be a folder under docs/")
         if "notes" in s and not isinstance(s["notes"], str):
             errors.append(f"{where} notes must be a quoted string")
-        check_layout_match(split_key(key)[0], s, layout, where, errors)
+        check_layout_match(split_key(key)[0], s, layout, where, errors, warnings)
         if purpose == "transcripts":
             if kind != "folder":
                 errors.append(f"{where} a transcripts source must be a folder")
@@ -234,10 +243,19 @@ def check_sources(sources, layout, scopes, errors, warnings):
         if purpose == "output":
             if kind != "folder":
                 errors.append(f"{where} an output source must be a folder")
-            if not str(s.get("record", "")).startswith("docs/"):
-                errors.append(f"{where} an output folder needs record: the docs/ folder its copies come from")
+            if "filed_by" in s:
+                if not KEY_RE.match(str(s["filed_by"])):
+                    errors.append(f"{where} filed_by must be the name of the skill that files there")
+                if "record" in s:
+                    errors.append(f"{where} an output folder has record (copies of a docs/ record) or filed_by "
+                                  "(deliverables kept only in Drive), not both")
+            elif not str(s.get("record", "")).startswith("docs/"):
+                errors.append(f"{where} an output folder needs record (the docs/ folder its copies come from) "
+                              "or filed_by (the skill whose deliverables live only here)")
         if purpose not in ("deliverable", "output") and ("record" in s or "shared_with_client" in s):
             warnings.append(f"{where} record and shared_with_client only apply to deliverables and output folders")
+        if purpose != "output" and "filed_by" in s:
+            warnings.append(f"{where} filed_by only applies to output folders")
     return sources
 
 

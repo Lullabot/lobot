@@ -10,7 +10,7 @@
 #   kind       folder | file
 #   file_type  document | spreadsheet | presentation (files only: what to create)
 #   purpose    transcripts | reference | deliverable | output
-#   handler, copy_to, record: copied into the project's entry (see SKILL.md)
+#   handler, copy_to, record, filed_by: copied into the project's entry (see SKILL.md)
 #   why        one line Lucy can use to explain it to the PM
 items:
   # Every project's root holds at least these three folders.
@@ -77,7 +77,9 @@ items:
     why: "The risk list the client sees. docs/risks.yaml stays the record of truth."
   status-reports:
     name: "Status reports"
-    look_for: ["Status", "Weekly updates", "Reports"]
+    look_for: ["Status", "Weekly updates", "Weekly reports", "Reports"]
+    parent: project-management
     kind: folder
-    purpose: reference
-    why: "Status updates sent to the client, for history and consistency."
+    purpose: output
+    filed_by: client-status-report
+    why: "The weekly status reports sent to the client, one Doc per week. This folder is their only copy; last week's report is read from here."
