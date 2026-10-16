@@ -1,6 +1,6 @@
 ---
 name: questions
-description: Keep the questions log (docs/questions.yaml), the list of outstanding questions only the PM can answer (unknown names, unclear owners, scope and contract questions, values to set). Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
+description: Keep the questions log (docs/questions.yaml), the list of outstanding questions only the PM can answer (unknown names, unclear owners, scope, schedule, process, and contract questions, values to set). Product and design questions stay with their owners. Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
 ---
 
 # Questions log
@@ -55,15 +55,23 @@ Quote every text field: unquoted text containing `: ` or starting with a special
 
 ## Who does what
 
-- **Lucy** owns the log: she adds questions from the material she processes and files answers. Adding a question is autonomous for her; it is a request for information, not a change to a record.
+- **Lucy** owns the log: she adds the PM's questions from the material she processes and files answers. Adding a question is autonomous for her; it is a request for information, not a change to a record.
 - **The assistant** adds questions that come up in other work, puts open ones to the PM when asked, and relays answers to Lucy.
 - **The PM** answers. An answer is only recorded from the PM (or a source the PM points to); never from silence or inference.
 
+## Whose question is it
+
+The log feeds the PM's review desk, so every entry should be one the PM can answer. Questions that belong to someone else bury the ones that are theirs.
+
+- **The PM's:** delivery, process, scope, schedule, the contract, and who does what (including who should answer a question nobody owns yet).
+- **Not the PM's:** product and design questions (content, copy, assets, design decisions, form fields, features). They belong to the product owner or designer (check the RACI). Don't copy them into the log. If one is already logged on a ticket, link the ticket where the question came up (the meeting notes' open questions, a dossier gap). If it isn't logged anywhere, keep it in the notes' open questions with its owner, and list it in the report so the assistant can offer to raise it on the right ticket. If nobody owns it, the PM's question is who should.
+
 ## Adding a question
 
-1. Check the log first; don't add a duplicate. If an open question covers it, sharpen that one.
-2. Check the records the question is about (people, RACI, glossary, overview). If they answer it, it isn't a question.
-3. Add the entry with the next ID and run the validator.
+1. Check it is the PM's (above).
+2. Check the log first; don't add a duplicate. If an open question covers it, sharpen that one.
+3. Check the records the question is about (people, RACI, glossary, overview). If they answer it, it isn't a question.
+4. Add the entry with the next ID and run the validator.
 
 Meeting notes keep their own "Open questions" section for what was raised in the meeting; questions for the PM go here, and the notes link to the log.
 
