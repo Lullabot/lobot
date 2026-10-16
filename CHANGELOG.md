@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.21.1](https://github.com/Lullabot/lobot/compare/v0.21.0...v0.21.1) (2026-10-16)
+
+### Fixed
+
+* **engine:** Lucy only puts questions on your list that you can answer ([7f22031](https://github.com/Lullabot/lobot/commit/7f220316089c0543d7ea5217f71808f449043f94)), closes [#9](https://github.com/Lullabot/lobot/issues/9)
+
 ## [0.21.0](https://github.com/Lullabot/lobot/compare/v0.20.1...v0.21.0) (2026-10-16)
 
 ### Added
