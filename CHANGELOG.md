@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.24.0](https://github.com/Lullabot/lobot/compare/v0.23.0...v0.24.0) (2026-10-21)
+
+### Added
+
+* **engine:** lay out what the team will build, site by site, before it becomes tickets ([710f449](https://github.com/Lullabot/lobot/commit/710f44968ddd56996e84b5b731fdfc9bf801c78b))
+* **engine:** lay out what the team will build, site by site, before it becomes tickets ([b4bc607](https://github.com/Lullabot/lobot/commit/b4bc6074a7358ba034e93517c89491a32a0cbab0))
+
+### Fixed
+
+* **engine:** your Project Brain is always saved straight to main, never through a pull request ([8378acc](https://github.com/Lullabot/lobot/commit/8378acc44ebaa07321460a571b6fb1e4816ea32d))
+* **engine:** your Project Brain is always saved straight to main, never through a pull request ([df74310](https://github.com/Lullabot/lobot/commit/df74310a3f4aa9448b4281ebd9e675cb8ffba4c6))
+
 ## [0.23.0](https://github.com/Lullabot/lobot/compare/v0.22.0...v0.23.0) (2026-10-21)
 
 ### Added
