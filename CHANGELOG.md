@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.24.1](https://github.com/Lullabot/lobot/compare/v0.24.0...v0.24.1) (2026-10-21)
+
+### Fixed
+
+* **engine:** Pepper drafts tickets for whichever tracker you choose, not just Jira ([1890cb1](https://github.com/Lullabot/lobot/commit/1890cb12e12de86fb0334a91a1a631c56f1215a6))
+
+### Wording and documentation
+
+* pull requests are squash-merged, and the title becomes the release note ([77d78eb](https://github.com/Lullabot/lobot/commit/77d78eb01c466464c24d49291617bf94b9f89f03)), closes [#12](https://github.com/Lullabot/lobot/issues/12) [#13](https://github.com/Lullabot/lobot/issues/13)
+
 ## [0.24.0](https://github.com/Lullabot/lobot/compare/v0.23.0...v0.24.0) (2026-10-21)
 
 ### Added
