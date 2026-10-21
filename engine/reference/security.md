@@ -86,7 +86,7 @@ The PM sets the token's expiry when they make it, as short as is practical. When
 
 **Why.** Reporting on work, keeping tickets tidy, and drafting tickets to a shared standard.
 
-**What it uses.** GitHub Projects goes through the GitHub token above. Jira goes through Atlassian's own connector, signed in as the PM, with the PM's Jira permissions. Reading a space's workflows through it needs a Jira admin to turn on that part of the connector.
+**What it uses.** GitHub Projects goes through the GitHub token above. Jira goes through either Atlassian's own connector, signed in as the PM, or Jira's REST API with the PM's own Atlassian API token, kept in the Project Brain's git-ignored `.env` and sent only to the project's Jira site. Both act with the PM's Jira permissions; an API token can't be narrowed below them, so the PM sets a short expiry and revokes it when they leave the project. Reading a space's workflows through the connector needs a Jira admin to turn on that part of it.
 
 **What it does.** Reads spaces, boards, work items, and workflows. With the PM's approval of each change: creates and edits work items, boards, and filters, and, when the PM asks, workflows and other space settings. Lobot's instructions rule out deleting a space, board, filter, or scheme, or changing permissions beyond the PM's own team, unless the PM explicitly asks. The connector itself allows whatever the PM's Jira permissions do.
 

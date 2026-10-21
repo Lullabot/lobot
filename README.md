@@ -35,7 +35,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
 | **Project setup** | Puts the Project Brain in a private GitHub repository for you, helps a new PM join an existing one, and when GitHub says no, walks you through the next route and drafts the request for whoever has to approve it. |
 | **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. |
-| **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. |
+| **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. Reads and writes work items with your own API token: searches and summarizes them, and creates a whole backlog of epics, stories, and links from one plan you approve, instead of typing each one in. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
 | **Lobot feedback** | Notices when a correction or a rough edge would help every project, and offers to report it to Lobot as an issue. It writes the report without any project details and posts it only after you approve the exact text. |
 

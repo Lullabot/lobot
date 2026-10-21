@@ -1,13 +1,13 @@
 ---
 name: jira
-description: Guide the PM through setting up and running Jira Cloud — spaces, boards, workflows, work types, sprints, and permissions — using current Atlassian terminology and docs. Use whenever a task involves Jira configuration, auditing or cleaning up a Jira site, creating or copying a space or board, choosing between Jira options, or explaining what a Jira screen is asking for.
+description: Guide the PM through setting up and running Jira Cloud — spaces, boards, workflows, work types, sprints, and permissions — using current Atlassian terminology and docs, and read and write work items through Jira's API (search, view, create in bulk, edit, link, move, comment). Use whenever a task involves Jira configuration, auditing or cleaning up a Jira site, creating or copying a space or board, choosing between Jira options, explaining what a Jira screen is asking for, connecting Jira, or reading, creating, updating, or linking Jira work items.
 ---
 
 # Jira
 
 ## Why
 
-Lullabot PMs set Jira up for clients, often without being Jira admins, and Atlassian changes Jira's names and screens often. This skill turns "what is this screen asking me?" into a clear answer and a short list of steps, without trusting outdated knowledge.
+Lullabot PMs set Jira up for clients, often without being Jira admins, and Atlassian changes Jira's names and screens often. This skill turns "what is this screen asking me?" into a clear answer and a short list of steps, without trusting outdated knowledge. It also gives the assistant a plain way to read and write work items, so a backlog drafted in the Project Brain doesn't have to be typed into Jira by hand.
 
 ## Project config
 
@@ -114,13 +114,179 @@ When a space's settings were switched after creation, its template board may sho
 - **Team-managed spaces can't be converted.** Moving to company-managed means an admin creates a new space and the work items are bulk-moved into it. Story point estimates don't survive (export keys and estimates to CSV first), sprint history may be lost, work item keys change (old keys redirect), and the old space's fields, board, automation, and reports stay behind. When the goal is only to reuse a team-managed space's setup, recreate its work types and statuses in a company-managed space instead of migrating.
 - **Shared settings stay linked.** A later change to a shared workflow or scheme changes every space that uses it. Before editing one, check which spaces share it, and ask the client's Jira owner before changing a scheme other teams use.
 
+## Connecting to Jira
+
+Use the first connection that works. Find out yourself: don't ask the PM which one they have, and don't ask them to run anything.
+
+1. **Atlassian's connector.** If this session has Atlassian's Jira tools, use them for reading and for single approved changes. They sign in as the PM through their browser, with nothing to set up in the folder. Plans still go through `jira.py`, which is what matches field names and values to Jira.
+2. **`jira.py`, here.** From the Project Brain root, in the shell on the PM's computer:
+   ```sh
+   python3 .ai/general/skills/jira/jira.py check
+   ```
+   Act on its last line, once; don't retry in a loop:
+
+   | It says | Meaning | Next |
+   |---|---|---|
+   | `jira: ok as <name>` | Connected. | Carry on. |
+   | `jira: missing …` | No token in this folder yet. | "Setting up the token" below. |
+   | `jira: blocked …` | This shell can't reach Jira. Cowork is blocked until the organization allows the PM's Jira site. | "Using Claude Code" below. |
+   | `jira: refused …` | Jira turned the token down. Usually it expired, or the email isn't the PM's Atlassian login. | Check the email in `.env`, then a new token ("Setting up the token", from step 2). |
+   | `jira: unreachable …` | The site name is wrong, or the network is down. | Compare `JIRA_SITE` with the address the PM opens Jira at; otherwise try later. |
+
+### Setting up the token
+
+You do everything except the token, which only the PM touches.
+
+1. **Get `.env` ready:**
+   ```sh
+   python3 .ai/general/skills/jira/jira.py setup --site SITE --email EMAIL
+   ```
+   Take the site from `.ai/project/jira.md` (or the address the PM opens Jira at, such as `example.atlassian.net`) and the email from the PM's `ids.email` in `docs/people.yaml`; ask only if neither has it. It makes sure `.env` is git-ignored, creates it readable only by the PM, and fills in the site and email. It never reads out or changes a token. If it says `ignore: added`, tell the PM `.gitignore` changed and should be committed. If it says `ignore: STOP`, stop and tell the PM: `.env` was committed, and any token it held must be revoked.
+2. **Walk the PM through the token,** in plain words like these:
+   1. Open https://id.atlassian.com/manage-profile/security/api-tokens, signed in to Atlassian as yourself.
+   2. Choose **Create API token**, the plain one, not the one "with scopes".
+   3. Name it after the project (for example "Lobot, Example project"), pick an expiry date a few months away, and choose **Create**. Then choose **Copy**.
+   4. In Finder, open the project folder and press **Cmd + Shift + .** (period) to show hidden files. Open `.env` with TextEdit.
+   5. Paste the token right after `JIRA_API_TOKEN=`, with no spaces or quotes. Save and close.
+   6. Tell me when it's done. Please don't paste the token into our chat.
+3. **Check again** with `check`. If the PM pastes the token into the chat anyway, don't use it: ask them to delete that token on the same page and make a new one, since the chat now holds it.
+
+A token reaches everything the PM's account can in Jira, so it belongs to one PM and one project folder. When the PM leaves the project, they delete it on the same page.
+
+### Using Claude Code
+
+When `check` says `blocked`, Jira can't be reached from this session. Keep going with everything that doesn't need Jira (Pepper writes plans from the structure file), and hand the Jira steps to Claude Code, which runs on the PM's own computer and network:
+
+1. Tell the PM what needs Jira and why, in one line.
+2. Give them these steps, with the request already filled in:
+   1. In the Claude desktop app, choose **Code** at the top, next to Chat and Cowork.
+   2. Under the message box, choose **Local**, then the folder button, **Open folder…**, and pick this project's folder.
+   3. Type: "_the request_". For example: "Check the Jira connection", "Update the Jira structure for SPACE", or "Validate the Jira plan docs/work/tickets/2026-11-03-search.yaml, ask me about anything it flags, and send it once I approve."
+   4. If Claude Code asks before running a command, the Jira ones start with `python3 .ai/general/skills/jira/jira.py`.
+3. Claude Code reads the same `.env`, so a token set up once works in both. If `check` there says `missing`, it follows "Setting up the token".
+4. Back in this session, pick up from what Claude Code left in the folder: the structure file, and `PLAN.created.json` beside a sent plan.
+
+If the PM would rather stay in Cowork, their organization's admin can allow the Jira site (`*.atlassian.net`) in Claude's admin settings, under Capabilities.
+
+### After connecting
+
+Record the site and spaces in `.ai/project/jira.md`, and each team member's account ID as `ids.jira` in `docs/people.yaml` (look them up with `users`).
+
+## How work gets into Jira
+
+Lucy lays out the work, Pepper turns it into a plan file, and the assistant sends it from wherever Jira can be reached (Claude Code, or Cowork once the site is allowed):
+
+1. **Jira → Pepper.** Where Jira is reachable, `structure SPACE` writes `.ai/project/jira/SPACE.yaml`: the space's work types and levels, each type's required and optional fields under the names people see in Jira, each field's kind and allowed values, statuses, link types, sprints, and open epics. Pepper writes plans from it without needing Jira. Regenerate it before a new batch of work, and whenever the space's setup changes.
+2. **Pepper writes the plan.** From the work the PM approved (work-breakdown skill), Pepper drafts a plan file in `docs/work/tickets/YYYY-MM-DD-<slug>.yaml` (format below), following the tickets skill for titles and descriptions. The PM reviews it there.
+3. **Validate and settle questions.** `validate` checks the plan against Jira and lists every problem at once, as questions: a field the type doesn't have, a value Jira doesn't allow, a missing required field, a parent at the wrong level, an unknown person or sprint. Answer what you can from the structure file and the records; ask the PM the rest, then fix the plan and validate again.
+4. **Approve and send.** The PM approves the final plan and it's stamped; `apply` sends it. A change to a stamped plan needs a new approval.
+5. **Record the keys.** `apply` writes `PLAN.created.json` beside the plan (ref → key). Lucy copies the keys into the work items' **Tickets.** and marks them `ticketed`.
+
+## Reading (no approval needed)
+
+```sh
+J=".ai/general/skills/jira/jira.py"
+python3 $J structure SPACE             # writes .ai/project/jira/SPACE.yaml for Pepper (--out - to print it)
+python3 $J spaces                      # key, name, company- or team-managed
+python3 $J types SPACE                 # work types and hierarchy level (epic 1, standard 0, subtask -1)
+python3 $J fields SPACE TYPE           # one type's fields: name, kind, required, field ID, allowed values
+python3 $J link-types                  # how each link type reads ("A blocks B")
+python3 $J users "name or email"       # account IDs, for docs/people.yaml
+python3 $J search 'project = SPACE AND statusCategory != Done ORDER BY rank' --limit 100
+python3 $J view SPACE-123 --comments   # fields, links, children, and the description as markdown
+python3 $J transitions SPACE-123       # statuses it can move to now
+```
+
+Add `--json` for Jira's raw response, and filter that rather than reading it whole.
+
+## Plan files
+
+A plan is YAML. Name fields exactly as the structure file does (case doesn't matter) and give values the way a person would; the script finds each field's ID and turns the value into what Jira's API expects.
+
+```yaml
+destination: Jira, space SPACE          # the human-review stamp: checked by the script, never sent
+sources: [docs/work/site/search.md]
+status: draft
+# approved_by: and approved_at: added on the PM's approval
+space: SPACE                            # default for every item
+items:
+  - ref: search-epic                    # required on new items: a name used only in this plan
+    type: Epic
+    summary: Event search
+    Team: 0f1e2d3c-…                    # a required field from the structure file
+    description: |                      # markdown, converted to Jira's format
+      ## Description
+      …
+  - ref: date-filter
+    type: Story
+    parent: search-epic                 # a ref earlier in the plan, or a key (SPACE-12)
+    summary: Add an event date filter to the news listing
+    labels: [search]
+    assignee: doe-jane                  # people-directory key with ids.jira
+    Story point estimate: 3
+    Discipline: [Back end, Front end]
+    Sprint: Sprint 5
+    description: |
+      …
+    links:
+      - is blocked by: date-index       # a link's wording (structure file), then a ref or key
+  - key: SPACE-7                        # an existing item: only the fields given change
+    labels: [search, phase-2]           # lists replace the whole list; an empty value clears a field
+    transition: In Progress             # a status or transition name
+    comment: |                          # markdown
+      …
+```
+
+The plan's own keys are `ref`, `key`, `type`, `space`, `parent`, `links`, `transition`, and `comment`. Every other key is a field. A field can also go under `fields:` (for example, by its ID when two fields share a name; the structure file shows the ID then).
+
+| Kind (structure file) | Write it as |
+|---|---|
+| text, url | Plain text. Summary is at most 255 characters. |
+| long text | Markdown. `@key` becomes a mention for anyone in `docs/people.yaml` with `ids.jira`; checkboxes become Jira action items. |
+| number | A number. |
+| date, datetime | `2026-11-03`, or `2026-11-03 14:00` (UTC unless an offset is given). |
+| option, version | One of the listed values. |
+| options, versions, components | A list of listed values, or one comma-separated line. |
+| option / child | `Parent / Child`, as listed. |
+| person, people | People-directory keys (or a list of them). |
+| labels | A list, or one comma-separated line; no spaces inside a label. |
+| sprint | An active or future sprint's name, as listed. |
+| team | The team's ID from Jira. |
+| other | The value as Jira's API expects it, under the field's ID. |
+
+A field that is in Jira but not on the create screen is set right after the item is created; Jira checks that value only then, so `validate` flags it. Hierarchy is checked: an item's parent is one level up (a story under an epic, a subtask under a story or task), and a subtask must have one.
+
+## Sending
+
+```sh
+python3 $J validate docs/work/tickets/2026-11-03-search.yaml        # questions, or a summary of what will happen
+python3 $J apply docs/work/tickets/2026-11-03-search.yaml --dry-run # every request it would send, sending nothing
+python3 $J apply docs/work/tickets/2026-11-03-search.yaml           # creates, updates, then links, moves, and comments
+```
+
+- Every write follows "Making changes" below and `.ai/general/human-review.md`. `apply` refuses a plan until it has `approved_by` and `approved_at`; `validate` and `--dry-run` work on any plan.
+- `apply` validates first and sends nothing if anything is wrong. Items are created in order; links are made after every item exists, so they can point forward.
+- If a run stops partway (Jira refused one item), fix the plan and run it again: what `PLAN.created.json` records is skipped.
+- After a link, the script reads it back and warns if Jira shows it the other way round.
+- Check the first item of a new kind in Jira, and report anything that renders or maps wrong to Lobot (lobot skill).
+
+Single changes, once approved, don't need a plan file:
+
+```sh
+python3 $J link SPACE-3 blocks SPACE-4
+python3 $J transition SPACE-3 "In Review"
+python3 $J comment SPACE-3 tmp/comment.md     # a draft's frontmatter is left out
+```
+
+Each takes `--dry-run`. `python3 $J adf FILE.md --back` shows offline how a markdown file will read in Jira.
+
 ## Making changes
 
 Anything the team or client can see is a change: creating or editing spaces, boards, filters, workflows, schemes, permissions, or work items.
 
 1. Say exactly what will change and in which space or board.
 2. Wait for the PM's approval, unless their request is itself the instruction.
-3. If the change is made through the browser, confirm the result afterward.
+3. Make it with `jira.py` (above) or, for settings the API doesn't cover, through the browser, and confirm the result with links afterward.
 
 Never delete a space, board, filter, or scheme, or change permissions for anyone but the PM's own team, without the PM explicitly asking for that action.
 
@@ -133,7 +299,8 @@ Never delete a space, board, filter, or scheme, or change permissions for anyone
 - The reference space new spaces copy settings from, and its shared schemes.
 - Boards: name, space, type, and saved filter.
 - Conventions: work types in use, workflow statuses, sprint length and naming, labels, components.
+- Which work types the team uses for what (epics per feature area, stories, tasks), and which fields it fills in. The fields themselves, their kinds and allowed values, are in the generated `.ai/project/jira/<SPACE>.yaml` (`jira.py structure`); don't copy them here.
 
 ## Journal
 
-Log Jira changes the PM made with your help (space created, board copied, workflow changed) and anything learned about how the client uses Jira.
+Log Jira changes the PM made with your help (space created, board copied, workflow changed), work items created or changed through `jira.py` (how many, which space, the plan's parent keys, who approved), and anything learned about how the client uses Jira.
