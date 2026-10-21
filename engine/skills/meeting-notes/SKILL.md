@@ -79,7 +79,7 @@ Reviewed notes also go to the project's shared drive, so the team can read them 
 Show the PM one list, grouped, every item with a one-line reason and a transcript timestamp where relevant:
 
 1. **Tasks to create:** title, project/section, priority, labels, assignee, description summary. Follow the task-management file's conventions.
-2. **Context doc changes:** people (new entries, new facts, IDs), RACI (people named to a role or area, and anyone acting outside their recorded role, per the raci skill), glossary (new terms, corrected meanings, new `aka`), dossier (facts added or corrected per site topic file, open gaps closed).
+2. **Context doc changes:** people (new entries, new facts, IDs), RACI (people named to a role or area, and anyone acting outside their recorded role, per the raci skill), glossary (new terms, corrected meanings, new `aka`), dossier (facts added or corrected per site topic file, open gaps closed), work breakdown (items added or changed, each change stated exactly; work-breakdown skill).
 3. **Decision log entries:** each proposed entry in full (decision, justification, driver, approver, status, tags), per the decision-log skill.
 4. **Flags:** risks, ADR candidates, open questions, and how each will be followed up.
 5. **Questions for the PM:** unknown people, uncertain terms, unclear owners. Whatever the PM doesn't answer during review is added to the questions log (questions skill), and the notes' open questions link to it.
