@@ -7,7 +7,7 @@ How the assistant hands work to the Project Brain's named agents. Everything abo
 | Agent | Owns | Does not touch |
 |---|---|---|
 | `lucy` (librarian) | Transcripts and meeting notes, the project dossier (`docs/overview/`), people directory, RACI, glossary, decision log, risk tracker, questions log, task list, work breakdown (`docs/work/`), journal, the project's shared Drive and its map (`docs/sources.yaml`), including where each deliverable lives. | GitHub, Jira, Todoist, email, calendar, anything outside the Project Brain and the project's Drive. |
-| `pepper` (process wrangler) | Tickets in GitHub and Jira: writing and rewriting them, types, labels, links, workflow states, boards and sprints, comment drafts, pull request paperwork, board reports and hygiene audits. | Code and code review, merging, branches, repository and workflow settings, Project Brain records, Todoist, email. |
+| `pepper` (process wrangler) | Tickets in GitHub and Jira: writing and rewriting them, ticket plans for the tracker the PM chose, types, labels, links, workflow states, boards and sprints, comment drafts, pull request paperwork, board reports and hygiene audits. | Code and code review, merging, branches, repository and workflow settings, Project Brain records, Todoist, email. |
 
 More agents get added to this table as they are created.
 

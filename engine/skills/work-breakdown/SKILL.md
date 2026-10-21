@@ -91,7 +91,7 @@ Two or three sentences: what this area is for and who it serves. Link the dossie
 
 Still being worked out in real use. Don't treat these as rules yet:
 
-- How items become tickets: issue types (epics, stories, tasks), parent links, and who drafts them (likely Pepper, from `ready` items, following the tickets skill).
+- How items become tickets. For now: Pepper drafts a ticket plan from `ready` items (tickets skill, "Ticket plans") for the tracker the PM chose, and the item's **Tickets.** gets the keys from the plan's `PLAN.created.json` once it's sent. Still open: which issue types items map to (an epic per area, a story per item, tasks below), and how many tickets one item usually becomes.
 - An import file (such as CSV) for ticket systems without a connector, and its columns.
 - How much detail an item needs before a PM is willing to mark it `ready`.
 

@@ -31,7 +31,8 @@ Jira mention when `key` is in docs/people.yaml with an `ids.jira` account ID.
 names in Jira, with kinds and allowed values), statuses, link types, sprints,
 and open epics to .ai/project/jira/SPACE.yaml, for writing plans without Jira.
 
-`validate` and `apply` read a plan file (YAML or JSON; format in SKILL.md).
+`validate` and `apply` read a ticket plan (YAML or JSON), the tracker-neutral
+format Pepper drafts (tickets skill, "Ticket plans").
 Fields are named as people see them in Jira and given human values; they are
 matched to field IDs and converted to what the API expects (options, people,
 sprints, markdown). Every problem is listed before anything is sent. Items
@@ -932,7 +933,7 @@ def field_meta(f, fid=None):
 
 
 def kind(m):
-    """A field's kind, in the words plan files and the structure file use."""
+    """A field's kind, in the words ticket plans and the structure file use."""
     s = m["schema"]
     t, custom, system = s.get("type", ""), s.get("custom", ""), s.get("system", "")
     if system in ("description", "environment") or custom.endswith(":textarea"):
@@ -1029,6 +1030,10 @@ class Meta:
         for t in self.link_types():
             if t["name"].lower() == phrase:
                 return t, True
+        if phrase in ("blocked by", "blocked_by"):  # a ticket plan's `blocked_by`, whatever the site calls it
+            t = next((t for t in self.link_types() if t["name"].lower() == "blocks"), None)
+            if t:
+                return t, False
         return None, None
 
     def statuses(self, space):
@@ -1226,11 +1231,32 @@ class Record:
 
 
 def load_plan(path):
+    """A ticket plan (tickets skill, "Ticket plans"), with its tracker-neutral keys read the Jira way."""
     plan = load_data(path)
     if isinstance(plan, list):
         plan = {"items": plan}
     if not isinstance(plan, dict) or not isinstance(plan.get("items"), list):
-        fail(f"{path} needs an `items:` list (format in SKILL.md)")
+        fail(f"{path} needs an `items:` list (tickets skill, \"Ticket plans\")")
+    tracker = str(plan.get("tracker") or "jira").strip().lower()
+    if tracker != "jira":
+        fail(f"{path} is a ticket plan for {plan['tracker']}, not Jira. Send it with that tracker's skill.")
+    if plan.get("project") and not plan.get("space"):
+        plan["space"] = plan["project"]
+    for it in plan["items"]:
+        if not isinstance(it, dict):
+            continue
+        for neutral, jira in (("title", "summary"), ("project", "space"), ("status", "transition")):
+            if neutral in it:
+                if jira in it:
+                    fail(f"{path}: {it.get('ref') or it.get('key')} has both `{neutral}` and `{jira}`; keep `{neutral}`")
+                it[jira] = it.pop(neutral)
+        links = list(it.get("links") or [])
+        for neutral, phrase in (("blocks", "blocks"), ("blocked_by", "blocked by")):
+            if neutral in it:
+                targets = it.pop(neutral)
+                links += [{phrase: t} for t in (targets if isinstance(targets, list) else [targets])]
+        if links:
+            it["links"] = links
     return plan
 
 
@@ -1671,7 +1697,7 @@ def cmd_structure(args):
     }
     header = (f"# Jira structure of {space}, generated {time.strftime('%Y-%m-%d')} by jira.py from {j.site}. Don't edit; regenerate:\n"
               f"#   python3 .ai/general/skills/jira/jira.py structure {space}\n"
-              "# Plan files name fields and values exactly as they appear here (jira skill, \"Writing work items\").\n"
+              "# Ticket plans name fields and values exactly as they appear here (jira skill, \"Ticket plans in Jira\").\n"
               "# level: 1 epic, 0 standard, -1 subtask; an item's parent is one level up. Kinds and values for every field are under fields.\n")
     text = header + yaml.safe_dump(data, sort_keys=False, allow_unicode=True, width=120, default_flow_style=None)
     if args.out == "-":
