@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/Lullabot/lobot/compare/v0.22.0...v0.23.0) (2026-10-21)
+
+### Added
+
+* **engine:** Pepper plans Jira work items from your space's own fields, and the assistant creates them after you settle its questions ([76a6620](https://github.com/Lullabot/lobot/commit/76a662086c4253829cd95dc62bd38707ba14d0c7))
+* **engine:** Pepper plans Jira work items from your space's own fields, and the assistant creates them after you settle its questions ([1c2f8f1](https://github.com/Lullabot/lobot/commit/1c2f8f1ea30cf5a8efe4793f642a0088babb0290))
+
 ## [0.22.0](https://github.com/Lullabot/lobot/compare/v0.21.1...v0.22.0) (2026-10-21)
 
 ### Added
