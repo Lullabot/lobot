@@ -91,6 +91,7 @@ The Project Brain is its own git repository, separate from the code in `repo/`. 
 
 **Committing:**
 
+- **Straight to `main`.** The Project Brain is the PM's working record, not shared code: commit on `main` and push to `main`. No branches or pull requests for it. Pull requests are only for changes to Lobot itself (lobot skill) and for ADRs in the code repository (adr skill).
 - Commit when the PM asks ("save my work", "commit this"), and offer to at the end of a session that changed files. Show what's included in a line or two, and wait for approval.
 - Stage files by name, never `.env` or anything else git-ignored. Check `git status` first, and if `.env` shows up as a change to commit, stop (see "Connecting GitHub").
 - Write the message in plain language ("Process the 14 October client meeting"). Lobot updates use "Update Lobot to x.y.z".
