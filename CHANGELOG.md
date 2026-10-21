@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.22.0](https://github.com/Lullabot/lobot/compare/v0.21.1...v0.22.0) (2026-10-21)
+
+### Added
+
+* **engine:** your questions and the team's product questions are now on separate review desk tabs ([0fc9b43](https://github.com/Lullabot/lobot/commit/0fc9b430e080dac108d1326e7b4bc0ac1c24f759)), closes [#10](https://github.com/Lullabot/lobot/issues/10)
+
 ## [0.21.1](https://github.com/Lullabot/lobot/compare/v0.21.0...v0.21.1) (2026-10-16)
 
 ### Fixed

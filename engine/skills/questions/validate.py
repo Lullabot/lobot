@@ -4,15 +4,17 @@
 Usage: python3 validate.py [path/to/questions.yaml]
 
 Checks each entry: ID (Q-###, unique, in order), required fields, scope,
-raised date, status (open | answered), and that answered questions have an answer.
+raised date, status (open | answered), that answered questions have an answer,
+and about (project | product; project when left out).
 Exit code 0 = valid (warnings may print), 1 = errors found.
 """
 DEFAULT_PATH = "docs/questions.yaml"
 EXAMPLE_ID = "Q-001"
 REQUIRED = ["question", "scope", "raised", "source", "status"]
-ALLOWED = set(REQUIRED) | {"answer"}
-TEXT_FIELDS = ["question", "source", "answer"]
+ALLOWED = set(REQUIRED) | {"answer", "about", "ask", "link"}
+TEXT_FIELDS = ["question", "source", "answer", "ask", "link"]
 STATUSES = ("open", "answered")
+ABOUT = ("project", "product")
 
 import datetime
 import re
@@ -131,11 +133,18 @@ def check_entry(key, q, errors, warnings):
         errors.append(f"{where} status must be one of: {', '.join(STATUSES)}")
     elif q["status"] == "answered" and not q.get("answer"):
         errors.append(f"{where} answered but the answer is empty")
+    if "about" in q and q["about"] not in ABOUT:
+        errors.append(f"{where} about must be one of: {', '.join(ABOUT)}")
+    if q.get("about") != "product":
+        for field in ("ask", "link"):
+            if field in q:
+                warnings.append(f"{where} '{field}' is only used on product questions (about: product)")
 
 
 def summary(data):
-    open_n = sum(1 for q in data.values() if isinstance(q, dict) and q.get("status") == "open")
-    return f"{len(data)} questions, {open_n} open"
+    open_q = [q for q in data.values() if isinstance(q, dict) and q.get("status") == "open"]
+    product = sum(1 for q in open_q if q.get("about") == "product")
+    return f"{len(data)} questions, {len(open_q)} open ({len(open_q) - product} project, {product} product)"
 
 
 if __name__ == "__main__":
