@@ -52,7 +52,7 @@ The review desk is the PM's one stop for everything that needs them, and what "t
 
 | Tab | Seeded from | What goes in |
 |---|---|---|
-| Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank) |
+| Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Work breakdown, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank) |
 | Questions for you, Product questions | `docs/questions.yaml` (questions skill) | Every entry, as on the questions page, with `about` (`project` when the record leaves it out), and `ask` and `link` for a product question |
 | My tasks, Others owe | `docs/tasks.yaml` (tasks skill) | Every entry, with `mine: true` when the PM is the owner, plus `due`, `status`, `link`, and a blank `note` |
 | Risks | `docs/risks.yaml` | Every entry, as on the risk page |
