@@ -118,7 +118,7 @@ When a space's settings were switched after creation, its template board may sho
 
 Use the first connection that works. Find out yourself: don't ask the PM which one they have, and don't ask them to run anything.
 
-1. **Atlassian's connector.** If this session has Atlassian's Jira tools, use them for reading and for single approved changes. They sign in as the PM through their browser, with nothing to set up in the folder. Plans still go through `jira.py`, which is what matches field names and values to Jira.
+1. **Atlassian's connector.** If this session has Atlassian's Jira tools, use them for reading and for single approved changes. They sign in as the PM through their browser, with nothing to set up in the folder. Ticket plans still go through `jira.py`, which is what matches field names and values to Jira.
 2. **`jira.py`, here.** From the Project Brain root, in the shell on the PM's computer:
    ```sh
    python3 .ai/general/skills/jira/jira.py check
@@ -174,10 +174,10 @@ Record the site and spaces in `.ai/project/jira.md`, and each team member's acco
 
 ## How work gets into Jira
 
-Lucy lays out the work, Pepper turns it into a plan file, and the assistant sends it from wherever Jira can be reached (Claude Code, or Cowork once the site is allowed):
+When the project's tracker is Jira (tickets skill, "Which tracker"), Lucy lays out the work, Pepper turns it into a ticket plan, and the assistant sends it from wherever Jira can be reached (Claude Code, or Cowork once the site is allowed):
 
-1. **Jira → Pepper.** Where Jira is reachable, `structure SPACE` writes `.ai/project/jira/SPACE.yaml`: the space's work types and levels, each type's required and optional fields under the names people see in Jira, each field's kind and allowed values, statuses, link types, sprints, and open epics. Pepper writes plans from it without needing Jira. Regenerate it before a new batch of work, and whenever the space's setup changes.
-2. **Pepper writes the plan.** From the work the PM approved (work-breakdown skill), Pepper drafts a plan file in `docs/work/tickets/YYYY-MM-DD-<slug>.yaml` (format below), following the tickets skill for titles and descriptions. The PM reviews it there.
+1. **Jira → Pepper.** Where Jira is reachable, `structure SPACE` writes `.ai/project/jira/SPACE.yaml`: the space's work types and levels, each type's required and optional fields under the names people see in Jira, each field's kind and allowed values, statuses, link types, sprints, and open epics. Pepper drafts ticket plans from it without needing Jira. Regenerate it before a new batch of work, and whenever the space's setup changes.
+2. **Pepper drafts the ticket plan.** From the work the PM approved (work-breakdown skill), Pepper drafts a ticket plan in `docs/work/tickets/YYYY-MM-DD-<slug>.yaml` (tickets skill, "Ticket plans"; Jira's part below). The PM reviews it there.
 3. **Validate and settle questions.** `validate` checks the plan against Jira and lists every problem at once, as questions: a field the type doesn't have, a value Jira doesn't allow, a missing required field, a parent at the wrong level, an unknown person or sprint. Answer what you can from the structure file and the records; ask the PM the rest, then fix the plan and validate again.
 4. **Approve and send.** The PM approves the final plan and it's stamped; `apply` sends it. A change to a stamped plan needs a new approval.
 5. **Record the keys.** `apply` writes `PLAN.created.json` beside the plan (ref → key). Lucy copies the keys into the work items' **Tickets.** and marks them `ticketed`.
@@ -199,49 +199,19 @@ python3 $J transitions SPACE-123       # statuses it can move to now
 
 Add `--json` for Jira's raw response, and filter that rather than reading it whole.
 
-## Plan files
+## Ticket plans in Jira
 
-A plan is YAML. Name fields exactly as the structure file does (case doesn't matter) and give values the way a person would; the script finds each field's ID and turns the value into what Jira's API expects.
+Pepper drafts tickets as a ticket plan (tickets skill, "Ticket plans"), with `tracker: jira` and the space key as `project`. For Jira:
 
-```yaml
-destination: Jira, space SPACE          # the human-review stamp: checked by the script, never sent
-sources: [docs/work/site/search.md]
-status: draft
-# approved_by: and approved_at: added on the PM's approval
-space: SPACE                            # default for every item
-items:
-  - ref: search-epic                    # required on new items: a name used only in this plan
-    type: Epic
-    summary: Event search
-    Team: 0f1e2d3c-…                    # a required field from the structure file
-    description: |                      # markdown, converted to Jira's format
-      ## Description
-      …
-  - ref: date-filter
-    type: Story
-    parent: search-epic                 # a ref earlier in the plan, or a key (SPACE-12)
-    summary: Add an event date filter to the news listing
-    labels: [search]
-    assignee: doe-jane                  # people-directory key with ids.jira
-    Story point estimate: 3
-    Discipline: [Back end, Front end]
-    Sprint: Sprint 5
-    description: |
-      …
-    links:
-      - is blocked by: date-index       # a link's wording (structure file), then a ref or key
-  - key: SPACE-7                        # an existing item: only the fields given change
-    labels: [search, phase-2]           # lists replace the whole list; an empty value clears a field
-    transition: In Progress             # a status or transition name
-    comment: |                          # markdown
-      …
-```
-
-The plan's own keys are `ref`, `key`, `type`, `space`, `parent`, `links`, `transition`, and `comment`. Every other key is a field. A field can also go under `fields:` (for example, by its ID when two fields share a name; the structure file shows the ID then).
+- `type` is one of the space's work types, and `key` is a work item key (`ABC-12`).
+- Under `fields:`, name fields exactly as the structure file does (case doesn't matter) and give values the way a person would. The script finds each field's ID and turns the value into what Jira's API expects. When two fields share a name, the structure file shows the field's ID; use that instead.
+- `parent` must be one level up: a story or task under an epic, a subtask under a story or task. A subtask must have one.
+- `status` is a status or transition name from the work type's workflow; `blocks` and `blocked_by` use Jira's Blocks link; any other link goes under `links:` in the structure file's wording (`- relates to: ABC-9`).
+- An empty value on an existing item clears that field.
 
 | Kind (structure file) | Write it as |
 |---|---|
-| text, url | Plain text. Summary is at most 255 characters. |
+| text, url | Plain text. A title is at most 255 characters. |
 | long text | Markdown. `@key` becomes a mention for anyone in `docs/people.yaml` with `ids.jira`; checkboxes become Jira action items. |
 | number | A number. |
 | date, datetime | `2026-11-03`, or `2026-11-03 14:00` (UTC unless an offset is given). |
@@ -254,7 +224,7 @@ The plan's own keys are `ref`, `key`, `type`, `space`, `parent`, `links`, `trans
 | team | The team's ID from Jira. |
 | other | The value as Jira's API expects it, under the field's ID. |
 
-A field that is in Jira but not on the create screen is set right after the item is created; Jira checks that value only then, so `validate` flags it. Hierarchy is checked: an item's parent is one level up (a story under an epic, a subtask under a story or task), and a subtask must have one.
+A field that is in Jira but not on the create screen is set right after the item is created; Jira checks that value only then, so `validate` flags it.
 
 ## Sending
 
@@ -270,7 +240,7 @@ python3 $J apply docs/work/tickets/2026-11-03-search.yaml           # creates, u
 - After a link, the script reads it back and warns if Jira shows it the other way round.
 - Check the first item of a new kind in Jira, and report anything that renders or maps wrong to Lobot (lobot skill).
 
-Single changes, once approved, don't need a plan file:
+Single changes, once approved, don't need a ticket plan:
 
 ```sh
 python3 $J link SPACE-3 blocks SPACE-4
