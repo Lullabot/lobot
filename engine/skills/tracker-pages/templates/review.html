@@ -109,6 +109,15 @@ form.add{background:var(--surface);border:1px solid var(--line);border-radius:10
 form.add .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 -4px}
 .foot{color:var(--muted);font-size:13px}
+/* Structured proposals: headline, one-line summary, itemized changes; the full text folds away. */
+.rsum{margin:0;color:var(--muted);font-size:14px}
+ul.points{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:14px}
+ul.points li{overflow-wrap:anywhere}
+/* Record references (T-012, Q-004, …): dotted underline, tooltip with what the record says. */
+.ref{font-family:var(--f-mono);font-size:.9em;color:var(--accent);border-bottom:1px dotted currentColor;cursor:help;white-space:nowrap;border-radius:3px}
+.ref.unknown{color:inherit;cursor:default;border-bottom-color:var(--line)}
+#tip{position:fixed;z-index:20;max-width:min(340px,calc(100vw - 32px));background:var(--fg);color:var(--bg);font-size:12.5px;line-height:1.4;padding:7px 9px;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
+#tip b{font-family:var(--f-mono);font-weight:600;margin-right:4px}
 @media (max-width:520px){li.item{grid-template-columns:1fr}.wrow{grid-template-columns:1fr}.side{display:flex;flex-wrap:wrap;gap:6px 14px}.kv{display:flex;gap:6px;align-items:center}.side select,.side input{width:auto}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -283,7 +292,7 @@ function render(){
   if (actId && $(actId)) { const n = $(actId); n.focus(); if (sel) try { n.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
 }
 
-function summaryText(d){ return d.item || d.question || d.task || d.risk || d.decision || ""; }
+function summaryText(d){ return d.title || d.item || d.question || d.task || d.risk || d.decision || ""; }
 
 function sortFor(t, list){
   const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, {numeric: true});
@@ -304,9 +313,9 @@ function emptyText(t){
 }
 
 // Long text folds to four lines with a "Show all" toggle.
-function longText(id, text){
+function longText(id, text, refs){
   const key = "txt-" + id, full = openText.has(key);
-  const p = el("div", {className: "title" + (full ? "" : " clamp"), textContent: text});
+  const p = el("div", {className: "title" + (full ? "" : " clamp")}, richText(text, refs));
   if (String(text).length < 280) return [p];
   const b = el("button", {className: "more", type: "button", textContent: full ? "Show less" : "Show all"});
   b.onclick = () => { full ? openText.delete(key) : openText.add(key); render(); };
@@ -332,6 +341,44 @@ function textSave(id, label, value, field, d, t, opts = {}){
   return opts.area ? [inp, el("button", {textContent: opts.button || "Save", disabled: !canWrite, onclick: commit})] : [inp];
 }
 
+// ---- Record references: IDs like T-012 or Q-004 in any text get a tooltip ----
+// The label comes from the document's own `refs` map ({"T-012": "what it says"}), else from a record loaded on this page.
+const REF_RE = /\b([A-Z]{1,3}-\d{2,4})\b/g;
+const REF_COLL = {T: "tasks", Q: "questions", R: "risks", D: "decisions"};
+function refLabel(rid, refs){
+  if (refs && refs[rid]) return refs[rid];
+  const coll = REF_COLL[rid.split("-")[0]], hit = coll && (data[coll] || []).find(x => x.id === rid);
+  const txt = hit && (hit.task || hit.question || hit.risk || hit.decision);
+  return txt ? (txt.length > 220 ? txt.slice(0, 217) + "…" : txt) : "";
+}
+function richText(text, refs){
+  const out = [], str = String(text ?? ""); let last = 0;
+  for (const m of str.matchAll(REF_RE)) {
+    if (m.index > last) out.push(str.slice(last, m.index));
+    const label = refLabel(m[1], refs);
+    const n = el("span", {className: "ref" + (label ? "" : " unknown"), textContent: m[1]});
+    if (label) { n.dataset.tip = label; n.tabIndex = 0; n.setAttribute("aria-label", `${m[1]}: ${label}`); }
+    out.push(n); last = m.index + m[0].length;
+  }
+  if (last < str.length) out.push(str.slice(last));
+  return out;
+}
+const tip = el("div", {id: "tip", role: "tooltip", hidden: true}); document.body.append(tip);
+function showTip(n){
+  tip.replaceChildren(el("b", {textContent: n.textContent}), n.dataset.tip); tip.hidden = false;
+  const r = n.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  const x = Math.max(16, Math.min(r.left, innerWidth - 16 - w));
+  const y = r.bottom + 6 + h > innerHeight - 8 ? r.top - 6 - h : r.bottom + 6;
+  tip.style.left = x + "px"; tip.style.top = Math.max(8, y) + "px"; n.setAttribute("aria-describedby", "tip");
+}
+function hideTip(){ tip.hidden = true; document.querySelectorAll("[aria-describedby=tip]").forEach(n => n.removeAttribute("aria-describedby")); }
+const refAt = e => e.target.closest && e.target.closest(".ref[data-tip]");
+document.addEventListener("mouseover", e => { const n = refAt(e); n ? showTip(n) : hideTip(); });
+document.addEventListener("focusin", e => { const n = refAt(e); n ? showTip(n) : hideTip(); });
+document.addEventListener("focusout", hideTip);
+document.addEventListener("keydown", e => { if (e.key === "Escape") hideTip(); });
+addEventListener("scroll", hideTip, {passive: true});
+
 // ---- Cards: metadata on the left, the item and its controls on the right, sources as a footnote ----
 const kv = (label, value) => value == null || value === "" ? null : el("div", {className: "kv"}, [el("span", {className: "k", textContent: label}), el("span", {className: "v"}, [].concat(value))]);
 const scopeName = d => SCOPES[d.scope || "all"] || d.scope;
@@ -356,7 +403,18 @@ function card(t, d, closed){
     note.setAttribute("aria-label", `Note for ${id}`); note.oninput = () => { drafts["note-" + id] = note.value; };
     const decide = v => { const n = note.value.trim(); if (v === "change" && !n) { note.focus(); notice(`Say what to change for this ${(d.kind || "proposal").toLowerCase()} first.`); return; } save(t, d, {decision: v, note: n}, () => delete drafts["note-" + id]); };
     const btn = (v, label) => el("button", {id: `dec-${v}-${id}`, className: chosen === v ? "chosen" : "", textContent: label, disabled: !canWrite, onclick: () => decide(v)});
-    main.push(...longText(id, d.item), note, el("div", {className: "controls"}, [btn("approve", "Approve"), btn("change", "Approve with change"), btn("drop", "Drop"),
+    if (d.title || d.summary || (d.points || []).length) {
+      // Structured proposal: headline, summary, itemized changes; the full proposal folds away.
+      main.push(d.title ? el("div", {className: "title summary"}, richText(d.title, d.refs)) : null,
+        d.summary ? el("p", {className: "rsum"}, richText(d.summary, d.refs)) : null,
+        (d.points || []).length ? el("ul", {className: "points"}, d.points.map(x => el("li", {}, richText(x, d.refs)))) : null);
+      if (d.item) {
+        const key = "full-" + id, det = el("details", {className: "detail", open: openText.has(key)}, [el("summary", {textContent: "Full proposal"}), el("div", {className: "title"}, richText(d.item, d.refs))]);
+        det.ontoggle = () => det.open ? openText.add(key) : openText.delete(key);
+        main.push(det);
+      }
+    } else main.push(...longText(id, d.item, d.refs));
+    main.push(note, el("div", {className: "controls"}, [btn("approve", "Approve"), btn("change", "Approve with change"), btn("drop", "Drop"),
       ...(chosen ? [el("button", {textContent: "Undo", disabled: !canWrite, onclick: () => save(t, d, {decision: "", note: ""})})] : [])]));
     foot.push(d.source ? fnLine([sourceTitle(d.source), d.ref].filter(Boolean).join(" · "), d.source) : null, fnLine(id));
   }
@@ -364,7 +422,7 @@ function card(t, d, closed){
     const answered = d.status === "answered";
     side.push(kv("ID", id), k === "product" ? kv("Ask", d.ask || "Nobody named") : null, scope,
       kv("Status", pill(answered ? "s-done" : "s-prog", answered ? "Answered" : "Open")), kv("Raised", d.raised));
-    main.push(...longText(id, d.question));
+    main.push(...longText(id, d.question, d.refs));
     if (!answered || editing.has(id)) {
       const ta = el("textarea", {id: "ans-" + id, value: drafts["ans-" + id] ?? d.answer ?? "", placeholder: "Your answer", disabled: !canWrite});
       ta.setAttribute("aria-label", `Answer for ${id}`); ta.oninput = () => { drafts["ans-" + id] = ta.value; };
@@ -393,7 +451,7 @@ function card(t, d, closed){
     const sev = d.severity || "TBD";
     side.push(kv("ID", id), kv("Severity", selectFor("sev-" + id, `Severity for ${id}`, RISK_SEV, sev, v => save(t, d, {severity: v}))),
       kv("Status", selectFor("rst-" + id, `Status for ${id}`, RISK_ST, d.status, v => save(t, d, {status: v}))), scope);
-    main.push(el("div", {className: "title summary", textContent: d.risk}));
+    main.push(el("div", {className: "title summary"}, richText(d.risk, d.refs)));
     if (d.description) {
       const key = "det-" + id, det = el("details", {className: "detail", open: openText.has(key)}, [el("summary", {textContent: "Show details"}), el("div", {className: "title", textContent: d.description})]);
       det.ontoggle = () => det.open ? openText.add(key) : openText.delete(key);
@@ -406,7 +464,7 @@ function card(t, d, closed){
   else if (k === "decisions") {
     side.push(kv("ID", id), kv("Status", selectFor("dst-" + id, `Status for ${id}`, DEC_ST, d.status, v => save(t, d, {status: v}))),
       kv("Driver", d.driver), kv("Needed by", d.neededBy), scope);
-    main.push(...longText(id, d.decision), el("div", {className: "controls"}, textSave("appr-" + id, `Approver for ${id}`, d.approver, "approver", d, t, {placeholder: "Approver"})));
+    main.push(...longText(id, d.decision, d.refs), el("div", {className: "controls"}, textSave("appr-" + id, `Approver for ${id}`, d.approver, "approver", d, t, {placeholder: "Approver"})));
     foot.push(d.source ? fnLine(d.source) : null);
   }
   else if (k === "checklist") {

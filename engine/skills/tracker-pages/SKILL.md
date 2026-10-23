@@ -52,12 +52,19 @@ The review desk is the PM's one stop for everything that needs them, and what "t
 
 | Tab | Seeded from | What goes in |
 |---|---|---|
-| Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Work breakdown, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank) |
+| Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Work breakdown, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank); plus the structured fields below |
 | Questions for you, Product questions | `docs/questions.yaml` (questions skill) | Every entry, as on the questions page, with `about` (`project` when the record leaves it out), and `ask` and `link` for a product question |
 | My tasks, Others owe | `docs/tasks.yaml` (tasks skill) | Every entry, with `mine: true` when the PM is the owner, plus `due`, `status`, `link`, and a blank `note` |
 | Risks | `docs/risks.yaml` | Every entry, as on the risk page |
 | Decisions | `docs/decisions.yaml` | Pending entries only, with `driver`, `approver`, `neededBy` |
 | Checklists | Each `docs/kickoff-checklist[-<scope>].md` | Every row, `id` `<scope>-<row>`, with `scope`, `row`, `task`, `status`, `note` |
+
+**Structured proposals.** A proposal's `item` is often long and dense, so when seeding the `review` collection also give each document fields the page shows instead, with `item` folded under "Full proposal":
+- `title`: what the proposal does, in a few words ("Log D-010: home page shows last year's statistics").
+- `summary`: one plain sentence on why, or what the PM is being asked, when the title doesn't say it.
+- `points`: the separate changes as a list, one short line each (one per record or field touched), when there is more than one.
+- `refs`: every record ID the proposal mentions (tasks, questions, risks, decisions, work items, …) mapped to a short label of what that record says, taken from the record file. The page shows each ID with a tooltip; an ID missing from `refs` falls back to a record loaded on the page, if any.
+Write them from the item and the records only; they add no facts of their own. A document without them shows `item` as before.
 
 Every document gets `synced` for its editable fields (`decision`, `note` for a proposal; `status`, `due`, `note` for a task; `status`, `approver` for a decision; `status`, `note` for a checklist row), like the record pages. `meta/info` holds `processed` (a list of `{title, file}` for what was just processed) and `at` (the date), shown at the top of the page.
 
