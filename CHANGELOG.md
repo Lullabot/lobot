@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.24.2](https://github.com/Lullabot/lobot/compare/v0.24.1...v0.24.2) (2026-10-27)
+
+### Fixed
+
+* **engine:** meeting notes keep design work out of tasks, aliases are only names people go by, and Lucy updates the work breakdown directly ([7c3e54a](https://github.com/Lullabot/lobot/commit/7c3e54a4eb458f258bb2bb1eaf01ec469f0f2596))
+* **engine:** review desk proposals show a title, summary, and bullet list, with tooltips on record IDs ([0361ee4](https://github.com/Lullabot/lobot/commit/0361ee4ad161fc11b38faf8c0a1e528614da5653))
+* **engine:** status reports ask the client only for what's needed now ([1489545](https://github.com/Lullabot/lobot/commit/148954548aeb5d995b7a93fe570a0c48ef26ef85))
+
 ## [0.24.1](https://github.com/Lullabot/lobot/compare/v0.24.0...v0.24.1) (2026-10-21)
 
 ### Fixed
