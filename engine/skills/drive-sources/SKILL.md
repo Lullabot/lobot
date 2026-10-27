@@ -35,7 +35,7 @@ When Lucy runs as a subagent she can't talk to the PM mid-run. "Lucy asks" means
 
 - **The Google Drive connector.** Tool names differ by assistant; the steps below name what each call does. If no Drive connector is available, say so once, skip the Drive steps, and fall back to files the PM drops in `docs/transcripts/`. Never ask the PM to export a file you could read once the connector is set up; tell them which connector would remove that step.
 - **Access through the PM's own Google account.** Only what that account can open is visible. A file missing from a check may not be shared with the PM.
-- **Reading, not editing, Docs and Sheets.** The Drive connector reads files and can create folders, blank files, and new Docs, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, records stay in the Project Brain (`docs/`). The exception is an `output` folder (see `purpose`): Lucy files new Docs there, either copies of a Project Brain record (the record stays the source of truth) or deliverables whose only home is that folder (see "Where a deliverable lives").
+- **Reading Docs and Sheets; editing only trackers, never sales documents.** The Drive connector reads files and can create folders, blank files, and new Docs, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, records stay in the Project Brain (`docs/`). With them, a file is edited only at the edit level its entry gives it (see "Edit levels"); the `contracts` folder (Sales Docs: SOWs, change orders, MSAs, proposals) is `locked` and never edited, whatever the PM asks (`.ai/general/lobot.md`, "Never edit sales documents"). The exception is an `output` folder (see `purpose`): Lucy files new Docs there, either copies of a Project Brain record (the record stays the source of truth) or deliverables whose only home is that folder (see "Where a deliverable lives").
 
 ## Format
 
@@ -51,6 +51,7 @@ sources:
     kind: folder                       # folder | file
     url: https://drive.google.com/drive/folders/1DeF...
     purpose: reference                 # transcripts | reference | deliverable | output
+    edit: locked                       # locked | ask | ok; none = read-only (see "Edit levels")
     added: 2026-10-09
     notes: "Signed SOW and change orders. Read before scope questions."
   meeting-transcripts:
@@ -59,6 +60,7 @@ sources:
     purpose: transcripts
     handler: meeting-notes             # skill that processes new files
     copy_to: docs/transcripts/         # save a snapshot here before handing it on
+    edit: locked
     since: 2026-10-01                  # ignore files created before this date
     subfolders: false                  # also check folders inside it
     added: 2026-10-09
@@ -73,6 +75,7 @@ sources:
     url: https://docs.google.com/spreadsheets/d/1QrS.../edit
     purpose: deliverable
     record: docs/risks.yaml            # the Project Brain record it corresponds to
+    edit: ask
     shared_with_client: true
     added: 2026-10-09
 not_used:
@@ -93,12 +96,30 @@ Field rules:
 - **`url`** is the link from Drive's address bar or Share button. The ID is read from it; don't store it separately.
 - **`purpose`**:
   - `transcripts`: a folder of meeting transcripts. Needs `handler: meeting-notes`.
-  - `reference`: material to read and cite (SOW, specs, client docs). Changes are reported, not processed.
-  - `deliverable`: a client-facing Doc or Sheet that corresponds to a Project Brain record (`record`). Until the Docs and Sheets connectors are available, the Project Brain file stays the record of truth, and the Doc or Sheet is checked for client edits so the PM can reconcile them.
+  - `reference`: material to read and cite (SOW, specs, client docs). Changes are reported, not processed. Not edited unless its `edit` level allows.
+  - `deliverable`: a Doc or Sheet the team or client works from that corresponds to a Project Brain record (`record`): the RACI matrix, schedule, team directory, risk tracker, decision log, kickoff checklist, or another tracker the PM designates. Mapped trackers default to `edit: ask`. The Project Brain file stays the record of truth, and the Doc or Sheet is checked for client edits so the PM can reconcile them. Once the Docs and Sheets connectors are available, an approved change is filed in the record first, then copied into the Doc or Sheet.
   - `output`: a folder Lucy files new Docs in. Either shareable copies of Project Brain records, one Doc per record (`record` is the `docs/` folder they come from, e.g. `docs/meetings/` for the meeting-notes folder), or deliverables that live only in Drive (`filed_by` names the skill that writes them, e.g. `client-status-report` for the status-reports folder; no `record`, because nothing is kept in `docs/`). The skill that owns the record says when to file a copy, and the record file notes its copy's link. Every copy of a record Lucy files is recorded in `processed` (its `result` is the record it was copied from), so her own copies never come up as new. Checks skip an output folder unless it also has a `handler`: some PMs drop Google Meet's Gemini notes straight into the Meeting Notes folder, so that folder then also takes `handler: meeting-notes`, `copy_to`, and `since`, like a transcripts folder.
+- **`edit`** is how far the assistant may change the file or, for a folder, everything in it: `locked`, `ask`, or `ok` (see "Edit levels"). Leave it off and the source is read-only until the PM sets one. Standard items take the layout's default; the PM can change `ask` and `ok` either way, but the validator refuses to loosen a layout item that is `locked`.
 - **`since`** keeps the first check from turning up years of old transcripts. Set it to the date the PM wants to start from.
 - **`not_used`** lists standard layout items the PM said this project doesn't have, with the reason, so they stop coming up.
 - **`processed`** holds one entry per file handled, in the order handled. `result` is the file it became (`docs/meetings/...`), or `skipped: <reason>` when the PM chose not to process it. A file edited after it was handled gets a new entry with the new `modified` when it is handled again.
+
+## Edit levels
+
+Every Drive file Lobot might change has one of three levels, set by the PM in its entry (or its folder's). They only matter once the assistant has a connector that edits Docs or Sheets; until then nothing is edited in place, and creating folders, blank files, and Docs in `output` folders follows "Rules" below.
+
+| Level | Meaning | Defaults |
+|---|---|---|
+| `locked` | Never edited, commented on, moved, or replaced, even when the PM asks. Covers everything inside a locked folder, at any depth. | `contracts` (Sales Docs), `meeting-transcripts` |
+| `ask` | Each change is proposed with its exact text and made only after the PM approves it. | Trackers: kickoff checklist, risk register, and any RACI matrix, schedule, team directory, or decision log the PM maps |
+| `ok` | Changed as its record's skill says, with the change listed in the session report for the PM to review afterward. Best kept for internal files; the validator warns on a client-shared one. | None |
+
+Before editing any Drive file:
+
+1. **Find its level:** its own entry, or else the entry of the mapped folder it sits in (check the file's parents). The strictest level that applies wins.
+2. **Sales documents are always `locked`.** An SOW, change order, MSA, proposal, or estimate is locked wherever it lives, mapped or not (`.ai/general/lobot.md`, "Never edit sales documents"). Say so and stop.
+3. **`ask` or `ok`:** an edit copies a change already filed in the file's Project Brain record, when it has one, and follows that record's skill.
+4. **No level: ask first, then log it.** Treat the file as read-only. Ask the PM whether it may be edited and at which level, then map it ("Add or change a source") with that `edit`, so the question isn't asked again. A file the PM won't open to edits is mapped `edit: locked`.
 
 ## Sites and programs
 
@@ -203,7 +224,7 @@ Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the k
 ## Add or change a source
 
 1. Get the link from the PM. Confirm the file or folder opens with the Drive connector (metadata only) and note its title and type.
-2. If it's a standard layout item, use the layout's key and fields. Otherwise ask what it's for (purpose), and for a transcript folder, which date to start from.
+2. If it's a standard layout item, use the layout's key and fields. Otherwise ask what it's for (purpose) and its edit level ("Edit levels"; read-only if the PM doesn't want it edited), and for a transcript folder, which date to start from.
 3. Lucy proposes the entry; the PM approves it; Lucy adds it in alphabetical order by key and runs the validator:
    ```sh
    python3 .ai/general/skills/drive-sources/validate.py docs/sources.yaml
@@ -226,7 +247,7 @@ Everything the assistant produces has one home, and the PM chooses it. Lobot has
 - **Ask before scanning.** Mapping the shared drive starts with the PM's go-ahead, every time. Checking already-mapped sources doesn't need one.
 - **Changes in Drive follow Lucy's autonomy.** Creating a folder or blank file is a change in the client's drive, so it is its own autonomy area in Lucy's project config (junior by default). At junior, she names exactly what she'll create and where, and waits for the PM's yes on each item.
 - **Never delete, move, rename, or share in Drive,** and never change permissions. Ask the PM to do it.
-- **Records stay local; Drive gets only `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the Docs a skill files in a mapped `output` folder: copies of a record (reviewed meeting notes) or deliverables whose home is that folder (client status reports), until the Docs and Sheets connectors are available and the PM approves writing elsewhere.
+- **Records stay local; Drive gets only `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the Docs a skill files in a mapped `output` folder: copies of a record (reviewed meeting notes) or deliverables whose home is that folder (client status reports), until the Docs and Sheets connectors are available; then existing files are changed only at their edit level ("Edit levels").
 - **Nothing is processed without the PM.** A check reports; the PM chooses what to process or skip.
 - **Ledger, not timestamps.** "New" means not in `processed`. Never infer that a file was handled from its date.
 - **No secrets in snapshots.** If a file contains credentials or keys, don't save a snapshot of it. Tell the PM and work from Drive directly.

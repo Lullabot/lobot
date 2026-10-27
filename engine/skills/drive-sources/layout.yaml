@@ -10,7 +10,9 @@
 #   kind       folder | file
 #   file_type  document | spreadsheet | presentation (files only: what to create)
 #   purpose    transcripts | reference | deliverable | output
-#   handler, copy_to, record, filed_by: copied into the project's entry (see SKILL.md)
+#   edit       locked | ask | ok: the default edit level (SKILL.md, "Edit levels"). No edit: read-only until the PM sets one.
+#              A project can't loosen locked.
+#   handler, copy_to, record, filed_by, edit: copied into the project's entry (see SKILL.md)
 #   why        one line Lucy can use to explain it to the PM
 items:
   # Every project's root holds at least these three folders.
@@ -43,13 +45,15 @@ items:
     file_type: spreadsheet
     purpose: deliverable
     record: docs/kickoff-checklist.md
+    edit: ask
     why: "Lullabot's new-project checklist and kickoff agendas. Copied from the template and named for the project so searches tell them apart."
   contracts:
     name: "Contracts"
-    look_for: ["SOW", "Statement of work", "MSA", "Legal", "Agreements"]
+    look_for: ["Sales Docs", "Sales", "SOW", "Statement of work", "MSA", "Legal", "Agreements"]
     kind: folder
     purpose: reference
-    why: "Signed SOWs, change orders, and agreements. Read before scope questions."
+    edit: locked
+    why: "Signed SOWs, change orders, and agreements. Read before scope questions. Legal documents: never edited."
   meeting-transcripts:
     name: "Meeting transcripts"
     look_for: ["Meet Recordings", "Transcripts", "Recordings"]
@@ -58,6 +62,7 @@ items:
     purpose: transcripts
     handler: meeting-notes
     copy_to: docs/transcripts/
+    edit: locked
     why: "Where Google Meet saves call transcripts, so new ones can be found and filed."
   meeting-notes:
     name: "Meeting Notes"
@@ -74,6 +79,7 @@ items:
     file_type: spreadsheet
     purpose: deliverable
     record: docs/risks.yaml
+    edit: ask
     why: "The risk list the client sees. docs/risks.yaml stays the record of truth."
   status-reports:
     name: "Status reports"

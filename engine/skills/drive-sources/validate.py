@@ -25,7 +25,8 @@ SCOPED_KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*(@[a-z0-9]+(-[a-z0-9]+)*)?$"
 KINDS = {"folder", "file"}
 PURPOSES = {"transcripts", "reference", "deliverable", "output"}
 SOURCE_FIELDS = {"kind", "url", "purpose", "handler", "copy_to", "since", "subfolders",
-                 "record", "filed_by", "shared_with_client", "added", "notes"}
+                 "record", "filed_by", "shared_with_client", "edit", "added", "notes"}
+EDIT_LEVELS = {"locked", "ask", "ok"}
 PROCESSED_REQUIRED = ["id", "title", "source", "modified", "processed", "result"]
 FOLDER_URL = re.compile(r"^https://drive\.google\.com/drive/(?:u/\d+/)?folders/([A-Za-z0-9_-]{10,})")
 FILE_URL = re.compile(
@@ -163,6 +164,11 @@ def check_layout_match(key, s, layout, where, errors, warnings):
                 warnings.append(f"{where} purpose '{s.get(field)}' is out of date: {legacy}")
             else:
                 errors.append(f"{where} is a standard layout item: {field} must be '{item.get(field)}'")
+    if item.get("edit") == "locked" and s.get("edit") != "locked":
+        if "edit" in s:
+            errors.append(f"{where} is locked in the standard layout and can't be loosened: edit must be 'locked'")
+        else:
+            warnings.append(f"{where} add edit: locked (the standard layout locks it; it is never edited)")
 
 
 def check_not_used(not_used, sources, layout, scopes, errors):
@@ -256,6 +262,15 @@ def check_sources(sources, layout, scopes, errors, warnings):
             warnings.append(f"{where} record and shared_with_client only apply to deliverables and output folders")
         if purpose != "output" and "filed_by" in s:
             warnings.append(f"{where} filed_by only applies to output folders")
+        if "edit" in s:
+            if s["edit"] not in EDIT_LEVELS:
+                errors.append(f"{where} edit must be one of: {', '.join(sorted(EDIT_LEVELS))} "
+                              "(leave it off for read-only)")
+            elif s["edit"] == "locked" and purpose == "output":
+                errors.append(f"{where} an output folder can't be locked: Lucy files new Docs there")
+            elif s["edit"] == "ok" and s.get("shared_with_client") is True:
+                warnings.append(f"{where} edit: ok on a file shared with the client skips the PM's approval; "
+                                "consider edit: ask")
     return sources
 
 
