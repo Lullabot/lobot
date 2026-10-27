@@ -66,7 +66,7 @@ Rules:
 - **Key** is `lastname-firstname`, lowercase, hyphenated (multi-word last names keep all words: `van-der-berg-anna`). The file is **alphabetized by key**, which means by last name.
 - **Required:** `name`, `org`, `role`, `status`. Omit any other field that's unknown rather than leaving it empty.
 - **Quote** every string in `ids` and `notes`. Unquoted values like `no`, `0123`, `@user`, or text containing `: ` break or silently change YAML.
-- **`aka`** holds nicknames, preferred names ("goes by"), and misspellings seen in transcripts, so mentions resolve to the right person.
+- **`aka`** holds nicknames, preferred names ("goes by"), and misspellings seen in transcripts, so mentions resolve to the right person. Not a name someone else happened to use for them that they don't go by: note who said it in the meeting notes instead.
 - **`ids`** keys are lowercase service names. Add new services as needed. Work contact info only; no personal phone numbers or addresses.
 - **`owns`**: a few words each, specific to this project. No generic filler ("team communication").
 - **`notes`**: dated and sourced where possible (`2026-07-08: ... (Content Hub Weekly)`). Keep only what helps someone work with this person.

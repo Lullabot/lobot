@@ -82,8 +82,8 @@ Two or three sentences: what this area is for and who it serves. Link the dossie
 ## Keeping it current
 
 - **First pass from the records.** Lucy builds it from the dossier (content, data, migration, design, plan topics), meeting notes, decisions, questions, and risks, after the PM confirms the areas.
-- **As material arrives.** When a transcript, email, or document describes something to build or changes an item, Lucy proposes the new or changed items with that material's other proposals (in a meeting's review list, as kind `Work breakdown`). Facts still go to the dossier first; items link to them rather than repeating them.
-- **Exact changes.** A proposal names the items and says what changes in each (a line added to Included, an open question, a new item in full), so the PM approves exactly what will be written.
+- **As material arrives.** When a transcript, email, or document describes something to build or changes an item, Lucy updates the items directly when the work breakdown is autonomous in her project config (the default), and lists what she changed in the material's review list as information (kind `Work breakdown`). On a project where it is junior, she proposes the changes there instead, and applies them once approved. Facts still go to the dossier first; items link to them rather than repeating them.
+- **Exact changes.** Whether applied or proposed, the review line names the items and says what changed in each (a line added to Included, an open question, a new item in full), so the PM can check exactly what was written.
 - **Index stays current.** Every change to an area file updates that site's `index.md` counts and summary.
 - **Review in small batches**, area by area. Only the PM moves an item to `ready`.
 
