@@ -48,7 +48,8 @@ lastname-firstname:
   name: Full Name
   aka: [Nickname, common misspelling]
   org: Organization
-  role: Title or function on this project
+  title: Job title at their organization
+  role: Role on this project
   status: active                  # active | former (YYYY-MM-DD) | unknown
   tz: America/New_York            # IANA name only, no UTC offset
   ids:
@@ -65,6 +66,7 @@ lastname-firstname:
 Rules:
 - **Key** is `lastname-firstname`, lowercase, hyphenated (multi-word last names keep all words: `van-der-berg-anna`). The file is **alphabetized by key**, which means by last name.
 - **Required:** `name`, `org`, `role`, `status`. Omit any other field that's unknown rather than leaving it empty.
+- **`title` and `role` are different things.** `title` is the person's job title at their organization ("President"); `role` is what they do on this project ("Account rep"). Leave `title` out until it's known; never copy the role into it.
 - **Quote** every string in `ids` and `notes`. Unquoted values like `no`, `0123`, `@user`, or text containing `: ` break or silently change YAML.
 - **`aka`** holds nicknames, preferred names ("goes by"), and misspellings seen in transcripts, so mentions resolve to the right person. Not a name someone else happened to use for them that they don't go by: note who said it in the meeting notes instead.
 - **`ids`** keys are lowercase service names. Add new services as needed. Work contact info only; no personal phone numbers or addresses.
@@ -74,7 +76,7 @@ Rules:
 
 ## Sources for Lullabot staff
 
-Verify Lullabot employees' full names and titles against the team page, https://www.lullabot.com/about/team, before asking the PM. Record the title from the page in `role` (add the project role in parentheses if different) and note the source. Contractors and former staff may not be listed. Lucy has no web access: when she meets a Lullabot person whose title isn't verified, she lists them in her report for the assistant to look up and records the title only once the assistant briefs her with it. Never record a title as an unexplained abbreviation.
+Verify Lullabot employees' full names and titles against the team page, https://www.lullabot.com/about/team, before asking the PM. Record the title from the page in `title`, the person's part on this project in `role`, and note the source. Contractors and former staff may not be listed. Lucy has no web access: when she meets a Lullabot person whose title isn't verified, she lists them in her report for the assistant to look up and records the title only once the assistant briefs her with it. Never record a title as an unexplained abbreviation.
 
 ## Updating
 

@@ -201,6 +201,14 @@ The matrix as Markdown, grouped by area, with columns Task, R, A, C, I and each 
 python3 .ai/general/skills/raci/validate.py docs/raci.yaml --table
 ```
 
+## The Roster & RACI Sheet
+
+When the project maps a Roster & RACI Sheet (drive-sources skill, layout key `raci`), it shows the people directory and this matrix to the team. `docs/people.yaml` and `docs/raci.yaml` stay the record; the Sheet is changed only as its edit level allows, after the record.
+
+- **Roster tab:** one row per active person, Lullabot first, then the client, each sorted by last name. Columns: First, Last, Organization, Site(s) (only when the matrix declares scopes), Title (`title`), Role (`role`), Email (`ids.email`). No phone numbers, even when the directory has them. A missing title stays blank.
+- **RACI Matrix tab:** rows grouped by area under a heading row, in the order areas first appear in the file. Columns: Responsibility, R, A, C, I, Backup, each naming people (several in one cell go on separate lines). Only the responsibility goes in its cell: sources, caveats, "unverified" markers, and anything else that doesn't fit a column go in a cell note on that cell, never appended to the text.
+- **Onboarding tab** (optional): one row per team member and a column per access item, with a status in each cell; progress details go in cell notes.
+
 ## Updating
 
 1. **Search first** for the role and row, so you edit rather than duplicate.
