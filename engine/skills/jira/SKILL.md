@@ -1,6 +1,6 @@
 ---
 name: jira
-description: Guide the PM through setting up and running Jira Cloud — spaces, boards, workflows, work types, sprints, and permissions — using current Atlassian terminology and docs, and read and write work items through Jira's API (search, view, create in bulk, edit, link, move, comment). Use whenever a task involves Jira configuration, auditing or cleaning up a Jira site, creating or copying a space or board, choosing between Jira options, explaining what a Jira screen is asking for, connecting Jira, or reading, creating, updating, or linking Jira work items.
+description: Guide the PM through setting up and running Jira Cloud — spaces, boards, workflows, work types, sprints, permissions, and who is billed for access — using current Atlassian terminology and docs, and read and write work items through Jira's API (search, view, create in bulk, edit, link, move, comment). Use whenever a task involves Jira configuration, auditing or cleaning up a Jira site, creating or copying a space or board, choosing between Jira options, explaining what a Jira screen is asking for, adding or offboarding people and what their licenses cost, connecting Jira, or reading, creating, updating, or linking Jira work items.
 ---
 
 # Jira
@@ -107,6 +107,16 @@ Boards are not copied with space settings. A board is a saved filter plus its co
 A copied board keeps its type (Scrum or Kanban). Only company-managed boards can be copied; a team-managed board has no saved filter or board configuration to copy, so match it by hand on the new space's board (columns, estimation, swimlanes, quick filters).
 
 When a space's settings were switched after creation, its template board may show the new statuses as unmapped: map them under *Board settings → Columns* before the team starts using it.
+
+## People and licenses (checked October 2026)
+
+PMs ask who Jira bills for when people join or leave a project. Answer from Atlassian's current docs and the site's own billing page, not from memory: prices and rules change.
+
+- **Access is what's billed, not use.** On monthly plans, everyone with access to Jira counts, including people who were invited and never accepted or logged in. A new person costs money from the moment they're given access, so add people when they start, not "just in case".
+- **Suspended and removed users aren't billed.** In Atlassian Administration (*Directory → Users*, or *Users* on older sites, then *••• → Suspend access* or *Remove user*). Suspending keeps the person's roles and groups for when access is restored; removing drops them, and they must be invited again. Either way their work items, comments, and history stay in Jira.
+- **Suspend when someone may come back** (a contractor between phases, someone on leave); remove when they're gone for good.
+- **Check the count after a change.** A suspended person who still appears in the user count probably still has access through a synced directory (an identity provider such as Okta or Google). They have to be removed there too, or the sync gives their access back.
+- **The PM usually can't do this.** It takes an organization admin or user access admin. Give the client's admin the list of people and the action for each (suspend or remove), and record what was done in the journal.
 
 ## Gotchas
 
