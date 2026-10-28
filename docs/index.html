@@ -188,25 +188,52 @@ nav.top .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
 .note b { display: block; }
 .note span { color: var(--ink-2); font-size: .95rem; }
 
-/* Deliverables */
-.dlv-group { display: grid; grid-template-columns: 220px 1fr; gap: 28px; padding: 32px 0; border-top: 1px dashed var(--line); }
-.dlv-group:first-of-type { border-top: 0; padding-top: 0; }
-.dlv-group > header h3 { font-size: 1.3rem; }
-.dlv-group > header p { color: var(--ink-3); font-size: .9rem; margin: 6px 0 0; }
-@media (max-width: 860px) { .dlv-group { grid-template-columns: 1fr; gap: 16px; } }
-.dlvs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.dlvs.compact { grid-template-columns: repeat(3, 1fr); }
-@media (max-width: 1000px) { .dlvs.compact { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px) { .dlvs, .dlvs.compact { grid-template-columns: 1fr; } }
-.dlv { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-.dlv header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.dlv h4 { margin: 0; font-size: 1.02rem; font-weight: 600; }
-.dlv > p { color: var(--ink-2); font-size: .93rem; margin: 0; }
-.dlv dl { margin: auto 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: .86rem; padding-top: 10px; border-top: 1px solid var(--line); }
-.dlv dt { color: var(--ink-3); }
-.dlv dd { margin: 0; color: var(--ink); }
-.dlv dd.you { color: var(--accent); font-weight: 500; }
-.dlv .chips { margin-top: 0; }
+/* Core records */
+.links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: -12px 0 32px; color: var(--ink-2); font-size: .93rem; }
+.links span::before { content: "↔"; color: var(--accent); margin-right: 8px; }
+.rec-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.rec-tab { font: inherit; text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; color: var(--ink); min-width: 170px; flex: 1; }
+.rec-tab small { display: block; color: var(--ink-3); font-size: .8rem; margin-top: 2px; }
+.rec-tab b { font-weight: 600; }
+.rec-tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.rec-tab[aria-selected="true"] small { color: color-mix(in srgb, var(--bg) 70%, transparent); }
+.rec { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow); }
+.rec[hidden] { display: none; }
+@media (max-width: 900px) { .rec { grid-template-columns: 1fr; padding: 22px; } }
+.rec .asks { font-family: Fraunces, Georgia, serif; font-size: 1.45rem; line-height: 1.25; margin: 0 0 6px; }
+.rec .file { color: var(--ink-3); font-size: .85rem; margin-bottom: 18px; }
+.rec h4 { font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); margin: 20px 0 8px; }
+.rec ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: .94rem; }
+.rec li { margin: 4px 0; }
+.rec li b { color: var(--ink); font-weight: 600; }
+.rec .yours { margin-top: 20px; background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; font-size: .94rem; }
+.rec .yours b { color: var(--accent); }
+.sample-label { font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); margin-bottom: 8px; }
+.entry { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: .9rem; }
+.entry > header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.entry > header .id { font-family: "JetBrains Mono", monospace; font-size: .8rem; color: var(--ink-3); }
+.entry > header strong { font-weight: 600; flex: 1; }
+.pill { font-size: .72rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); }
+.pill.hi { background: #f9dcd3; color: #9b2f12; border-color: transparent; }
+.pill.open { background: #fdf0cf; color: #7a5300; border-color: transparent; }
+.pill.ok { background: #d9efe2; color: #1e6a3e; border-color: transparent; }
+@media (prefers-color-scheme: dark) {
+  .pill.hi { background: #4a2219; color: #f5a68c; }
+  .pill.open { background: #3d3115; color: #f1cf7a; }
+  .pill.ok { background: #183526; color: #8fd6aa; }
+}
+.entry dl { margin: 0; display: grid; grid-template-columns: 112px 1fr; }
+.entry dt, .entry dd { padding: 9px 16px; border-top: 1px solid var(--line); margin: 0; }
+.entry dl > :nth-child(1), .entry dl > :nth-child(2) { border-top: 0; }
+.entry dt { color: var(--ink-3); }
+.entry dd { color: var(--ink); }
+.entry dd small { color: var(--ink-3); }
+.entry .hist { margin: 0; padding: 0; list-style: none; }
+.entry .hist li { margin: 0; }
+.raci-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; border-bottom: 1px solid var(--line); }
+.raci-grid div { padding: 10px 6px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); font-size: .82rem; color: var(--ink-2); }
+.raci-grid div:nth-child(4n+1) { border-left: 0; }
+.raci-grid b { display: block; font-family: Fraunces, serif; font-size: 1.15rem; color: var(--accent); }
 
 /* Rules */
 .rules { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; counter-reset: rule; }
@@ -265,7 +292,7 @@ footer a { color: var(--ink-2); }
       <a href="#idea">The idea</a>
       <a href="#day">A day with Lobot</a>
       <a href="#team">The team</a>
-      <a href="#deliverables">Deliverables</a>
+      <a href="#records">Core records</a>
       <a href="#skills">Skills</a>
       <a href="#brain">Project Brain</a>
       <a href="#rules">Ground rules</a>
@@ -426,145 +453,207 @@ footer a { color: var(--ink-2); }
   </div>
 </section>
 
-<section id="deliverables">
+<section id="records">
   <div class="wrap">
     <div class="head">
-      <div class="eyebrow">Deliverables</div>
-      <h2>What you no longer keep by hand.</h2>
-      <p class="lede">Lobot drafts, files, and keeps these current. Your part shrinks to the judgment calls: approving, choosing, and answering.</p>
+      <div class="eyebrow">Core records</div>
+      <h2>The PM's records, kept for you.</h2>
+      <p class="lede">The five records every project leans on. Lucy fills them from meetings, documents, and your answers, cites where each fact came from, and keeps them current. You make the calls.</p>
     </div>
-    <div class="dlv-group">
-      <header><h3>Every meeting, every day</h3><p>The running record of what happened.</p></header>
-      <div class="dlvs">
-        <article class="dlv">
-          <header><h4>Meeting notes</h4><span class="owner lucy">Lucy</span></header>
-          <p>From the transcript, usually found in Drive for you. Proposed decisions, risks, questions, and tasks go to your review desk.</p>
-          <div class="chips"><span class="chip">TL;DR</span><span class="chip">Overview</span><span class="chip">Action items</span><span class="chip">Flags</span><span class="chip">Open questions</span></div>
-          <dl><dt>Lands in</dt><dd><code>docs/meetings/</code>, plus a Google Doc copy for the team in the meeting notes folder</dd><dt>Your part</dt><dd class="you">Review the proposals</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Daily journal</h4><span class="owner lucy">Lucy</span></header>
-          <p>What got done and why, decisions, and thoughts, logged as you work. Each session starts with a recap of where things stand.</p>
-          <div class="chips"><span class="chip">Log</span><span class="chip">Decisions</span><span class="chip">Open threads</span><span class="chip">Recap</span></div>
-          <dl><dt>Lands in</dt><dd><code>docs/journals/</code>, one file per day</dd><dt>Your part</dt><dd class="you">Say "wrap up"</dd></dl>
-        </article>
+    <div class="links" aria-label="How the records connect">
+      <span>Every name in the RACI and decision log comes from the roster</span>
+      <span>Each answer you give is filed into the record it changes</span>
+      <span>Approved risks feed the weekly client report</span>
+    </div>
+
+    <div class="rec-tabs" role="tablist" aria-label="Core records">
+      <button class="rec-tab" role="tab" id="t-roster" aria-controls="r-roster" aria-selected="true"><b>Team roster</b><small>Who's who</small></button>
+      <button class="rec-tab" role="tab" id="t-raci" aria-controls="r-raci" aria-selected="false" tabindex="-1"><b>RACI matrix</b><small>Who decides</small></button>
+      <button class="rec-tab" role="tab" id="t-questions" aria-controls="r-questions" aria-selected="false" tabindex="-1"><b>Questions log</b><small>What's still open</small></button>
+      <button class="rec-tab" role="tab" id="t-risks" aria-controls="r-risks" aria-selected="false" tabindex="-1"><b>Risk tracker</b><small>What could go wrong</small></button>
+      <button class="rec-tab" role="tab" id="t-decisions" aria-controls="r-decisions" aria-selected="false" tabindex="-1"><b>Decision log</b><small>What we agreed</small></button>
+    </div>
+
+    <div class="rec" role="tabpanel" id="r-roster" aria-labelledby="t-roster">
+      <div>
+        <p class="asks">"Who is this, what do they own, and how do I reach them?"</p>
+        <div class="file">People directory · <code>docs/people.yaml</code></div>
+        <h4>Each person</h4>
+        <ul>
+          <li><b>Name</b>, plus the names they go by and the misspellings transcripts produce, so every mention lands on the right person</li>
+          <li><b>Organization, role, and status</b> (active or former)</li>
+          <li><b>Time zone</b></li>
+          <li><b>Usernames</b> in GitHub, Jira, Slack, and email, so tickets and lookups never guess</li>
+          <li><b>What they own</b> on this project, and dated, sourced notes</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li>Only people with an active role get an entry</li>
+          <li>Anything inferred is marked unverified until someone confirms it</li>
+          <li>Lullabot titles are checked against the team page; work contact details only</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> fill in a surname or confirm a role when Lucy asks.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entry</div>
+        <div class="entry">
+          <header><strong>Ana Ruiz</strong><span class="pill ok">Active</span></header>
+          <dl>
+            <dt>Goes by</dt><dd>Ana <small>· "Anna" in transcripts</small></dd>
+            <dt>Org · role</dt><dd>Client · Program lead</dd>
+            <dt>Time zone</dt><dd>America/Chicago</dd>
+            <dt>Usernames</dt><dd>GitHub <code>aruiz</code> · Jira account ID · email</dd>
+            <dt>Owns</dt><dd>Content approvals, launch sign-off</dd>
+            <dt>Notes</dt><dd>Oct 8: Prefers decisions confirmed by email. <small>(Kickoff)</small></dd>
+          </dl>
+        </div>
       </div>
     </div>
-    <div class="dlv-group">
-      <header><h3>Every week</h3><p>The reports you used to assemble on Friday afternoon.</p></header>
-      <div class="dlvs">
-        <article class="dlv">
-          <header><h4>Client status report</h4><span class="owner lobot">Lobot</span></header>
-          <p>Drafted in your voice from the records, journals, and last week's report. Risks and asks carry forward until they're resolved.</p>
-          <div class="chips"><span class="chip">Summary</span><span class="chip">Needs your attention</span><span class="chip">Risks and issues</span><span class="chip">Progress</span><span class="chip">Next week</span><span class="chip">Key dates</span><span class="chip">Team availability</span></div>
-          <dl><dt>Lands in</dt><dd>A Google Doc in the project's status reports folder</dd><dt>Your part</dt><dd class="you">Pick what the client sees and approve the text</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Project journal entry</h4><span class="owner lobot">Lobot</span></header>
-          <p>The candid weekly entry for Lullabot leadership, from the week's journals. Open threads carry forward; opportunities get called out.</p>
-          <div class="chips"><span class="chip">Status color</span><span class="chip">Progress</span><span class="chip">Problems and risks</span><span class="chip">Opportunities</span><span class="chip">Things to share</span></div>
-          <dl><dt>Lands in</dt><dd>Your project journal doc, ready to paste</dd><dt>Your part</dt><dd class="you">Confirm the status color and approve</dd></dl>
-        </article>
+
+    <div class="rec" role="tabpanel" id="r-raci" aria-labelledby="t-raci" hidden>
+      <div>
+        <p class="asks">"Who decides this, and who do I ask?"</p>
+        <div class="file">RACI matrix · <code>docs/raci.yaml</code> · tracker page</div>
+        <h4>Each responsibility</h4>
+        <ul>
+          <li><b>Responsible:</b> who does the work</li>
+          <li><b>Accountable:</b> the one person who makes the final call</li>
+          <li><b>Consulted</b> before (three at most) and <b>Informed</b> after</li>
+          <li><b>Backup and response window</b> when the client decides, so a late approval has a clear next step</li>
+          <li><b>SOW reference</b>, a flag where we're waiting on the client, and where the assignment came from</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li>Both teams, site by site, built on roles: when someone leaves, one line changes</li>
+          <li>Moves from <b>draft</b> to <b>agreed</b> only when both sides accept it, and back to <b>needs review</b> when a phase or contract changes</li>
+          <li>Produces a "who to go to" table and contact list to share with the client</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> get both sides to agree it, and approve the table before the client sees it.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample row</div>
+        <div class="entry">
+          <header><strong>Make business decisions for the site</strong><span class="pill ok">Agreed</span></header>
+          <div class="raci-grid">
+            <div><b>R</b>Program lead</div><div><b>A</b>Program lead</div><div><b>C</b>Agency PM</div><div><b>I</b>—</div>
+          </div>
+          <dl>
+            <dt>Program lead</dt><dd>Ana Ruiz</dd>
+            <dt>Backup</dt><dd>Executive sponsor</dd>
+            <dt>Respond in</dt><dd>3 business days</dd>
+            <dt>Source</dt><dd>Kickoff meeting <small>(00:12:40)</small></dd>
+          </dl>
+        </div>
       </div>
     </div>
-    <div class="dlv-group">
-      <header><h3>Always current</h3><p>The project's records, kept up to date as meetings and documents come in. One fact, one home.</p></header>
-      <div class="dlvs compact">
-        <article class="dlv">
-          <header><h4>Decision log</h4><span class="owner lucy">Lucy</span></header>
-          <p>What was decided, why, who drove it, and who approved it, plus what's still pending.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/decisions.yaml</code></dd><dt>Your part</dt><dd class="you">Approve; silence never counts</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Risk register</h4><span class="owner lucy">Lucy</span></header>
-          <p>Severity, status, who confirmed it, the next step, and a dated history of each risk.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/risks.yaml</code></dd><dt>Your part</dt><dd class="you">Set severity, close risks</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Questions log</h4><span class="owner lucy">Lucy</span></header>
-          <p>Questions only you can answer, kept apart from product questions for the client. Answers are filed where they belong.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/questions.yaml</code></dd><dt>Your part</dt><dd class="you">Answer in a batch</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Task list</h4><span class="owner lucy">Lucy</span></header>
-          <p>Every action item, yours and the ones others owe, with owner and due date. Yours also go to your task manager, when one is connected.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/tasks.yaml</code></dd><dt>Your part</dt><dd class="you">Close items, chase late ones</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>RACI matrix</h4><span class="owner lucy">Lucy</span></header>
-          <p>Who's responsible, accountable, consulted, and informed per area, both teams, site by site, with a shareable "who to go to" table.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/raci.yaml</code></dd><dt>Your part</dt><dd class="you">Approve before the client sees it</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Project dossier</h4><span class="owner lucy">Lucy</span></header>
-          <p>Everything known about the project and each site, every fact citing its source. Questions get answered from it.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/overview/</code></dd><dt>Your part</dt><dd class="you">Ask questions</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>People directory</h4><span class="owner lucy">Lucy</span></header>
-          <p>Roles, time zones, and the usernames needed to find people in GitHub, Jira, and other tools.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/people.yaml</code></dd><dt>Your part</dt><dd class="you">Fill gaps when asked</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Glossary</h4><span class="owner lucy">Lucy</span></header>
-          <p>Acronyms, product names, and project jargon, so transcripts and documents are read correctly.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/glossary.yaml</code></dd><dt>Your part</dt><dd class="you">Confirm new terms</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Drive map</h4><span class="owner lucy">Lucy</span></header>
-          <p>The project's shared drive mapped to Lullabot's standard layout: where things live, and what's already been processed.</p>
-          <dl><dt>Lands in</dt><dd><code>docs/sources.yaml</code></dd><dt>Your part</dt><dd class="you">Choose where each deliverable lives</dd></dl>
-        </article>
+
+    <div class="rec" role="tabpanel" id="r-questions" aria-labelledby="t-questions" hidden>
+      <div>
+        <p class="asks">"What do you need from me?"</p>
+        <div class="file">Questions log · <code>docs/questions.yaml</code> · tracker page and review desk</div>
+        <h4>Two kinds, kept apart</h4>
+        <ul>
+          <li><b>Project questions</b> only you can answer: a surname, who owns something, whether the SOW is signed, a risk's severity</li>
+          <li><b>Product questions</b> for the product owner or designer, with who should answer and the ticket where it's logged, so you can chase them</li>
+        </ul>
+        <h4>Each question</h4>
+        <ul>
+          <li>Answerable on its own: says what's missing and where the answer goes</li>
+          <li>The site it's about, when it was raised, and the meeting or document that raised it</li>
+          <li>Open or answered, with the answer, who gave it, and when</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> answer them in a batch. Each answer is filed where it belongs: a surname into the roster, a backup into the RACI, a severity into the risk tracker.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entries</div>
+        <div class="entry" style="margin-bottom:14px">
+          <header><span class="id">Q-002</span><strong>What is Alex's surname?</strong><span class="pill open">Open</span></header>
+          <dl>
+            <dt>Kind</dt><dd>Project question, for you</dd>
+            <dt>Raised</dt><dd>Oct 9 · Kickoff meeting notes</dd>
+            <dt>Goes to</dt><dd>Team roster</dd>
+          </dl>
+        </div>
+        <div class="entry">
+          <header><span class="id">Q-003</span><strong>Does the contact form need a phone number field?</strong><span class="pill open">Open</span></header>
+          <dl>
+            <dt>Kind</dt><dd>Product question</dd>
+            <dt>Ask</dt><dd>Product owner</dd>
+            <dt>Logged on</dt><dd>Ticket #42</dd>
+            <dt>Raised</dt><dd>Oct 10 · Design review</dd>
+          </dl>
+        </div>
       </div>
     </div>
-    <div class="dlv-group">
-      <header><h3>From plan to tickets</h3><p>Planned work, turned into tickets without retyping it.</p></header>
-      <div class="dlvs">
-        <article class="dlv">
-          <header><h4>Work breakdown</h4><span class="owner lucy">Lucy</span></header>
-          <p>What the team will build, by site and feature area. Each item has a goal, scope, open questions, and sources, and moves from idea to draft to ready to ticketed.</p>
-          <div class="chips"><span class="chip">W-### items</span><span class="chip">Goal</span><span class="chip">Scope</span><span class="chip">Open questions</span><span class="chip">Sources</span></div>
-          <dl><dt>Lands in</dt><dd><code>docs/work/</code></dd><dt>Your part</dt><dd class="you">Mark items ready</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Ticket plan and tickets</h4><span class="owner pepper">Pepper</span></header>
-          <p>A whole batch of tickets drafted as one plan, to Lullabot's ticket standard, then created in Jira or GitHub with links and parents in place.</p>
-          <div class="chips"><span class="chip">Titles</span><span class="chip">Descriptions</span><span class="chip">Acceptance criteria</span><span class="chip">Labels</span><span class="chip">Links</span></div>
-          <dl><dt>Lands in</dt><dd><code>docs/work/tickets/</code>, then your tracker</dd><dt>Your part</dt><dd class="you">Approve the plan, settle its questions</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Board reports and hygiene audits</h4><span class="owner pepper">Pepper</span></header>
-          <p>Sprint status, plus what's stale, unowned, unclear, or mislabeled on the board, with the fewest changes that fix it.</p>
-          <div class="chips"><span class="chip">Sprint status</span><span class="chip">Stale</span><span class="chip">Unowned</span><span class="chip">Unclear</span></div>
-          <dl><dt>Lands in</dt><dd>A report in chat, ranked, with ticket keys and links</dd><dt>Your part</dt><dd class="you">Approve the fixes</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Architecture decision records</h4><span class="owner lobot">Lobot</span></header>
-          <p>Hard technical choices written up for the technical lead, who answers, reviews, and merges them.</p>
-          <div class="chips"><span class="chip">Decision</span><span class="chip">Alternatives considered</span><span class="chip">Consequences</span><span class="chip">Who was involved</span></div>
-          <dl><dt>Lands in</dt><dd>A draft pull request in the code repository</dd><dt>Your part</dt><dd class="you">Start one when a choice is made</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Jira site audit</h4><span class="owner pepper">Pepper</span></header>
-          <p>A workbook of every space, workflow, status, and work type, showing what uses what, so cleanup is a set of decisions instead of an afternoon of clicking.</p>
-          <div class="chips"><span class="chip">Keep</span><span class="chip">Unsure</span><span class="chip">Removable</span></div>
-          <dl><dt>Lands in</dt><dd>An .xlsx to open in Google Sheets</dd><dt>Your part</dt><dd class="you">Decide what to keep</dd></dl>
-        </article>
+
+    <div class="rec" role="tabpanel" id="r-risks" aria-labelledby="t-risks" hidden>
+      <div>
+        <p class="asks">"What could go wrong, and what are we doing about it?"</p>
+        <div class="file">Risk tracker · <code>docs/risks.yaml</code> · tracker page</div>
+        <h4>Each risk</h4>
+        <ul>
+          <li><b>A one-line summary</b> that reads on its own in a list, and what could go wrong</li>
+          <li><b>Severity</b> (High, Medium, Low, or TBD until you set it) and <b>status</b> (Open, Monitoring, Closed)</li>
+          <li><b>Who confirmed it</b> and where it was raised, down to the meeting timestamp</li>
+          <li><b>The next step</b>: who does what</li>
+          <li><b>Dated updates</b>, so you can see how it developed</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li>Every risk is confirmed by a named person, never invented</li>
+          <li>Updates are added, not rewritten, so the history stays honest</li>
+          <li>Only the risks you approve, in the words you approve, reach the client's status report</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> set the severity, choose what the client sees, and close risks.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entry</div>
+        <div class="entry">
+          <header><span class="id">R-001</span><strong>Launch window falls over the holidays</strong><span class="pill hi">High</span></header>
+          <dl>
+            <dt>Status</dt><dd>Open</dd>
+            <dt>Why it matters</dt><dd>Funding depends on launching by year end, which leaves no slack if launch slips past the holidays.</dd>
+            <dt>Confirmed by</dt><dd>Sam Lee, Ana Ruiz</dd>
+            <dt>Source</dt><dd>Kickoff meeting <small>(00:31:10)</small></dd>
+            <dt>Next step</dt><dd>PM and Sam Lee agree a launch date with the client.</dd>
+            <dt>Updates</dt><dd><ul class="hist"><li>Oct 14: The schedule marks the last two weeks of December as a change freeze. <small>(Schedule Sheet)</small></li></ul></dd>
+          </dl>
+        </div>
       </div>
     </div>
-    <div class="dlv-group">
-      <header><h3>Where you review it all</h3><p>One place to see what needs you, outside the chat.</p></header>
-      <div class="dlvs">
-        <article class="dlv">
-          <header><h4>Review desk</h4><span class="owner lobot">Lobot</span></header>
-          <p>Your dashboard: a tab for Lucy's proposals, your questions, product questions, your tasks, what others owe, risks, pending decisions, and checklists. It opens after each transcript or file is processed.</p>
-          <dl><dt>Lands in</dt><dd>A private page in Claude you can share</dd><dt>Your part</dt><dd class="you">Approve, answer, and edit in place</dd></dl>
-        </article>
-        <article class="dlv">
-          <header><h4>Tracker pages</h4><span class="owner lobot">Lobot</span></header>
-          <p>Working pages for the risks, decisions, RACI, questions, and kickoff checklist. Change something on a page and it's filed back into the Project Brain.</p>
-          <dl><dt>Lands in</dt><dd>Private pages in Claude you can share</dd><dt>Your part</dt><dd class="you">Work there instead of in files</dd></dl>
-        </article>
+
+    <div class="rec" role="tabpanel" id="r-decisions" aria-labelledby="t-decisions" hidden>
+      <div>
+        <p class="asks">"What did we decide, and who signed off?"</p>
+        <div class="file">Decision log · <code>docs/decisions.yaml</code> · tracker page</div>
+        <h4>Each decision</h4>
+        <ul>
+          <li><b>The decision</b>, stated as a choice, and <b>why</b>, with the meeting or message it came from</li>
+          <li><b>Driver:</b> who pushed for it. <b>Approver:</b> who signed off</li>
+          <li><b>Status:</b> pending, approved, denied, superseded, or deprecated</li>
+          <li><b>Needed by</b> for pending decisions, so you chase them before they block work</li>
+          <li><b>Tags</b> for filtering by feature or system</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li><b>Approval is never inferred.</b> Nobody objecting isn't a yes; it stays pending until someone confirms who approved it</li>
+          <li>One decision per entry, and denied ones are kept, so settled questions aren't reopened</li>
+          <li>Architecture decisions go to ADRs in the code repository instead</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> confirm approvers and chase what's pending.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entry</div>
+        <div class="entry">
+          <header><span class="id">D-004</span><strong>Launch before the December change freeze</strong><span class="pill open">Pending</span></header>
+          <dl>
+            <dt>Why</dt><dd>Avoids the freeze and protects year-end funding. Raised in the weekly check-in <small>(00:08:15)</small>.</dd>
+            <dt>Driver</dt><dd>Sam Lee</dd>
+            <dt>Approver</dt><dd>Ana Ruiz <small>(needed)</small></dd>
+            <dt>Needed by</dt><dd>Nov 1</dd>
+            <dt>Tags</dt><dd>launch, schedule</dd>
+          </dl>
+        </div>
       </div>
     </div>
   </div>
@@ -898,6 +987,25 @@ Do the terminal work for me, explain what's happening in plain language, and sto
       var f = b.getAttribute('data-filter');
       buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
       items.forEach(function (el) { el.hidden = !(f === 'all' || el.getAttribute('data-group') === f); });
+    });
+  });
+
+  // Core record tabs
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.rec-tab'));
+  function select(tab, focus) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) tab.focus();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { select(t); });
+    t.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); select(tabs[(i + d + tabs.length) % tabs.length], true); }
     });
   });
 
