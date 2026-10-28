@@ -188,6 +188,26 @@ nav.top .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
 .note b { display: block; }
 .note span { color: var(--ink-2); font-size: .95rem; }
 
+/* Deliverables */
+.dlv-group { display: grid; grid-template-columns: 220px 1fr; gap: 28px; padding: 32px 0; border-top: 1px dashed var(--line); }
+.dlv-group:first-of-type { border-top: 0; padding-top: 0; }
+.dlv-group > header h3 { font-size: 1.3rem; }
+.dlv-group > header p { color: var(--ink-3); font-size: .9rem; margin: 6px 0 0; }
+@media (max-width: 860px) { .dlv-group { grid-template-columns: 1fr; gap: 16px; } }
+.dlvs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.dlvs.compact { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 1000px) { .dlvs.compact { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .dlvs, .dlvs.compact { grid-template-columns: 1fr; } }
+.dlv { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.dlv header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.dlv h4 { margin: 0; font-size: 1.02rem; font-weight: 600; }
+.dlv > p { color: var(--ink-2); font-size: .93rem; margin: 0; }
+.dlv dl { margin: auto 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: .86rem; padding-top: 10px; border-top: 1px solid var(--line); }
+.dlv dt { color: var(--ink-3); }
+.dlv dd { margin: 0; color: var(--ink); }
+.dlv dd.you { color: var(--accent); font-weight: 500; }
+.dlv .chips { margin-top: 0; }
+
 /* Rules */
 .rules { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; counter-reset: rule; }
 @media (max-width: 960px) { .rules { grid-template-columns: repeat(2, 1fr); } }
@@ -245,6 +265,7 @@ footer a { color: var(--ink-2); }
       <a href="#idea">The idea</a>
       <a href="#day">A day with Lobot</a>
       <a href="#team">The team</a>
+      <a href="#deliverables">Deliverables</a>
       <a href="#skills">Skills</a>
       <a href="#brain">Project Brain</a>
       <a href="#rules">Ground rules</a>
@@ -402,6 +423,150 @@ footer a { color: var(--ink-2); }
       </article>
     </div>
     <p class="lede" style="margin-top:28px">Lucy and Pepper work like new hires: they start out checking with you, and earn more independence in each area as you correct and promote them.</p>
+  </div>
+</section>
+
+<section id="deliverables">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Deliverables</div>
+      <h2>What you no longer keep by hand.</h2>
+      <p class="lede">Lobot drafts, files, and keeps these current. Your part shrinks to the judgment calls: approving, choosing, and answering.</p>
+    </div>
+    <div class="dlv-group">
+      <header><h3>Every meeting, every day</h3><p>The running record of what happened.</p></header>
+      <div class="dlvs">
+        <article class="dlv">
+          <header><h4>Meeting notes</h4><span class="owner lucy">Lucy</span></header>
+          <p>From the transcript, usually found in Drive for you. Proposed decisions, risks, questions, and tasks go to your review desk.</p>
+          <div class="chips"><span class="chip">TL;DR</span><span class="chip">Overview</span><span class="chip">Action items</span><span class="chip">Flags</span><span class="chip">Open questions</span></div>
+          <dl><dt>Lands in</dt><dd><code>docs/meetings/</code>, plus a Google Doc copy for the team in the meeting notes folder</dd><dt>Your part</dt><dd class="you">Review the proposals</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Daily journal</h4><span class="owner lucy">Lucy</span></header>
+          <p>What got done and why, decisions, and thoughts, logged as you work. Each session starts with a recap of where things stand.</p>
+          <div class="chips"><span class="chip">Log</span><span class="chip">Decisions</span><span class="chip">Open threads</span><span class="chip">Recap</span></div>
+          <dl><dt>Lands in</dt><dd><code>docs/journals/</code>, one file per day</dd><dt>Your part</dt><dd class="you">Say "wrap up"</dd></dl>
+        </article>
+      </div>
+    </div>
+    <div class="dlv-group">
+      <header><h3>Every week</h3><p>The reports you used to assemble on Friday afternoon.</p></header>
+      <div class="dlvs">
+        <article class="dlv">
+          <header><h4>Client status report</h4><span class="owner lobot">Lobot</span></header>
+          <p>Drafted in your voice from the records, journals, and last week's report. Risks and asks carry forward until they're resolved.</p>
+          <div class="chips"><span class="chip">Summary</span><span class="chip">Needs your attention</span><span class="chip">Risks and issues</span><span class="chip">Progress</span><span class="chip">Next week</span><span class="chip">Key dates</span><span class="chip">Team availability</span></div>
+          <dl><dt>Lands in</dt><dd>A Google Doc in the project's status reports folder</dd><dt>Your part</dt><dd class="you">Pick what the client sees and approve the text</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Project journal entry</h4><span class="owner lobot">Lobot</span></header>
+          <p>The candid weekly entry for Lullabot leadership, from the week's journals. Open threads carry forward; opportunities get called out.</p>
+          <div class="chips"><span class="chip">Status color</span><span class="chip">Progress</span><span class="chip">Problems and risks</span><span class="chip">Opportunities</span><span class="chip">Things to share</span></div>
+          <dl><dt>Lands in</dt><dd>Your project journal doc, ready to paste</dd><dt>Your part</dt><dd class="you">Confirm the status color and approve</dd></dl>
+        </article>
+      </div>
+    </div>
+    <div class="dlv-group">
+      <header><h3>Always current</h3><p>The project's records, kept up to date as meetings and documents come in. One fact, one home.</p></header>
+      <div class="dlvs compact">
+        <article class="dlv">
+          <header><h4>Decision log</h4><span class="owner lucy">Lucy</span></header>
+          <p>What was decided, why, who drove it, and who approved it, plus what's still pending.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/decisions.yaml</code></dd><dt>Your part</dt><dd class="you">Approve; silence never counts</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Risk register</h4><span class="owner lucy">Lucy</span></header>
+          <p>Severity, status, who confirmed it, the next step, and a dated history of each risk.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/risks.yaml</code></dd><dt>Your part</dt><dd class="you">Set severity, close risks</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Questions log</h4><span class="owner lucy">Lucy</span></header>
+          <p>Questions only you can answer, kept apart from product questions for the client. Answers are filed where they belong.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/questions.yaml</code></dd><dt>Your part</dt><dd class="you">Answer in a batch</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Task list</h4><span class="owner lucy">Lucy</span></header>
+          <p>Every action item, yours and the ones others owe, with owner and due date. Yours also go to your task manager, when one is connected.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/tasks.yaml</code></dd><dt>Your part</dt><dd class="you">Close items, chase late ones</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>RACI matrix</h4><span class="owner lucy">Lucy</span></header>
+          <p>Who's responsible, accountable, consulted, and informed per area, both teams, site by site, with a shareable "who to go to" table.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/raci.yaml</code></dd><dt>Your part</dt><dd class="you">Approve before the client sees it</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Project dossier</h4><span class="owner lucy">Lucy</span></header>
+          <p>Everything known about the project and each site, every fact citing its source. Questions get answered from it.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/overview/</code></dd><dt>Your part</dt><dd class="you">Ask questions</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>People directory</h4><span class="owner lucy">Lucy</span></header>
+          <p>Roles, time zones, and the usernames needed to find people in GitHub, Jira, and other tools.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/people.yaml</code></dd><dt>Your part</dt><dd class="you">Fill gaps when asked</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Glossary</h4><span class="owner lucy">Lucy</span></header>
+          <p>Acronyms, product names, and project jargon, so transcripts and documents are read correctly.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/glossary.yaml</code></dd><dt>Your part</dt><dd class="you">Confirm new terms</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Drive map</h4><span class="owner lucy">Lucy</span></header>
+          <p>The project's shared drive mapped to Lullabot's standard layout: where things live, and what's already been processed.</p>
+          <dl><dt>Lands in</dt><dd><code>docs/sources.yaml</code></dd><dt>Your part</dt><dd class="you">Choose where each deliverable lives</dd></dl>
+        </article>
+      </div>
+    </div>
+    <div class="dlv-group">
+      <header><h3>From plan to tickets</h3><p>Planned work, turned into tickets without retyping it.</p></header>
+      <div class="dlvs">
+        <article class="dlv">
+          <header><h4>Work breakdown</h4><span class="owner lucy">Lucy</span></header>
+          <p>What the team will build, by site and feature area. Each item has a goal, scope, open questions, and sources, and moves from idea to draft to ready to ticketed.</p>
+          <div class="chips"><span class="chip">W-### items</span><span class="chip">Goal</span><span class="chip">Scope</span><span class="chip">Open questions</span><span class="chip">Sources</span></div>
+          <dl><dt>Lands in</dt><dd><code>docs/work/</code></dd><dt>Your part</dt><dd class="you">Mark items ready</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Ticket plan and tickets</h4><span class="owner pepper">Pepper</span></header>
+          <p>A whole batch of tickets drafted as one plan, to Lullabot's ticket standard, then created in Jira or GitHub with links and parents in place.</p>
+          <div class="chips"><span class="chip">Titles</span><span class="chip">Descriptions</span><span class="chip">Acceptance criteria</span><span class="chip">Labels</span><span class="chip">Links</span></div>
+          <dl><dt>Lands in</dt><dd><code>docs/work/tickets/</code>, then your tracker</dd><dt>Your part</dt><dd class="you">Approve the plan, settle its questions</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Board reports and hygiene audits</h4><span class="owner pepper">Pepper</span></header>
+          <p>Sprint status, plus what's stale, unowned, unclear, or mislabeled on the board, with the fewest changes that fix it.</p>
+          <div class="chips"><span class="chip">Sprint status</span><span class="chip">Stale</span><span class="chip">Unowned</span><span class="chip">Unclear</span></div>
+          <dl><dt>Lands in</dt><dd>A report in chat, ranked, with ticket keys and links</dd><dt>Your part</dt><dd class="you">Approve the fixes</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Architecture decision records</h4><span class="owner lobot">Lobot</span></header>
+          <p>Hard technical choices written up for the technical lead, who answers, reviews, and merges them.</p>
+          <div class="chips"><span class="chip">Decision</span><span class="chip">Alternatives considered</span><span class="chip">Consequences</span><span class="chip">Who was involved</span></div>
+          <dl><dt>Lands in</dt><dd>A draft pull request in the code repository</dd><dt>Your part</dt><dd class="you">Start one when a choice is made</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Jira site audit</h4><span class="owner pepper">Pepper</span></header>
+          <p>A workbook of every space, workflow, status, and work type, showing what uses what, so cleanup is a set of decisions instead of an afternoon of clicking.</p>
+          <div class="chips"><span class="chip">Keep</span><span class="chip">Unsure</span><span class="chip">Removable</span></div>
+          <dl><dt>Lands in</dt><dd>An .xlsx to open in Google Sheets</dd><dt>Your part</dt><dd class="you">Decide what to keep</dd></dl>
+        </article>
+      </div>
+    </div>
+    <div class="dlv-group">
+      <header><h3>Where you review it all</h3><p>One place to see what needs you, outside the chat.</p></header>
+      <div class="dlvs">
+        <article class="dlv">
+          <header><h4>Review desk</h4><span class="owner lobot">Lobot</span></header>
+          <p>Your dashboard: a tab for Lucy's proposals, your questions, product questions, your tasks, what others owe, risks, pending decisions, and checklists. It opens after each transcript or file is processed.</p>
+          <dl><dt>Lands in</dt><dd>A private page in Claude you can share</dd><dt>Your part</dt><dd class="you">Approve, answer, and edit in place</dd></dl>
+        </article>
+        <article class="dlv">
+          <header><h4>Tracker pages</h4><span class="owner lobot">Lobot</span></header>
+          <p>Working pages for the risks, decisions, RACI, questions, and kickoff checklist. Change something on a page and it's filed back into the Project Brain.</p>
+          <dl><dt>Lands in</dt><dd>Private pages in Claude you can share</dd><dt>Your part</dt><dd class="you">Work there instead of in files</dd></dl>
+        </article>
+      </div>
+    </div>
   </div>
 </section>
 
