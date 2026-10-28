@@ -14,6 +14,7 @@ Never put a client's name, people, project details, internal URLs, or credential
 | `scaffold/` | New projects only, once | Existing projects never receive changes here. If they need one, say in the commit body what they have to do by hand. `{{PROJECT_NAME}}`, `{{PROJECT_KEY}}`, and `{{DATE}}` are filled in on install. `gitignore` has no dot because npm drops `.gitignore`; the tool restores it. |
 | `tools/lobot.js` | Runs through `npx`; not copied into projects | No dependencies. |
 | `tools/migrations.json` | Read by the tool's `status`, `update`, and `migrate` | Steps a breaking change needs in a project's own files (see "Breaking" below). |
+| `docs/` | The team, as the GitHub Pages site (https://lullabot.github.io/lobot/) | Not part of the package. `docs/index.html` is kept by hand; see "Keep the map current". |
 | Everything else | Nobody | Repository docs, release config, this file. |
 
 ## Rules
@@ -23,7 +24,7 @@ Never put a client's name, people, project details, internal URLs, or credential
 - **One skill per folder:** `engine/skills/<name>/SKILL.md`, with `name` matching the folder and a `description` that says when to use it. Skills that keep a record file ship a validator and are tested against an empty file.
 - **Agent names and personalities follow one pattern.** A named agent gets an alliterative name plus a role that fits ("Lucy the Librarian", "Pepper the Process Wrangler"), so it's easy to remember who does what. Its `personality.md` follows Lobot's format: a namesake from film, TV, or books, an inspiration table (what they take, what they leave behind), and the traits left behind become hard limits.
 - **Everything about an agent lives under `engine/agents/`:** the definition is `<name>.md`, supporting files go in `<name>/`. Only the definition is copied to `.claude/agents/`, so no other `.md` file may sit directly in `engine/agents/`. Project settings for an agent belong in `scaffold/.ai/project/agents/<name>/`.
-- **Keep the map current.** Adding, renaming, or removing a rule, skill, agent, or record file means updating `engine/lobot.md` (directory map, working rules), `engine/delegation.md` (roster) when an agent changes, and `README.md` if the commands or layout changed.
+- **Keep the map current.** Adding, renaming, or removing a rule, skill, agent, or record file means updating `engine/lobot.md` (directory map, working rules), `engine/delegation.md` (roster) when an agent changes, and `README.md` if the commands or layout changed. Any change that alters what a PM sees or can do (a skill, agent, ground rule, command, or setup step) also updates the Pages site, `docs/index.html`, in the same pull request, so the page and `main` never disagree. Every skill needs a card with its folder name in `data-skill` and every agent one with its name in `data-agent`; `node .github/scripts/check-pages.js` checks that, and runs on every pull request. The version and "What's new" load live from GitHub releases, so a release needs no page edit.
 - **Rules are refined, not accumulated.** Edit an instruction in place; don't append a contradiction.
 
 ## Commits and releases

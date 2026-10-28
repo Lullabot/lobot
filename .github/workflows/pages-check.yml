@@ -1,0 +1,22 @@
+name: Pages check
+
+# Makes sure the GitHub Pages site (docs/index.html) has a card for every
+# skill and agent in engine/. See "Keep the map current" in CLAUDE.md.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node .github/scripts/check-pages.js

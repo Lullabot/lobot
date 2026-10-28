@@ -8,6 +8,8 @@ Each project gets its own **Project Brain**: one folder that holds Lobot plus ev
 
 Lobot works with Claude Code, Claude Cowork, and any other assistant that can read a folder.
 
+**See everything Lobot includes at [lullabot.github.io/lobot](https://lullabot.github.io/lobot/).**
+
 ## What is included?
 
 ### Skills
@@ -187,6 +189,7 @@ Most improvements are discovered while working on a real project. The goal is to
 | `scaffold/` | Starting files for a new Project Brain: `CLAUDE.md`, `README.md`, empty records. | Copied once on install; updates never touch them. |
 | `tools/lobot.js` | The command-line tool behind `npx`. No dependencies. | Not copied. |
 | `CLAUDE.md` | The rules for changing Lobot, for people and assistants alike. | Not copied. |
+| `docs/` | The [GitHub Pages site](https://lullabot.github.io/lobot/) that shows the team what Lobot includes. | Not copied. |
 
 ### From a project, with your assistant
 
