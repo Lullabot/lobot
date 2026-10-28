@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.24.3](https://github.com/Lullabot/lobot/compare/v0.24.2...v0.24.3) (2026-10-28)
+
+### Wording and documentation
+
+* **engine:** Jira skill explains who is billed when people join or leave a project ([6a143ac](https://github.com/Lullabot/lobot/commit/6a143acff2eb7a8ae9eaf90274759427567c344a))
+
 ## [0.24.2](https://github.com/Lullabot/lobot/compare/v0.24.1...v0.24.2) (2026-10-27)
 
 ### Fixed
