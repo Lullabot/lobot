@@ -3,7 +3,8 @@
 # Each key is also the source key used in a project's docs/sources.yaml, so the same thing has the same name on every project.
 #
 # Fields:
-#   name       the name to give it when Lucy creates it
+#   name       the name to give it when Lucy creates it. <KEY> is the project key from the root CLAUDE.md
+#              (e.g. EXU): files start with it, not the project's full name, so browser tabs tell them apart.
 #   look_for   other names it often goes by, to match an existing folder or file
 #   parent     where it belongs: root (the top level of the shared drive, or of each scope's root)
 #              or the key of the layout folder it sits in. No parent: anywhere in the drive.
@@ -38,7 +39,7 @@ items:
     purpose: reference
     why: "Discovery, strategy, and design work: research, IA, wireframes, designs."
   kickoff-checklist:
-    name: "Kickoff tasks: <project name>"
+    name: "<KEY> Kickoff tasks"
     look_for: ["Kickoff tasks", "Kickoff checklist", "Project Kickoff Checklist", "Project initiation"]
     parent: root
     kind: file
@@ -46,7 +47,17 @@ items:
     purpose: deliverable
     record: docs/kickoff-checklist.md
     edit: ask
-    why: "Lullabot's new-project checklist and kickoff agendas. Copied from the template and named for the project so searches tell them apart."
+    why: "Lullabot's new-project checklist and kickoff agendas. Copied from the template and named with the project key so searches and browser tabs tell them apart."
+  raci:
+    name: "<KEY> Roster & RACI"
+    look_for: ["People, Roles, and Responsibilities", "Contacts, Roles, and RACI", "Team Directory & RACI", "RACI", "RASCI", "Roster", "Team directory"]
+    parent: root
+    kind: file
+    file_type: spreadsheet
+    purpose: deliverable
+    record: docs/raci.yaml
+    edit: ask
+    why: "Who's who and who owns what: the team roster (docs/people.yaml) and the RACI matrix (docs/raci.yaml), plus the team's onboarding access. The Project Brain files stay the record."
   contracts:
     name: "Contracts"
     look_for: ["Sales Docs", "Sales", "SOW", "Statement of work", "MSA", "Legal", "Agreements"]
@@ -73,14 +84,35 @@ items:
     record: docs/meetings/
     why: "Shareable copies of reviewed meeting notes, filed next to the transcripts they came from, so the team can read them without the Project Brain."
   risk-register:
-    name: "Risk register"
-    look_for: ["Risks", "RAID log", "Risk log"]
+    name: "<KEY> Risk Log"
+    look_for: ["Risk log", "Risk register", "Risks", "RAID log"]
+    parent: project-management
     kind: file
     file_type: spreadsheet
     purpose: deliverable
     record: docs/risks.yaml
     edit: ask
     why: "The risk list the client sees. docs/risks.yaml stays the record of truth."
+  decision-log:
+    name: "<KEY> Decision Log"
+    look_for: ["Decision log", "Decisions", "Decision register"]
+    parent: project-management
+    kind: file
+    file_type: spreadsheet
+    purpose: deliverable
+    record: docs/decisions.yaml
+    edit: ask
+    why: "The decision log the team works from. docs/decisions.yaml stays the record of truth."
+  questions-log:
+    name: "<KEY> Questions Log"
+    look_for: ["Questions log", "Questions", "Open questions", "Q&A log"]
+    parent: project-management
+    kind: file
+    file_type: spreadsheet
+    purpose: deliverable
+    record: docs/questions.yaml
+    edit: ask
+    why: "The open questions and their answers, where the PM and team can work through them. docs/questions.yaml stays the record of truth."
   status-reports:
     name: "Status reports"
     look_for: ["Status", "Weekly updates", "Weekly reports", "Reports"]
