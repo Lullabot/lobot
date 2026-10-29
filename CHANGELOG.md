@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.28.0](https://github.com/Lullabot/lobot/compare/v0.27.0...v0.28.0) (2026-10-29)
+
+### Added
+
+* **engine:** the risk, decision, and questions logs share one "Maintenance Logs" workbook ([#23](https://github.com/Lullabot/lobot/issues/23)) ([c4f26dd](https://github.com/Lullabot/lobot/commit/c4f26ddff5a6671a98f3e3d4af97e35902ed6149))
+
 ## [0.27.0](https://github.com/Lullabot/lobot/compare/v0.26.0...v0.27.0) (2026-10-29)
 
 ### Added
