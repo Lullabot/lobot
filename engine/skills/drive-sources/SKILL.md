@@ -162,7 +162,7 @@ Run this when a project is set up, when `docs/sources.yaml` has no `shared_drive
 2. **If the PM says yes, scan the top level** of the shared drive, or of each scope's root. Search for files whose parent is the root's ID, metadata only (no content snippets), following page tokens until the list is complete. Shared drives are usually small; if the top level has more than about 50 items, report the count and ask which folders to look in. Look one level deeper only into a folder the PM points to, or one that matches a layout folder other items name as their `parent` (e.g. Project Management), or whose name matches a layout item's `look_for`.
 3. **Match it against `layout.yaml`.** For each standard item not yet in `sources` or `not_used`, compare names, case-insensitively, against its `name` and `look_for`, and check that the kind matches (folder or file). An item with a `parent` is expected there (`root` is the top level); a match somewhere else is still a match, but say where it is. Then report back in three short lists:
    - **Likely matches to confirm:** "Is *Meet Recordings* the meeting-transcripts folder?"
-   - **Missing:** standard items with no match. For each, offer to create it with the layout's `name` (a folder, or a blank Doc or Sheet per `file_type`) in its `parent` (at the root for `root`, inside the parent folder otherwise, creating that first if it's missing too; at the root when there is no `parent`), to record where it actually lives if it's elsewhere, or to mark it not used.
+   - **Missing:** standard items with no match. For each, offer to create it with the layout's `name`, with `<KEY>` replaced by the project key from the root `CLAUDE.md` (a folder, or a blank Doc or Sheet per `file_type`) in its `parent` (at the root for `root`, inside the parent folder otherwise, creating that first if it's missing too; at the root when there is no `parent`), to record where it actually lives if it's elsewhere, or to mark it not used.
    - **Unrecognized:** top-level items that match nothing. Ask whether any should be mapped, and what each is for.
 4. **If the PM says no to the scan, ask instead.** List the standard items not yet accounted for, with each one's `why`, and ask where each lives (a link), whether it should be created, or whether the project doesn't use it. Record what the PM answers; ask about the rest another time rather than repeating the whole list.
 5. **Record the answers.** Lucy writes the entries (keys and fields from `layout.yaml`, plus `added`, with `@<scope>` when the project has scopes), the `shared_drive` link (or each scope's) if it's new, and any `not_used` reasons, then runs the validator. For a transcript folder, ask which date to start from (`since`).
@@ -208,7 +208,7 @@ Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the k
    ```yaml
    ---
    drive_url: https://docs.google.com/spreadsheets/d/1QrS.../edit
-   title: "Kickoff tasks: Project name"
+   title: "EXU Kickoff tasks"
    tab: "New Project Checklist"
    modified: "2026-10-09T19:43:26Z"   # Sheet modifiedTime when last synced
    synced: 2026-10-09
