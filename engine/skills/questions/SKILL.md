@@ -1,6 +1,6 @@
 ---
 name: questions
-description: Keep the questions log (docs/questions.yaml), the list of outstanding questions, in two kinds kept apart: project questions only the PM can answer (unknown names, unclear owners, scope, schedule, process, and contract questions, values to set), and product questions the team needs a stakeholder to answer (content, copy, design, features). Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
+description: Keep the questions log (docs/questions.yaml), the list of outstanding questions, in four kinds kept apart: project questions only the PM can answer (unclear owners, scope, schedule, process, and contract questions, values to set), product questions the team needs a stakeholder to answer (content, copy, design, features), technical questions for developers or client IT (data feeds, integrations, hosting), and housekeeping checks for the Project Brain (who someone is, a mistranscribed term), each with who answers it, its status, and when it's needed by. Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
 ---
 
 # Questions log
@@ -20,10 +20,11 @@ The same work turns up product questions the team needs answered by the product 
 
 If `docs/questions.yaml` doesn't exist, create it from the format below with no entries. A project that still has the old markdown table (`docs/questions.md`) converts it with the Lobot tool's `migrate` (lobot skill), with the PM's approval.
 
+
 ## Format
 
 ```yaml
-# Questions log: project questions for the PM and product questions for stakeholders (about: project | product), and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.
+# Questions log: questions for the PM (about: project | housekeeping) and for others (about: product | technical), with who answers each, and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.
 # Managed by the questions skill: .ai/general/skills/questions/SKILL.md
 # Validate after every edit: python3 .ai/general/skills/questions/validate.py docs/questions.yaml
 
@@ -57,13 +58,14 @@ Q-003:
 |---|---|---|
 | key | Yes | `Q-` plus three digits, never reused. The file is ordered by ID. |
 | `question` | Yes | One question, answerable on its own: say what is missing and where the answer will go. Quoted. |
-| `about` | No | `project` (the default when left out): a question for the PM. `product`: a question the team needs a stakeholder to answer (see "Two kinds of question"). |
-| `ask` | No | For a product question: who answers it, as a people key or a role from the RACI. Quoted. |
+| `about` | No | `project` (the default when left out), `product`, `technical`, or `housekeeping` (see "Kinds of question"). |
+| `ask` | When not the PM's | Who answers it: people keys, comma-separated, or a role from the RACI (see "Who answers and when"). Quoted. |
 | `link` | No | For a product question: the ticket where it's logged. Quoted. |
 | `scope` | Yes | `all`, or a site or program key when the project declares scopes (the same keys as `docs/raci.yaml` and `docs/sources.yaml`). |
 | `raised` | Yes | The date it was logged. |
 | `source` | Yes | The file, meeting, or record that raised it. Quoted. |
-| `status` | Yes | `open` or `answered`. |
+| `status` | Yes | `open`, `asked`, `partly-answered`, or `answered` (see "Who answers and when"). |
+| `needed_by` | No | The date the answer is needed by, while unanswered. |
 | `answer` | When answered | The answer, with who gave it and when. A partial answer can sit on an open question. Quoted. |
 
 Quote every text field: unquoted text containing `: ` or starting with a special character breaks YAML.
@@ -74,12 +76,22 @@ Quote every text field: unquoted text containing `: ` or starting with a special
 - **The assistant** adds questions that come up in other work, puts open ones to the PM when asked, and relays answers to Lucy.
 - **The PM** answers project questions, and passes on answers to product questions (or points to where they were given, such as the ticket). An answer is only recorded from the PM (or a source the PM points to); never from silence or inference.
 
-## Two kinds of question
+## Kinds of question
 
 The log feeds the PM's review desk, which shows each kind on its own tab. A question in the wrong kind buries the ones the PM has to answer.
 
 - **Project** (`about: project`, or left out): questions only the PM can answer. Delivery, process, scope, schedule, the contract, who people are, and who does what (including who should answer a question nobody owns yet).
 - **Product** (`about: product`): questions the team needs answered about the product (content, copy, assets, design decisions, form fields, features). They belong to the product owner or designer (check the RACI); set `ask` to who answers it. If the question is already logged on a ticket, set `link` to it and keep the discussion there. If it isn't logged anywhere, list it in the report so the assistant can offer to raise it on the right ticket. If nobody owns it, also add a project question: who should answer it.
+- **Technical** (`about: technical`): questions for the developers or the client's technical people: data feeds, integrations, hosting, security reviews, what a system can output. Set `ask` to who answers it; `link` works as for product questions.
+- **Housekeeping** (`about: housekeeping`): checks that keep the Project Brain accurate rather than move the project: who someone in a transcript is, a surname or title, a term that may be mistranscribed, an unexplained glossary term. The PM usually answers these in a batch.
+
+The review desk shows product and technical questions on "Questions for others" and project and housekeeping questions on the PM's tab.
+
+## Who answers and when
+
+- **`ask`**: who answers it, as people keys (comma-separated when it takes more than one) or a RACI role. Set it on every question that isn't the PM's own; on a project or housekeeping question it can be left out (the PM).
+- **`needed_by`**: the date the answer is needed before it blocks work or a milestone, when there is one (a design review, a build that depends on it). Remove it once the question is answered.
+- **`status`**: `open` (logged, not yet put to whoever answers it), `asked` (put to them, waiting), `partly-answered` (some answer is in `answer`; say what is still open), `answered`. Move a question to `asked` only when the PM says it was asked, or a source shows it.
 
 ## Adding a question
 
@@ -92,7 +104,7 @@ Meeting notes keep their own "Open questions" section for what was raised in the
 
 ## Answering
 
-1. Record the answer in the entry and set `answered`.
+1. Record the answer in the entry and set `answered` (or `partly-answered`, saying in the answer what is still open). Remove `needed_by`.
 2. File what the answer changes, in the same pass, through that record's skill (a surname into `docs/people.yaml`, a backup into `docs/raci.yaml`, a severity into `docs/risks.yaml`), and remove any `(unverified)` marker the answer resolves.
 3. If an answer is a business decision, run it through the decision-log skill's entry test; if it is a risk, it goes in the risk tracker.
 4. Run the validator:

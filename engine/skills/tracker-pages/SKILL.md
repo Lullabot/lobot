@@ -24,7 +24,7 @@ Templates are in `templates/` in this skill's folder. Each has a `CONFIG` object
 | `raci.html` | `docs/raci.yaml` (people from `docs/people.yaml`) | `roles`, `rows`, `meta/info`, `requests` | View the matrix (Responsibility, then R, A, C, I with the people in each cell, grouped by area) per scope, or one page per site; request a change (no direct edits: RACI changes need a source) |
 | `questions.html` | `docs/questions.yaml` | `questions/<Q-###>` | Filter project and product questions; answer, reopen, add a question |
 | `checklist.html` | `docs/kickoff-checklist[-<scope>].md` (drive-sources skill, "Mirror a Sheet locally") | `kickoff/<scope or all>/tasks` | Set status and note; mark rows copied into the Sheet |
-| `review.html` | The review desk: several records, one tab each (see "Review desk") | `review`, `questions`, `tasks`, `risks`, `decisions`, `checklist`, `meta/info` | Approve, change, or drop Lucy's proposals; answer questions (yours and the product's, on separate tabs); set task status and dates; set risk severity, status, next step; settle pending decisions; set checklist status; add a question, task, or risk |
+| `review.html` | The review desk: several records, one tab each (see "Review desk") | `review`, `questions`, `tasks`, `risks`, `decisions`, `checklist`, `meta/info` | Approve, change, or drop Lucy's proposals; answer questions (yours, and those for others, on separate tabs); set task status and dates; set risk severity, status, next step; settle pending decisions; set checklist status; add a question, task, or risk |
 
 ## Publish a page
 
@@ -53,7 +53,7 @@ The review desk is the PM's one stop for everything that needs them, and what "t
 | Tab | Seeded from | What goes in |
 |---|---|---|
 | Lucy's proposals | The review list of each meeting notes file still `status: draft` (meeting-notes skill, "Review"), and any other proposal Lucy returned for approval | One document per item: `id` (the notes file name and the item number, e.g. `2026-10-14-site-walkthrough-3`), `kind` (Task, People, RACI, Glossary, Dossier, Work breakdown, Decision, Risk, ADR), `item` (the proposal in full, with its reason), `source` (the notes file), `ref` (timestamp), `scope`, `decision` and `note` (blank); plus the structured fields below |
-| Questions for you, Product questions | `docs/questions.yaml` (questions skill) | Every entry, as on the questions page, with `about` (`project` when the record leaves it out), and `ask` and `link` for a product question |
+| Questions for you, Questions for others | `docs/questions.yaml` (questions skill) | Every entry, as on the questions page, with `about` (`project` when the record leaves it out), `ask`, `link`, and `neededBy`. Project and housekeeping questions go on "for you"; product and technical ones on "for others" |
 | My tasks, Others owe | `docs/tasks.yaml` (tasks skill) | Every entry, with `mine: true` when the PM is the owner, plus `due`, `status`, `link`, and a blank `note` |
 | Risks | `docs/risks.yaml` | Every entry, as on the risk page |
 | Decisions | `docs/decisions.yaml` | Pending entries only, with `driver`, `approver`, `neededBy` |
