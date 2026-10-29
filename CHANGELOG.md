@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.30.0](https://github.com/Lullabot/lobot/compare/v0.29.0...v0.30.0) (2026-10-29)
+
+### Added
+
+* **engine:** the task list holds only the PM's own one-off actions, each with a short summary and an optional description ([#25](https://github.com/Lullabot/lobot/issues/25)) ([b178a23](https://github.com/Lullabot/lobot/commit/b178a232f259ec29fe407c56490aa1a587319873))
+
 ## [0.29.0](https://github.com/Lullabot/lobot/compare/v0.28.0...v0.29.0) (2026-10-29)
 
 ### Added
