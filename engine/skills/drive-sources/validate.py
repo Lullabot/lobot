@@ -25,7 +25,7 @@ SCOPED_KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*(@[a-z0-9]+(-[a-z0-9]+)*)?$"
 KINDS = {"folder", "file"}
 PURPOSES = {"transcripts", "reference", "deliverable", "output"}
 SOURCE_FIELDS = {"kind", "url", "purpose", "handler", "copy_to", "since", "subfolders",
-                 "record", "tabs", "filed_by", "shared_with_client", "edit", "added", "notes"}
+                 "record", "tabs", "holds_record", "filed_by", "shared_with_client", "edit", "added", "notes"}
 EDIT_LEVELS = {"locked", "ask", "ok"}
 PROCESSED_REQUIRED = ["id", "title", "source", "modified", "processed", "result"]
 FOLDER_URL = re.compile(r"^https://drive\.google\.com/drive/(?:u/\d+/)?folders/([A-Za-z0-9_-]{10,})")
@@ -269,6 +269,13 @@ def check_sources(sources, layout, scopes, errors, warnings):
             elif not str(s.get("record", "")).startswith("docs/"):
                 errors.append(f"{where} an output folder needs record (the docs/ folder its copies come from) "
                               "or filed_by (the skill whose deliverables live only here)")
+        if "holds_record" in s:
+            if s["holds_record"] is not True:
+                errors.append(f"{where} holds_record must be true, or left out")
+            elif purpose != "deliverable" or s.get("kind") != "file":
+                errors.append(f"{where} holds_record only applies to a deliverable file (a Sheet that holds a record)")
+            elif s.get("edit") not in ("ask", "ok"):
+                errors.append(f"{where} a Sheet that holds a record needs edit: ask or ok")
         if purpose not in ("deliverable", "output") and ("record" in s or "shared_with_client" in s):
             warnings.append(f"{where} record and shared_with_client only apply to deliverables and output folders")
         if purpose != "output" and "filed_by" in s:

@@ -11,8 +11,8 @@ Every file has one home, by what it is. Use the first row that fits.
 | A person, their role, time zone, or a username/ID | `docs/people.yaml` | people skill |
 | Who is responsible for or approves an area of work | `docs/raci.yaml` | raci skill |
 | A term with a meaning specific to the project | `docs/glossary.yaml` | glossary skill |
-| A project decision, made or pending | `docs/decisions.yaml` (architecture decisions are ADRs in the code repo) | decision-log skill, adr skill |
-| A risk, an open question (for the PM, or about the product), an action item | `docs/risks.yaml`, `docs/questions.yaml`, `docs/tasks.yaml` | risks, questions, tasks skills |
+| A project decision, made or pending | `docs/decisions.yaml`, or its Sheets when it lives there (`.ai/general/records-in-sheets.md`); architecture decisions are ADRs in the code repo | decision-log skill, adr skill |
+| A risk, an open question (for the PM, or about the product), an action item | `docs/risks.yaml`, `docs/questions.yaml` (or their Sheets when they live there), `docs/tasks.yaml` | risks, questions, tasks skills |
 | Where things live in the project's shared Drive | `docs/sources.yaml` | drive-sources skill |
 | What is true now about the project or a site | `docs/overview/` (the dossier) | dossier skill |
 | What the team will build, before it becomes tickets | `docs/work/<site>/` | work-breakdown skill |

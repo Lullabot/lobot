@@ -21,6 +21,8 @@ The same work turns up product questions the team needs answered by the product 
 If `docs/questions.yaml` doesn't exist, create it from the format below with no entries. A project that still has the old markdown table (`docs/questions.md`) converts it with the Lobot tool's `migrate` (lobot skill), with the PM's approval.
 
 
+**When the record lives in Sheets.** If `docs/sources.yaml` maps a Sheet for `docs/questions.yaml` with `holds_record: true`, the Sheets are the record and the file holds no entries: follow `.ai/general/records-in-sheets.md` wherever this skill reads or writes the file.
+
 ## Format
 
 ```yaml
