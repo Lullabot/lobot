@@ -13,7 +13,7 @@ except ImportError:
     sys.exit("PyYAML is required: pip install pyyaml")
 
 REQUIRED = ["name", "org", "role", "status"]
-ALLOWED = set(REQUIRED) | {"aka", "tz", "ids", "owns", "notes"}
+ALLOWED = set(REQUIRED) | {"aka", "title", "tz", "ids", "owns", "notes"}
 KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 STATUS_RE = re.compile(r"^(active|unknown|former \(\d{4}-\d{2}-\d{2}\))$")
 
