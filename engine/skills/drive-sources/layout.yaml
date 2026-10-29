@@ -14,6 +14,7 @@
 #   edit       locked | ask | ok: the default edit level (SKILL.md, "Edit levels"). No edit: read-only until the PM sets one.
 #              A project can't loosen locked.
 #   handler, copy_to, record, filed_by, edit: copied into the project's entry (see SKILL.md)
+#   sales_folder  true: normally the paired sales folder, reached through a shortcut in the project folder (SKILL.md, "The paired sales folder")
 #   why        one line Lucy can use to explain it to the PM
 items:
   # Every project's root holds at least these three folders.
@@ -64,7 +65,8 @@ items:
     kind: folder
     purpose: reference
     edit: locked
-    why: "Signed SOWs, change orders, and agreements. Read before scope questions. Legal documents: never edited."
+    sales_folder: true
+    why: "Signed SOWs, change orders, and agreements. Read before scope questions. Legal documents: never edited. Usually the Sales team's own folder for the project, kept outside the project folder and linked into it with a shortcut."
   meeting-transcripts:
     name: "Meeting transcripts"
     look_for: ["Meet Recordings", "Transcripts", "Recordings"]
