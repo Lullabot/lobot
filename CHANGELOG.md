@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.29.0](https://github.com/Lullabot/lobot/compare/v0.28.0...v0.29.0) (2026-10-29)
+
+### Added
+
+* **engine:** questions come in four kinds, with who answers each and when the answer is needed ([#24](https://github.com/Lullabot/lobot/issues/24)) ([6300fa8](https://github.com/Lullabot/lobot/commit/6300fa82c7b8ceb5e5405569f8464330f11f13e2))
+
 ## [0.28.0](https://github.com/Lullabot/lobot/compare/v0.27.0...v0.28.0) (2026-10-29)
 
 ### Added
