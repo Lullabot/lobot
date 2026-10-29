@@ -50,6 +50,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 .s-scope,.s-kind{color:var(--accent);background:var(--accent-soft)}
 .wnote{margin:-10px 0 0;padding:0 4px;font-size:13px;color:var(--muted)}
 .notice{background:var(--sync-bg);color:var(--sync);border-radius:8px;padding:10px 12px;font-size:14px}
+.sheets{background:var(--accent-soft);color:var(--fg);border-radius:8px;padding:10px 12px;font-size:14px}
 details.waiting{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
 details.waiting>summary{cursor:pointer;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .wlist{display:grid;gap:6px;margin-top:10px;font-size:14px}
@@ -270,6 +271,11 @@ function render(){
   const all = rows(t).filter(inScope);
   const open = sortFor(t, all.filter(t.attention)), closed = sortFor(t, all.filter(d => !t.attention(d)));
   const kids = [el("p", {className: "lead", textContent: t.lead})];
+  // A record that lives in Google Sheets (records-in-sheets.md) has no items here, only links to its Sheets.
+  const sheets = info && info.sheets && info.sheets[t.coll];
+  if (sheets && sheets.length) kids.push(el("div", {className: "sheets"}, [
+    el("span", {textContent: "These now live in Google Sheets: "}),
+    ...sheets.flatMap((x, i) => [i ? ", " : null, el("a", {href: x.url, target: "_blank", rel: "noopener", textContent: x.title})].filter(Boolean)), "."]));
   if (!loaded) kids.push(el("p", {className: "empty", textContent: "Loading…"}));
   else {
     if (t.coll === "checklist" && HAS_SCOPES && scopeF === "any") {

@@ -14,6 +14,9 @@ Projects relitigate decisions nobody wrote down. The decision log is the single 
 - Log: `docs/decisions.yaml`
 - Validator and reports: `validate.py` in this skill's folder
 
+
+**When the record lives in Sheets.** If `docs/sources.yaml` maps a Sheet for `docs/decisions.yaml` with `holds_record: true`, the Sheets are the record and the file holds no entries: follow `.ai/general/records-in-sheets.md` wherever this skill reads or writes the file.
+
 ## When to use
 
 **Read** (look up) when:

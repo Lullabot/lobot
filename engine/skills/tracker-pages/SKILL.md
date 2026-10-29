@@ -66,6 +66,8 @@ The review desk is the PM's one stop for everything that needs them, and what "t
 - `refs`: every record ID the proposal mentions (tasks, questions, risks, decisions, work items, …) mapped to a short label of what that record says, taken from the record file. The page shows each ID with a tooltip; an ID missing from `refs` falls back to a record loaded on the page, if any.
 Write them from the item and the records only; they add no facts of their own. A document without them shows `item` as before.
 
+**Records in Sheets.** When a record lives in Google Sheets (`holds_record: true`, `.ai/general/records-in-sheets.md`), its tabs stay but its collection is emptied, so the tabs show 0, and `meta/info` gets `sheets`: for each collection (`questions`, `risks`, `decisions`) a list of `{title, url}` for the Sheets that hold it. The page shows those links on the tab. Its record page (risks, decisions, or questions page) is retired.
+
 Every document gets `synced` for its editable fields (`decision`, `note` for a proposal; `status`, `due`, `note` for a task; `status`, `approver` for a decision; `status`, `note` for a checklist row), like the record pages. `meta/info` holds `processed` (a list of `{title, file}` for what was just processed) and `at` (the date), shown at the top of the page.
 
 **After processing a new file or transcript** (meeting notes, a Drive source, a document Lucy filed):

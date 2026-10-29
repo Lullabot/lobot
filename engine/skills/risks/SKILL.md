@@ -18,6 +18,9 @@ Risks come up in passing: a launch date over the holidays, a data feed nobody ha
 
 If `docs/risks.yaml` doesn't exist, create it from the format below with no entries. A project that still has the old markdown table (`docs/risks.md`), or entries whose `risk` is a long text from an earlier version, converts them with the Lobot tool's `migrate` (lobot skill), with the PM's approval; dated additions in the old risk text become updates, and the rest is split into a short `risk` and a `description`. The short version is taken from the start of each risk, so reread them with the PM and reword any that read badly.
 
+
+**When the record lives in Sheets.** If `docs/sources.yaml` maps a Sheet for `docs/risks.yaml` with `holds_record: true`, the Sheets are the record and the file holds no entries: follow `.ai/general/records-in-sheets.md` wherever this skill reads or writes the file.
+
 ## Format
 
 ```yaml
