@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.25.0](https://github.com/Lullabot/lobot/compare/v0.24.3...v0.25.0) (2026-10-29)
+
+### Added
+
+* **engine:** Drive Sheets are named with the project key, and the logs live in Project Management ([#20](https://github.com/Lullabot/lobot/issues/20)) ([a340e23](https://github.com/Lullabot/lobot/commit/a340e23dc61230efab574f80a736671f1570a20c))
+
+### Wording and documentation
+
+* add a GitHub Pages site that shows the team everything in Lobot ([#18](https://github.com/Lullabot/lobot/issues/18)) ([c11d93f](https://github.com/Lullabot/lobot/commit/c11d93f2f5922b2707a2cc591fb6ad86e02b3744))
+
 ## [0.24.3](https://github.com/Lullabot/lobot/compare/v0.24.2...v0.24.3) (2026-10-28)
 
 ### Wording and documentation
