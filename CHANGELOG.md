@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.27.0](https://github.com/Lullabot/lobot/compare/v0.26.0...v0.27.0) (2026-10-29)
+
+### Added
+
+* **engine:** Lucy finds the paired sales folder through its shortcut instead of looking for a Contracts folder ([#22](https://github.com/Lullabot/lobot/issues/22)) ([3e09147](https://github.com/Lullabot/lobot/commit/3e091470cf35449c824692e3eb61e90d70ecc870))
+
 ## [0.26.0](https://github.com/Lullabot/lobot/compare/v0.25.0...v0.26.0) (2026-10-29)
 
 ### Added
