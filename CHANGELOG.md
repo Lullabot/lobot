@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.0](https://github.com/Lullabot/lobot/compare/v0.30.0...v0.31.0) (2026-10-29)
+
+### Added
+
+* **engine:** the risk tracker, decision log, and questions log can live in Google Sheets instead of their docs/ files ([#26](https://github.com/Lullabot/lobot/issues/26)) ([2c38cd7](https://github.com/Lullabot/lobot/commit/2c38cd7c26eabefcabbb70b7fac9bb23b9c8ca37))
+
 ## [0.30.0](https://github.com/Lullabot/lobot/compare/v0.29.0...v0.30.0) (2026-10-29)
 
 ### Added
