@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.26.0](https://github.com/Lullabot/lobot/compare/v0.25.0...v0.26.0) (2026-10-29)
+
+### Added
+
+* **engine:** the Roster & RACI Sheet splits title from project role, leaves out phone numbers, and keeps extra detail in notes ([#21](https://github.com/Lullabot/lobot/issues/21)) ([fd53182](https://github.com/Lullabot/lobot/commit/fd53182a71a5ef174ab66b0273fdee14487f2e73))
+
 ## [0.25.0](https://github.com/Lullabot/lobot/compare/v0.24.3...v0.25.0) (2026-10-29)
 
 ### Added
