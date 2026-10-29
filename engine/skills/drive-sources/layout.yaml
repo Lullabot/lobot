@@ -13,6 +13,7 @@
 #   purpose    transcripts | reference | deliverable | output
 #   edit       locked | ask | ok: the default edit level (SKILL.md, "Edit levels"). No edit: read-only until the PM sets one.
 #              A project can't loosen locked.
+#   tabs       for a workbook that holds several records: the tab for each, in the same order as record
 #   handler, copy_to, record, filed_by, edit: copied into the project's entry (see SKILL.md)
 #   sales_folder  true: normally the paired sales folder, reached through a shortcut in the project folder (SKILL.md, "The paired sales folder")
 #   why        one line Lucy can use to explain it to the PM
@@ -85,36 +86,17 @@ items:
     purpose: output
     record: docs/meetings/
     why: "Shareable copies of reviewed meeting notes, filed next to the transcripts they came from, so the team can read them without the Project Brain."
-  risk-register:
-    name: "<KEY> Risk Log"
-    look_for: ["Risk log", "Risk register", "Risks", "RAID log"]
+  maintenance-logs:
+    name: "<KEY> Maintenance Logs"
+    look_for: ["Maintenance logs", "RAID log", "Risk log", "Risk register", "Decision log", "Questions log", "Project logs"]
     parent: project-management
     kind: file
     file_type: spreadsheet
     purpose: deliverable
-    record: docs/risks.yaml
+    record: [docs/risks.yaml, docs/decisions.yaml, docs/questions.yaml]
+    tabs: ["Risks", "Decisions", "Questions"]
     edit: ask
-    why: "The risk list the client sees. docs/risks.yaml stays the record of truth."
-  decision-log:
-    name: "<KEY> Decision Log"
-    look_for: ["Decision log", "Decisions", "Decision register"]
-    parent: project-management
-    kind: file
-    file_type: spreadsheet
-    purpose: deliverable
-    record: docs/decisions.yaml
-    edit: ask
-    why: "The decision log the team works from. docs/decisions.yaml stays the record of truth."
-  questions-log:
-    name: "<KEY> Questions Log"
-    look_for: ["Questions log", "Questions", "Open questions", "Q&A log"]
-    parent: project-management
-    kind: file
-    file_type: spreadsheet
-    purpose: deliverable
-    record: docs/questions.yaml
-    edit: ask
-    why: "The open questions and their answers, where the PM and team can work through them. docs/questions.yaml stays the record of truth."
+    why: "The risk, decision, and questions logs in one workbook, one tab each, so the PM reviews them together and entries can point at each other. The docs/ files stay the record of truth unless the project moves the records into the Sheet."
   status-reports:
     name: "Status reports"
     look_for: ["Status", "Weekly updates", "Weekly reports", "Reports"]

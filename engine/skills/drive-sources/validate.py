@@ -25,7 +25,7 @@ SCOPED_KEY_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*(@[a-z0-9]+(-[a-z0-9]+)*)?$"
 KINDS = {"folder", "file"}
 PURPOSES = {"transcripts", "reference", "deliverable", "output"}
 SOURCE_FIELDS = {"kind", "url", "purpose", "handler", "copy_to", "since", "subfolders",
-                 "record", "filed_by", "shared_with_client", "edit", "added", "notes"}
+                 "record", "tabs", "filed_by", "shared_with_client", "edit", "added", "notes"}
 EDIT_LEVELS = {"locked", "ask", "ok"}
 PROCESSED_REQUIRED = ["id", "title", "source", "modified", "processed", "result"]
 FOLDER_URL = re.compile(r"^https://drive\.google\.com/drive/(?:u/\d+/)?folders/([A-Za-z0-9_-]{10,})")
@@ -246,6 +246,17 @@ def check_sources(sources, layout, scopes, errors, warnings):
             warnings.append(f"{where} since and subfolders only apply to folders")
         if purpose == "deliverable" and not s.get("record"):
             errors.append(f"{where} a deliverable needs record: the Project Brain file it corresponds to")
+        rec = s.get("record")
+        if isinstance(rec, list):
+            if purpose != "deliverable":
+                errors.append(f"{where} only a deliverable workbook can list several records")
+            for r in rec:
+                if not str(r).startswith("docs/"):
+                    errors.append(f"{where} each record must be a docs/ path, not '{r}'")
+        if "tabs" in s:
+            tabs = s["tabs"]
+            if not isinstance(rec, list) or not isinstance(tabs, list) or len(tabs) != len(rec):
+                errors.append(f"{where} tabs must list one tab name per record, in the same order")
         if purpose == "output":
             if kind != "folder":
                 errors.append(f"{where} an output source must be a folder")
