@@ -4,14 +4,17 @@
 Usage: python3 validate.py [path/to/tasks.yaml]
 
 Checks each entry: ID (T-###, unique, in order), required fields, scope,
-due date, status (open | waiting | done | dropped), and link.
+due date, status (open | waiting | done | dropped), and link. An entry has a
+`summary` (and optional `description`); older entries may still have the
+single `task` field instead, which reads as the summary.
 Exit code 0 = valid (warnings may print), 1 = errors found.
 """
 DEFAULT_PATH = "docs/tasks.yaml"
 EXAMPLE_ID = "T-001"
-REQUIRED = ["task", "owner", "scope", "status", "source"]
-ALLOWED = set(REQUIRED) | {"due", "link", "note"}
-TEXT_FIELDS = ["task", "owner", "source", "link", "note"]
+REQUIRED = ["owner", "scope", "status", "source"]
+ALLOWED = set(REQUIRED) | {"summary", "description", "task", "due", "link", "note"}
+TEXT_FIELDS = ["summary", "description", "task", "owner", "source", "link", "note"]
+SUMMARY_MAX = 100
 ACTIVE = ("open", "waiting")
 CLOSED = ("done", "dropped")
 
@@ -126,6 +129,15 @@ KEY_RE = re.compile(r"^T-(\d{3,})$")
 
 def check_entry(key, t, errors, warnings):
     where = f"[{key}]"
+    has_summary, has_task = t.get("summary") not in (None, ""), t.get("task") not in (None, "")
+    if has_summary and has_task:
+        errors.append(f"{where} has both 'summary' and 'task': move 'task' into 'summary' and 'description'")
+    elif not has_summary and not has_task:
+        errors.append(f"{where} missing 'summary'")
+    elif has_task and "description" in t:
+        errors.append(f"{where} 'description' goes with 'summary': rename 'task' to 'summary'")
+    if has_summary and len(str(t["summary"])) > SUMMARY_MAX:
+        warnings.append(f"{where} summary is over {SUMMARY_MAX} characters: move detail into 'description'")
     if t.get("status") not in ACTIVE + CLOSED:
         errors.append(f"{where} status must be one of: {', '.join(ACTIVE + CLOSED)}")
     if "due" in t and not as_date(t["due"]):
