@@ -239,8 +239,8 @@ Every merge to `main` is released automatically by [semantic-release](https://se
 
 | Commit message | Meaning | Version |
 |---|---|---|
-| `feat(engine): add a risk tracker skill` | Something new | Minor: 0.1.0 → 0.2.0 |
-| `fix(engine): correct the journal close steps` | A correction | Patch: 0.1.0 → 0.1.1 |
+| `feat(engine): add a risk tracker skill` | A new feature: skill, agent, command, or record | Minor: 0.1.0 → 0.2.0 |
+| `fix(engine): correct the journal close steps` | A fix or improvement to an existing feature | Patch: 0.1.0 → 0.1.1 |
 | `docs(engine): reword the people skill` | Any other change to what projects receive | Patch |
 | `feat(engine)!: rename the decision log file` | Projects must change something to keep working | Major: 0.1.0 → 1.0.0 |
 | `docs: fix a typo in the README`, `ci: ...` | Nothing projects receive changed | No release |
