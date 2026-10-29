@@ -126,7 +126,7 @@ ul.points li{overflow-wrap:anywhere}
   <header>
     <div class="eyebrow" id="eyebrow">Lobot</div>
     <h1>Review desk</h1>
-    <p class="sub">Everything that needs you, in one place: Lucy's proposals, your questions, questions to chase with others, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
+    <p class="sub">Everything that needs you, in one place: Lucy's proposals, your questions, questions to chase with others, your tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
     <div class="processed" id="processed"></div>
   </header>
 
@@ -176,10 +176,7 @@ const TABS = [
    lead: "Product and technical questions the work is waiting on, each with who answers it. Chase them with whoever is named; when you have an answer, record it here and Claude files it.",
    attention: d => d.status !== "answered", closedLabel: "Answered"},
   {key: "mine", label: "My tasks", coll: "tasks", edit: ["status", "due", "note"], filter: d => !!d.mine,
-   lead: "Your action items. Set a status or date; done and dropped items fold away.",
-   attention: d => d.status === "open" || d.status === "waiting", closedLabel: "Done or dropped"},
-  {key: "others", label: "Others owe", coll: "tasks", edit: ["status", "due", "note"], filter: d => !d.mine,
-   lead: "Follow-ups owed by the team and the client. Overdue ones are the ones to chase. Mark one done only when someone says it is.",
+   lead: "Your own one-off actions. Set a status or date; done and dropped items fold away. What others owe you is on the questions tabs.",
    attention: d => d.status === "open" || d.status === "waiting", closedLabel: "Done or dropped"},
   {key: "risks", label: "Risks", coll: "risks", edit: ["severity", "status", "nextStep"],
    lead: "Open risks, highest severity first. A TBD severity needs your call.",
@@ -292,7 +289,7 @@ function render(){
   if (actId && $(actId)) { const n = $(actId); n.focus(); if (sel) try { n.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
 }
 
-function summaryText(d){ return d.title || d.item || d.question || d.task || d.risk || d.decision || ""; }
+function summaryText(d){ return d.title || d.item || d.question || d.summary || d.task || d.risk || d.decision || ""; }
 
 function sortFor(t, list){
   const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, {numeric: true});
@@ -348,7 +345,7 @@ const REF_COLL = {T: "tasks", Q: "questions", R: "risks", D: "decisions"};
 function refLabel(rid, refs){
   if (refs && refs[rid]) return refs[rid];
   const coll = REF_COLL[rid.split("-")[0]], hit = coll && (data[coll] || []).find(x => x.id === rid);
-  const txt = hit && (hit.task || hit.question || hit.risk || hit.decision);
+  const txt = hit && (hit.summary || hit.task || hit.question || hit.risk || hit.decision);
   return txt ? (txt.length > 220 ? txt.slice(0, 217) + "…" : txt) : "";
 }
 function richText(text, refs){
@@ -443,7 +440,7 @@ function card(t, d, closed){
     side.push(kv("ID", id), k === "others" ? kv("Owner", d.owner || "No owner") : null, scope,
       kv("Status", selectFor("st-" + id, `Status for ${id}`, TASK_ST, d.status, v => save(t, d, {status: v}))),
       kv("Due", [due, ...(overdue ? [pill("s-crit", "Overdue")] : [])]));
-    main.push(...longText(id, d.task), el("div", {className: "controls"}, textSave("tnote-" + id, `Note for ${id}`, d.note, "note", d, t, {placeholder: "Note (who said it's done, new date, …)"})));
+    main.push(...(d.summary ? [el("div", {className: "title"}, richText(d.summary)), ...(d.description ? longText(id, d.description) : [])] : longText(id, d.task)), el("div", {className: "controls"}, textSave("tnote-" + id, `Note for ${id}`, d.note, "note", d, t, {placeholder: "Note (who said it's done, new date, …)"})));
     foot.push(d.source ? fnLine(d.source) : null, d.link ? el("div", {}, [el("a", {href: d.link, target: "_blank", rel: "noopener", textContent: "Open in the task manager"})]) : null);
     if (overdue) li.classList.add("edge-crit");
   }
@@ -522,7 +519,7 @@ function addForm(t){
     if (t.key === "questions") { id = nextId("questions", "Q-"); doc = {question: v, about: "project", raised: today(), status: "open", answer: ""}; }
     else if (t.key === "product") { id = nextId("questions", "Q-"); doc = {question: v, about: "product", ask: ask.value.trim(), link: "", raised: today(), status: "open", answer: ""}; }
     else if (t.key === "risks") { id = nextId("risks", "R-"); doc = {risk: v, description: desc.value.trim(), severity: sev.value, status: "Open", nextStep: "", confirmedBy: ""}; }
-    else { id = nextId("tasks", "T-"); doc = {task: v, owner: owner.value.trim() || CONFIG.pm, mine: t.key === "mine", due: due.value, status: "open", note: "", link: ""}; }
+    else { id = nextId("tasks", "T-"); doc = {summary: v, owner: owner.value.trim() || CONFIG.pm, mine: t.key === "mine", due: due.value, status: "open", note: "", link: ""}; }
     btn.disabled = true;
     try { await db.collection(t.coll).doc(id).set({id, ...doc, scope: sc, source: "Added on the review desk", synced: null, createdAt: now}); notice(""); ["new-", "newowner-", "newdue-", "newdesc-", "newask-"].forEach(p => delete drafts[p + t.key]); }
     catch (err) { notice("That wasn't added. You may only have view access to this page."); btn.disabled = false; }

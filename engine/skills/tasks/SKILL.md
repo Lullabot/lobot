@@ -1,13 +1,13 @@
 ---
 name: tasks
-description: Keep the action-item list (docs/tasks.yaml), every follow-up that came out of meetings and documents, the PM's own and the ones others owe, with owner, due date, and status. Use when a meeting or document produces action items, when the PM asks what's on their plate or who owes what, when someone finishes or drops an item, and before chasing anyone for a follow-up.
+description: Keep the PM's own to-do list (docs/tasks.yaml): one-off actions only the PM will do, with due date and status. Not development work (tickets), routine team work, information the work is waiting on (questions), or risk next steps. Use when a meeting or document gives the PM an action, when the PM asks what's on their plate, and when the PM finishes or drops an item.
 ---
 
 # Tasks
 
 ## Why
 
-Action items are written into each meeting's notes, and then they scatter: the PM's own go to a task manager (when one is connected), and the ones others owe live only in old notes files. Nobody can then see what is late or who to chase. The task list keeps every open action item in one place, the PM's and everyone else's, so the PM can work their own and follow up on the rest.
+Action items come out of every meeting and document, but most of them already have a home: development work is in the ticket tracker, design work in the work breakdown, routine team work in the team's own habits and meetings, and waiting on someone for information in the questions log. The task list is the PM's own to-do list: the one-off actions only the PM will do, so they don't get lost among everyone else's. Other people's action items stay in the meeting notes' action-items table, the record of who agreed to what.
 
 ## Where
 
@@ -22,12 +22,12 @@ If `docs/tasks.yaml` doesn't exist, create it from the format below with no entr
 ## Format
 
 ```yaml
-# Task list: every action item, the PM's own and the ones others owe. Ordered by ID (T-001, T-002, ...); IDs are never reused.
+# Task list: the PM's own one-off actions. Ordered by ID (T-001, T-002, ...); IDs are never reused.
 # Managed by the tasks skill: .ai/general/skills/tasks/SKILL.md
 # Validate after every edit: python3 .ai/general/skills/tasks/validate.py docs/tasks.yaml
 
 T-001:
-  task: "Share sample data files"
+  summary: "Share sample data files"
   owner: "Ana Ruiz"
   scope: all
   status: done
@@ -35,7 +35,8 @@ T-001:
   note: "Files arrived 2026-10-14 (PM, 2026-10-15)."
 
 T-002:
-  task: "Send the homework list to the client"
+  summary: "Send the homework list to the client"
+  description: "Data samples, brand materials, analytics access, and key dates, as promised on the kickoff call."
   owner: "Sam Lee"
   scope: site-a
   due: 2026-10-16
@@ -46,7 +47,9 @@ T-002:
 | Field | Required | Holds |
 |---|---|---|
 | key | Yes | `T-` plus three digits, never reused. The file is ordered by ID. |
-| `task` | Yes | One action, starting with a verb, clear without opening the source. Quoted. |
+| `summary` | Yes | One action, starting with a verb, short enough to skim (under 100 characters): what, not every detail. Quoted. |
+| `description` | No | The detail the summary leaves out: what exactly, the parts of a list, context, related record IDs. Quoted. |
+| `task` | Older entries | The single field tasks had before `summary` and `description`; it reads as the summary. Split it into the two fields when the task is next edited, and never add both. |
 | `owner` | Yes | A name from `docs/people.yaml` (several separated by commas), or a team ("Client team"). Mark an owner the source didn't state with `(unverified)`. Quoted. |
 | `scope` | Yes | `all`, or a site or program key (the same keys as `docs/raci.yaml`). |
 | `due` | No | The date it's due. A date worked out from something vague ("by end of week") is noted in `note` as derived. |
@@ -59,7 +62,7 @@ Quote every text field: unquoted text containing `: ` or starting with a special
 
 ## Who does what
 
-- **Lucy** adds the action items from the material she processes (meeting-notes skill), one entry per item in the notes' action-items table. Adding an entry is autonomous for her: it repeats what the source says.
+- **Lucy** adds the PM's own one-off actions from the material she processes (meeting-notes skill), phrased as what the PM does, and turns information the work is waiting on into questions instead (questions skill). Adding an entry is autonomous for her; other people's action items stay in the notes.
 - **The assistant** files the PM's own items in the task manager per `.ai/project/task-management.md` and puts the link in the entry. While the project has no task manager connected, the entry is the task.
 - **The PM** closes, drops, or re-dates items. Others' items are closed when the PM or a source says they're done, never from silence.
 
@@ -74,6 +77,12 @@ Quote every text field: unquoted text containing `: ` or starting with a special
 
 ## Rules
 
+- **Only the PM's own one-off actions.** File an item only when the PM has something to do that isn't already tracked elsewhere, phrased as what the PM does ("Request GA for all three sites"); the owner is the PM. Don't file:
+  - **Development work.** It goes in the ticket tracker.
+  - **Routine team work and meeting prep.** Known, recurring work (logging hours, planning a review that's on the calendar) and anything a scheduled meeting covers.
+  - **Waiting on someone for information.** That's a question with `ask` and `needed_by` (questions skill), not a task, and never a task that only says to get an answer.
+  - **Next steps on a risk.** They stay on the risk (risks skill).
+  - **Other people's action items.** They stay in the meeting notes' action-items table.
 - **Every action item, one home.** The notes keep their action-items table as the record of the meeting; the task list is where status lives. Don't track status in the notes.
 - **Waiting is not done.** An item stays open until someone says it's done.
 - **Done entries stay.** They are the history of who did what.
