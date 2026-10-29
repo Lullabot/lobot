@@ -1,3 +1,3 @@
-# Questions log: project questions for the PM and product questions for stakeholders (about: project | product), and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.
+# Questions log: questions for the PM (about: project | housekeeping) and for others (about: product | technical), with who answers each, and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.
 # Managed by the questions skill: .ai/general/skills/questions/SKILL.md
 # Validate after every edit: python3 .ai/general/skills/questions/validate.py docs/questions.yaml

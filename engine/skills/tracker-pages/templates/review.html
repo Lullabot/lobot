@@ -126,7 +126,7 @@ ul.points li{overflow-wrap:anywhere}
   <header>
     <div class="eyebrow" id="eyebrow">Lobot</div>
     <h1>Review desk</h1>
-    <p class="sub">Everything that needs you, in one place: Lucy's proposals, your questions, product questions to chase, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
+    <p class="sub">Everything that needs you, in one place: Lucy's proposals, your questions, questions to chase with others, tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
     <div class="processed" id="processed"></div>
   </header>
 
@@ -169,11 +169,11 @@ const TABS = [
   {key: "review", label: "Lucy's proposals", coll: "review", edit: ["decision", "note"],
    lead: "Changes Lucy proposes from the material she processed. Approve, approve with a change (say what), or drop each one. Claude applies the approved ones.",
    attention: d => !d.decision, closedLabel: "Decided"},
-  {key: "questions", label: "Questions for you", coll: "questions", edit: ["status", "answer"], filter: d => d.about !== "product",
+  {key: "questions", label: "Questions for you", coll: "questions", edit: ["status", "answer"], filter: d => d.about !== "product" && d.about !== "technical",
    lead: "Questions about the project that only you can answer. Type an answer and Claude files it into the record it affects.",
    attention: d => d.status !== "answered", closedLabel: "Answered"},
-  {key: "product", label: "Product questions", coll: "questions", edit: ["status", "answer"], filter: d => d.about === "product",
-   lead: "Questions the team needs a stakeholder to answer about the product. Chase them with whoever is named; when you have an answer, record it here and Claude files it.",
+  {key: "product", label: "Questions for others", coll: "questions", edit: ["status", "answer"], filter: d => d.about === "product" || d.about === "technical",
+   lead: "Product and technical questions the work is waiting on, each with who answers it. Chase them with whoever is named; when you have an answer, record it here and Claude files it.",
    attention: d => d.status !== "answered", closedLabel: "Answered"},
   {key: "mine", label: "My tasks", coll: "tasks", edit: ["status", "due", "note"], filter: d => !!d.mine,
    lead: "Your action items. Set a status or date; done and dropped items fold away.",
@@ -308,7 +308,7 @@ function list(items, t, closed){
 }
 function emptyText(t){
   return {review: "No proposals waiting. Lucy's next batch shows up here after she processes a file or transcript.",
-    questions: "No open questions for you.", product: "No open product questions.", mine: "Nothing on your plate here.", others: "Nobody owes you anything right now.",
+    questions: "No open questions for you.", product: "No open questions for others.", mine: "Nothing on your plate here.", others: "Nobody owes you anything right now.",
     risks: "No open risks.", decisions: "No pending decisions.", checklist: "Every checklist row is done or not applicable."}[t.key];
 }
 
@@ -421,7 +421,7 @@ function card(t, d, closed){
   else if (k === "questions" || k === "product") {
     const answered = d.status === "answered";
     side.push(kv("ID", id), k === "product" ? kv("Ask", d.ask || "Nobody named") : null, scope,
-      kv("Status", pill(answered ? "s-done" : "s-prog", answered ? "Answered" : "Open")), kv("Raised", d.raised));
+      kv("Status", pill(answered ? "s-done" : "s-prog", {answered: "Answered", asked: "Asked", "partly-answered": "Partly answered"}[d.status] || "Open")), d.neededBy ? kv("Needed by", d.neededBy) : null, kv("Raised", d.raised));
     main.push(...longText(id, d.question, d.refs));
     if (!answered || editing.has(id)) {
       const ta = el("textarea", {id: "ans-" + id, value: drafts["ans-" + id] ?? d.answer ?? "", placeholder: "Your answer", disabled: !canWrite});
