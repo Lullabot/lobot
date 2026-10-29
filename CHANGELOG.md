@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.31.1](https://github.com/Lullabot/lobot/compare/v0.31.0...v0.31.1) (2026-10-29)
+
+### Fixed
+
+* **engine:** the weekly journal entry leaves out what the account manager already knows, and learns from the PM's edits in the doc ([17dd670](https://github.com/Lullabot/lobot/commit/17dd67037e168ec088f4230dcf34679b9cc6e9fd))
+
+### Wording and documentation
+
+* use feat only for a new feature, and fix for improving an existing one ([75304f2](https://github.com/Lullabot/lobot/commit/75304f2fd813b7184d4292a68081359a4442bd00))
+
 ## [0.31.0](https://github.com/Lullabot/lobot/compare/v0.30.0...v0.31.0) (2026-10-29)
 
 ### Added
