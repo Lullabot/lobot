@@ -39,8 +39,8 @@ The one thing kept outside it is the PM's **personal profile** in `~/.lobot/`: t
 | `.ai/project/client-status-report/template.md` | The project's own status report template, when the PM built one; it replaces the skill's default. | PM + assistant |
 | `.ai/project/project-journal-entry.md` | The account manager, other readers, and due day for the weekly project journal entry (used by the project-journal-entry skill). | PM + assistant |
 | `.ai/project/voice/` | One file per PM (`<people-key>.md`) with how their voice differs on this project (a client's register, a team's norms), layered over their personal voice. See the pm-voice skill. | PM + assistant |
-| `~/.lobot/` | Outside the Project Brain, in the PM's home folder: their personal profile (`voice.md`, `preferences.md`), shared by every project they work on. Nothing project-specific. See the pm-profile skill. | PM + assistant |
-| `.ai/project/task-management.md` | Where tasks go for this project (tool, project, labels) and which items become tasks. Set per PM. | PM |
+| `~/.lobot/` | Outside the Project Brain, in the PM's home folder: their personal profile (`voice.md`, `preferences.md`, including their task manager settings), shared by every project they work on. Nothing project-specific. See the pm-profile skill. | PM + assistant |
+| `.ai/project/task-management.md` | Which task manager the PM uses on this project (first line: `Task manager: Lobot`, the default, or `Todoist`), and that task manager's settings for this project (tasks skill). | PM |
 | `docs/` | Context artifacts: the material the assistant reads to do tasks (people, glossary, notes, derived summaries, journal). | Assistant, reviewed by PM |
 | `docs/overview/` | Project dossier: `index.md` (read first) → one folder per site (`sites/<site>/`: index, topic files such as the current site's background, audiences, content, data, migration) → `reference/` (exhaustive or generated detail). Every fact cites its source. See the dossier skill. | Lucy, reviewed by PM |
 | `docs/people.yaml` | Canonical people directory: active participants, roles, timezones, third-party usernames/IDs. See the people skill. | Assistant |
@@ -69,10 +69,11 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 2. Read the rule files (`*.md`) at the top level of `.ai/general/` and `.ai/project/`, and the `description` of each skill in their `skills/` folders (skip the descriptions if your tool already lists these skills as available). Load a full skill, glossary, or script only when needed.
 3. Read the PM's preferences in `~/.lobot/preferences.md` if it exists and can be read, and start from its Lobot settings (pm-profile skill). If it can't be read, say so in one line.
 4. Read `docs/overview/index.md` (Level 1 of the project dossier). Open a site's index and topic files only as the task needs.
-5. Run the journal skill's catch-up mode (`.ai/general/skills/journal/SKILL.md`): read the latest file in `docs/journals/` and recap it.
-6. If a Google Drive connector is available: when `docs/sources.yaml` maps sources, run the drive-sources skill's check and list what's new or changed in one line per source, processing nothing yet; when it has no `shared_drive`, offer once to have Lucy map the project's shared drive.
-7. If the project has tracker pages (listed in the root `CLAUDE.md`) and the assistant can read them, run the tracker-pages skill's sync and list what the PM changed on each page, filing nothing yet.
-8. Only then start the task.
+5. If the PM's task manager isn't Lobot (first line of `.ai/project/task-management.md`), bring `docs/tasks.yaml` up to date with it (for Todoist, the todoist skill's "Keeping the list in step") and list what changed in one line.
+6. Run the journal skill's catch-up mode (`.ai/general/skills/journal/SKILL.md`): read the latest file in `docs/journals/` and recap it.
+7. If a Google Drive connector is available: when `docs/sources.yaml` maps sources, run the drive-sources skill's check and list what's new or changed in one line per source, processing nothing yet; when it has no `shared_drive`, offer once to have Lucy map the project's shared drive.
+8. If the project has tracker pages (listed in the root `CLAUDE.md`) and the assistant can read them, run the tracker-pages skill's sync and list what the PM changed on each page, filing nothing yet.
+9. Only then start the task.
 
 ## Working rules
 
@@ -95,7 +96,7 @@ Within `.ai/general/` and `.ai/project/`, rules live as markdown files at the to
 - **Show the records.** When the PM asks to see a record ("pull up my open questions", "show me the risks", "what's on the checklist"), the record's tracker page is the default answer: open it, or publish it first if its template exists and it has no page yet (tracker-pages skill, "Show a record"), with a short summary in chat. Records without a page template are answered from the file. When the PM asks for "the dashboard" or what needs them ("what's on my plate?", "what needs my attention?"), open the review desk, even as the first request of a session (after the start-of-session routine). The review desk is the dashboard.
 - **Hand back at the review desk.** After processing a new file or transcript, sync the review desk and open it (tracker-pages skill, "Review desk"): Lucy's proposals, questions for the PM, product questions, tasks, risks, pending decisions, and checklist rows, one tab each. Say in one line what's new on it rather than listing everything in chat.
 - **Track risks.** A risk a speaker or document raised goes in the risk tracker with the risks skill (`.ai/general/skills/risks/SKILL.md`); a new development of a known risk is a dated update to it.
-- **Track every action item.** Action items from meetings and documents, the PM's and everyone else's, go in the task list with the tasks skill (`.ai/general/skills/tasks/SKILL.md`). The PM's own are also filed in the task manager when the project has one.
+- **Track every action item.** Action items from meetings and documents, the PM's and everyone else's, go in the task list with the tasks skill (`.ai/general/skills/tasks/SKILL.md`). The PM's own are also filed in the task manager the PM chose (tasks skill, "Task managers"): Lobot's own list by default, or Todoist with the todoist skill (`.ai/general/skills/todoist/SKILL.md`).
 - **Lay out the work.** What the team will build goes in the work breakdown with the work-breakdown skill (`.ai/general/skills/work-breakdown/SKILL.md`), by site and feature area, before it becomes tickets. Only the PM marks an item ready.
 - **Pages are inboxes, files are records.** Tracker pages (`.ai/general/skills/tracker-pages/SKILL.md`) are where the PM works with records outside the chat. Changes made there are filed into `docs/` through each record's skill, and every change to a record with a page is copied to the page.
 - **Journal as you go, close every session.** Log completed tasks and decisions with the journal skill during the session, and run its close mode at the end of every session (after filing any tracker page changes).

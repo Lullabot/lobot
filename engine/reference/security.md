@@ -107,7 +107,7 @@ The PM sets the token's expiry when they make it, as short as is practical. When
 
 **Why.** Filing the PM's own action items from meetings where the PM already keeps their to-do list.
 
-**What it uses.** The task manager's connector in the PM's assistant, signed in as the PM.
+**What it uses.** The task manager's connector in the PM's assistant, signed in as the PM. Its settings (which project, sections, and labels to use) are kept in the PM's profile on their own computer or in the project's files. No task manager token is stored in the Project Brain.
 
 **What it does.** Creates the PM's own tasks after the PM approves them in a meeting's review. Items other people owe stay in the Project Brain. Lobot's agents (Lucy and Pepper) are instructed not to use it.
 

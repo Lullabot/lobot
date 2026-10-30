@@ -15,7 +15,7 @@ Action items come out of every meeting and document, but most of them already ha
 |---|---|
 | Task list | `docs/tasks.yaml` |
 | Validator | `validate.py` in this skill's folder |
-| Where the PM's tasks go (tool, project, sections) | `.ai/project/task-management.md` |
+| Which task manager the PM uses, and its settings for this project | `.ai/project/task-management.md` (see "Task managers") |
 
 If `docs/tasks.yaml` doesn't exist, create it from the format below with no entries.
 
@@ -63,8 +63,19 @@ Quote every text field: unquoted text containing `: ` or starting with a special
 ## Who does what
 
 - **Lucy** adds the PM's own one-off actions from the material she processes (meeting-notes skill), phrased as what the PM does, and turns information the work is waiting on into questions instead (questions skill). Adding an entry is autonomous for her; other people's action items stay in the notes.
-- **The assistant** files the PM's own items in the task manager per `.ai/project/task-management.md` and puts the link in the entry. While the project has no task manager connected, the entry is the task.
+- **The assistant** files the PM's own items in the PM's task manager (see "Task managers") and puts the link in the entry. With Lobot as the task manager, the entry is the task.
 - **The PM** closes, drops, or re-dates items. Others' items are closed when the PM or a source says they're done, never from silence.
+
+## Task managers
+
+The task list always keeps the project's copy, so it survives a change of PM. The PM chooses where they manage their own tasks, and the choice is the first line of `.ai/project/task-management.md`:
+
+| Task manager | First line | How |
+|---|---|---|
+| Lobot (the default) | `Task manager: Lobot` | The entries in `docs/tasks.yaml`, shown on the review desk (tracker-pages skill). Nothing is filed anywhere else. |
+| Todoist | `Task manager: Todoist` | Todoist is where the PM manages the tasks filed there, and the entries follow it: the todoist skill (`.ai/general/skills/todoist/SKILL.md`) files each approved task and copies every change made in Todoist back here. |
+
+When the file or its first line is missing, the task manager is Lobot; ask the PM once whether they'd rather use another one, and record the answer. Never assume a task manager because its connector is in the session. A PM who uses the same task manager everywhere can keep the choice and its settings in their profile (`## Task manager` in `~/.lobot/preferences.md`, pm-profile skill); the project file still records it, so the project shows where its tasks went.
 
 ## Changing an entry
 
