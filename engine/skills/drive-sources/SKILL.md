@@ -19,7 +19,7 @@ Every Lullabot client project has its own shared drive, and most project materia
 | Source map and processed list | `docs/sources.yaml` |
 | Standard shared drive layout | `layout.yaml` in this skill's folder |
 | Validator | `validate.py` in this skill's folder |
-| Snapshots of transcripts read from Drive | `docs/transcripts/` (when the source sets `copy_to`) |
+| Snapshots of transcripts read from Drive (raw; git-ignored by default) | `docs/transcripts/raw/` (the source's `copy_to`) |
 
 If `docs/sources.yaml` doesn't exist (projects installed before this skill), create it with the header comment from the format below, `sources: {}`, `not_used: {}`, and `processed: []`.
 
@@ -33,7 +33,7 @@ When Lucy runs as a subagent she can't talk to the PM mid-run. "Lucy asks" means
 
 ## Needs
 
-- **The Google Drive connector.** Tool names differ by assistant; the steps below name what each call does. If no Drive connector is available, say so once, skip the Drive steps, and fall back to files the PM drops in `docs/transcripts/`. Never ask the PM to export a file you could read once the connector is set up; tell them which connector would remove that step.
+- **The Google Drive connector.** Tool names differ by assistant; the steps below name what each call does. If no Drive connector is available, say so once, skip the Drive steps, and fall back to files the PM drops in `docs/transcripts/raw/`. Never ask the PM to export a file you could read once the connector is set up; tell them which connector would remove that step.
 - **Access through the PM's own Google account.** Only what that account can open is visible. A file missing from a check may not be shared with the PM.
 - **Reading Docs and Sheets; editing only trackers, never sales documents.** The Drive connector reads files and can create folders, blank files, and new Docs, but it can't edit what is inside a Doc or Sheet. Until the Google Docs and Sheets connectors are available, records stay in the Project Brain (`docs/`). With them, a file is edited only at the edit level its entry gives it (see "Edit levels"); the `contracts` folder (Sales Docs: SOWs, change orders, MSAs, proposals) is `locked` and never edited, whatever the PM asks (`.ai/general/lobot.md`, "Never edit sales documents"). The exception is an `output` folder (see `purpose`): Lucy files new Docs there, either copies of a Project Brain record (the record stays the source of truth) or deliverables whose only home is that folder (see "Where a deliverable lives").
 
@@ -59,7 +59,7 @@ sources:
     url: https://drive.google.com/drive/folders/1AbC...
     purpose: transcripts
     handler: meeting-notes             # skill that processes new files
-    copy_to: docs/transcripts/         # save a snapshot here before handing it on
+    copy_to: docs/transcripts/raw/     # save a snapshot here before handing it on
     edit: locked
     since: 2026-10-01                  # ignore files created before this date
     subfolders: false                  # also check folders inside it
@@ -205,7 +205,7 @@ Only after the PM says which files to process.
    retrieved: 2026-10-09
    ---
    ```
-   The snapshot keeps the Project Brain usable without Drive access (portability rule). Never edit it afterwards; to refresh it, write a new snapshot.
+   The snapshot keeps the Project Brain usable without Drive access (portability rule). Never edit it afterwards; to refresh it, write a new snapshot. A transcript snapshot is raw: it goes in `docs/transcripts/raw/`, which is git-ignored by default, and the cleaned copy the Project Brain commits is made from it (transcript-cleanup skill, which meeting-notes runs first).
 3. **Run the handler** skill (e.g. meeting-notes) on the snapshot, then record the file in `processed` with the resulting path as `result`.
 4. **Skipped files:** when the PM says to skip a file, record it with `result: "skipped: <reason>"` so it stops coming up.
 

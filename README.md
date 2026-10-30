@@ -18,6 +18,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 
 | Skill | What it does for you |
 |---|---|
+| **Transcript cleanup** | Cuts the small talk and anything sensitive (health, HR, other clients, passwords read aloud) from a transcript, drops filler words, and leaves one timestamped paragraph per speaker. You approve the cuts. Only the cleaned copy is committed; the raw transcript stays on your computer. |
 | **Meeting notes** | Turns a meeting transcript into notes with a summary, action items, and flags, and suggests the decisions, tasks, and risks that came out of it. |
 | **Drive sources** | Maps the project's shared Google Drive against Lullabot's standard layout (offering to create what's missing), checks it for new transcripts and changed documents, and reads them straight from Drive so you no longer export them by hand. |
 | **Decision log** | Records what was decided, why, who drove it, and who approved it, and tracks what is still waiting on approval. |
@@ -71,7 +72,7 @@ Your voice and preferences live in `~/.lobot/`, outside any one project. In Clau
 
 Open your assistant in the Project Brain folder and talk to it the way you would talk to a project coordinator. At the start of each session it reads the rules, catches up on the latest journal entry, and tells you where things stand.
 
-**After a client call.** Drop the transcript into the Project Brain and say "process today's meeting with the client." If the project's Google Meet transcript folder is mapped (Drive sources), skip the drop: Lucy finds the new transcript in Drive and saves a copy for you. Lucy writes the meeting notes. The assistant then opens your review desk with the proposed decisions, risks, and record changes, the new questions, and the action items, and waits for your approval before applying them.
+**After a client call.** Drop the transcript into `docs/transcripts/raw/` and say "process today's meeting with the client." If the project's Google Meet transcript folder is mapped (Drive sources), skip the drop: Lucy finds the new transcript in Drive and saves a copy for you. Lucy cleans the transcript and writes the meeting notes. The assistant then opens your review desk with the proposed transcript cuts, decisions, risks, and record changes, the new questions, and the action items, and waits for your approval before applying them. Only the cleaned transcript is committed.
 
 **Before a status update.** Ask "what did we decide about the launch date, and what's still waiting on approval?" The assistant answers from the decision log. Then ask it to "draft this week's status update for the client," and it writes one in your voice for you to edit and send.
 
@@ -157,7 +158,7 @@ npx --yes github:Lullabot/lobot update
 
 Each run downloads the latest Lobot, so there is nothing to clone or pull. Both commands list what's new since your version: new and updated skills and agents, and the release notes. When the assistant runs the update, it turns that into a short report of what you can now do.
 
-Now and then a version also needs a change in your project's own files, such as a renamed folder. The update lists those steps, and the assistant asks for your approval before making them with `npx --yes github:Lullabot/lobot migrate`.
+Now and then a version also needs a change in your project's own files, such as a renamed folder. The update lists those steps, and the assistant asks for your approval before making them with `npx --yes github:Lullabot/lobot migrate`. Some steps are a choice, such as keeping raw transcripts out of git: the assistant asks you about each one, and a choice you decline is recorded so it stops coming up.
 
 Review the changes, commit them in the Project Brain ("Update Lobot to x.y.z"), and start a new assistant session. A session that is already open keeps working from the old version.
 

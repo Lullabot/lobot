@@ -52,9 +52,10 @@ The update only touches `.ai/general/`, `.claude/agents/`, and the skill links.
 Some versions also need a change in the project's own files, which the update never touches: a folder renamed under `.ai/project/`, a name updated in a project config. Lobot ships these as steps, and `status` and `update` list them under "Steps for this project's own files".
 
 1. Explain each step to the PM in plain language, with the reason the update gives ("an agent was renamed, so its project settings folder moves to match"). Ask for approval of the steps as a set. Approval is never inferred from silence.
+   - A migration with "Ask the PM" is the PM's choice, not part of the set: put its question to the PM on its own, with what each answer means and the recommended one first. Transcript migrations are Lucy's area, so say so in her words when she's working on the project. If the PM declines, run `npx --yes github:Lullabot/lobot migrate --decline <id>`; it records the choice in `.ai/project/declined-migrations.yaml` so it stops coming up, and skips any migration that depends on it. The PM can delete the line to be asked again.
 2. Once approved, run `npx --yes github:Lullabot/lobot migrate`. Never make the moves or edits yourself; the tool makes them the same way in every project.
 3. Report what it did. If it lists steps it couldn't do (usually because the destination already exists), show them to the PM and help do them by hand.
-4. The PM reviews and commits the result with the update.
+4. The PM reviews and commits the result with the update. When files were moved into a git-ignored folder (raw transcripts into `docs/transcripts/raw/`), tell the PM the commit shows them as deleted: they stay on this computer and in git history, and only stop being tracked.
 
 ## What's new report
 

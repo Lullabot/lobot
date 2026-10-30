@@ -71,5 +71,40 @@
         "field": "risk"
       }
     ]
+  },
+  {
+    "id": "transcripts-raw-folder",
+    "why": "Raw transcripts now have their own folder, docs/transcripts/raw/, next to the cleaned copies, so Drive snapshots are saved there.",
+    "steps": [
+      {
+        "replace": "docs/sources.yaml",
+        "pattern": "^(\\s*copy_to:\\s*)docs/transcripts/?(?!raw/)(?=\\s|$)",
+        "to": "$1docs/transcripts/raw/",
+        "label": "copy_to: docs/transcripts/ with copy_to: docs/transcripts/raw/"
+      }
+    ]
+  },
+  {
+    "id": "transcripts-raw-local",
+    "why": "Only cleaned transcripts are committed by default now: raw ones, with the small talk and anything sensitive said on the call, stay on this computer in docs/transcripts/raw/.",
+    "ask": "Keep raw transcripts out of git from now on, and commit only the cleaned copies? (Recommended.)",
+    "steps": [
+      {
+        "ignore": "/docs/transcripts/raw/"
+      }
+    ]
+  },
+  {
+    "id": "transcripts-raw-untrack",
+    "needs": "transcripts-raw-local",
+    "why": "Raw transcripts committed before are moved into docs/transcripts/raw/, so git stops tracking them. Git history keeps them, and they stay on this computer.",
+    "ask": "Move the raw transcripts already committed into docs/transcripts/raw/ so they stop being tracked? (Recommended; the commit will show them as deleted.)",
+    "steps": [
+      {
+        "move_files": "docs/transcripts",
+        "to": "docs/transcripts/raw",
+        "unless_frontmatter": "cleaned"
+      }
+    ]
   }
 ]

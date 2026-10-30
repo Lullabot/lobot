@@ -42,7 +42,7 @@ Lobot's instructions tell the assistant to ask before acting and to stay away fr
 
 **Why.** The Project Brain is version-controlled in a private repository in the Lullabot organization, named after the project's code repository with `-pm` on the end. That's how a new PM picks up a project, and how its history is kept. GitHub is also where most projects track their work.
 
-**What's in the Project Brain repository.** Meeting transcripts and notes, decisions, risks, open questions, action items, a people directory (work contact details and usernames), and Lobot's own files. No code, and no credentials by Lobot's rules. Who can read it is set by the repository's access in GitHub, like any private repository in the organization.
+**What's in the Project Brain repository.** Cleaned meeting transcripts (small talk and sensitive passages cut, with the PM's approval; raw transcripts stay on the PM's computer by default) and notes, decisions, risks, open questions, action items, a people directory (work contact details and usernames), and Lobot's own files. No code, and no credentials by Lobot's rules. Who can read it is set by the repository's access in GitHub, like any private repository in the organization.
 
 **What it uses.** The PM's own personal access token. Lobot works with either kind:
 
@@ -75,7 +75,7 @@ The PM sets the token's expiry when they make it, as short as is practical. When
 **What it does.**
 
 - Reads files in the project's shared drive, and the project's internal journal doc in Lullabot's own drive. It scans the shared drive only after the PM agrees.
-- Saves a copy of a transcript into the Project Brain when it processes one, so the record still makes sense without Drive access.
+- Saves a copy of a transcript into the Project Brain when it processes one, so the record still makes sense without Drive access. The copy is raw and isn't committed by default; the cleaned copy made from it is.
 - With the PM's approval (or once the PM has given standing permission for it), creates missing standard folders and blank Docs or Sheets in the project's shared drive, and files a shareable copy of reviewed meeting notes as a new Doc.
 - With an editing connector and the PM's approval of the exact text: adds the weekly journal entry to the journal doc, and keeps the project's trackers current (RACI matrix, schedule, team directory, risk tracker, decision log, kickoff checklist, and any other file the PM designates). Each Drive file has an edit level the PM sets in the project's Drive map: `locked` (never edited), `ask` (the PM approves each change), or `ok` (the PM reviews afterward). A file with no level is read-only until the PM sets one.
 - Never edits SOWs, change orders, MSAs, proposals, or anything else in the Sales Docs or Contracts folder, even when the PM asks. They are legal documents.

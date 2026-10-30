@@ -19,7 +19,7 @@ date: YYYY-MM-DD
 type: <PM's label, e.g. onboarding>
 template: general
 speakers: [Full Name, Full Name]   # who spoke in the transcript; attendance unknown
-source: docs/transcripts/<file> (<format>, ~N min)
+source: docs/transcripts/<file> (cleaned; <format>, ~N min)
 status: draft
 ---
 # <Meeting title> (YYYY-MM-DD)
