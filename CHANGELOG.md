@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.32.0](https://github.com/Lullabot/lobot/compare/v0.31.1...v0.32.0) (2026-10-30)
+
+### Added
+
+* **engine:** clean transcripts before they're committed, keeping raw ones off git ([#28](https://github.com/Lullabot/lobot/issues/28)) ([1eef6a5](https://github.com/Lullabot/lobot/commit/1eef6a57fe3d3cd0c2416747ef1915e9a7efd85d))
+
 ## [0.31.1](https://github.com/Lullabot/lobot/compare/v0.31.0...v0.31.1) (2026-10-29)
 
 ### Fixed
