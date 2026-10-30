@@ -34,7 +34,7 @@ Ask the PM for the meeting type if it isn't stated. Record the PM's label (e.g. 
 
 1. **Locate the source.** Find the raw transcript in `docs/transcripts/raw/`. Note its format (Gemini notes markdown, plain text, WebVTT), date, title, and length. If the file contains a machine-written summary (e.g. "Notes by Gemini"), treat it as a hint only; the transcript is the source.
 2. **Clean it** with the transcript-cleanup skill, up to its draft (`tmp/<slug>.clean.md`). Its cut list joins this skill's review (below), and the cleaned transcript is written to `docs/transcripts/` once the PM approves. Work from the cleaned draft from here on, and cite its timestamps.
-3. **Load the type file** and `.ai/project/task-management.md`. If the project has no task-management file, ask the PM where tasks go and create it.
+3. **Load the type file** and `.ai/project/task-management.md`. If the project has no task-management file, the task manager is Lobot's own list; ask the PM once whether they'd rather use another one (tasks skill, "Task managers") and create the file.
 4. **Read the whole cleaned transcript**, in chunks if large. Don't summarize from the first half.
 5. **Resolve names and terms as you read.**
    - Speakers and people mentioned: people skill. Transcript labels may be misspelled or differ from the directory (`Joshua` vs. `Josh`); match on `aka`. Never guess who an unknown name is.

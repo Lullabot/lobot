@@ -22,6 +22,10 @@ How they like start-of-session recaps, status reports, and answers: order, lengt
 
 Layouts they reuse (a status update shape, meeting agenda, decision summary), described in general terms.
 
+## Task manager
+
+The task manager they use on every project, and its settings (tasks skill, "Task managers"; for Todoist, the todoist skill). Leave out when they use Lobot's own task list.
+
 ## Working habits
 
 When to check in, how much to do before asking, things to always or never do.
