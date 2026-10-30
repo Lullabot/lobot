@@ -15,7 +15,7 @@ The task list in the Project Brain (`docs/tasks.yaml`, tasks skill) is where the
 |---|---|
 | Which task manager the PM uses on this project | First line of `.ai/project/task-management.md` (tasks skill, "Task managers") |
 | The PM's Todoist settings, for every project | `## Task manager` in `~/.lobot/preferences.md` (pm-profile skill) |
-| This project's Todoist settings: its section, its label, and any setting that differs from the PM's own | `.ai/project/task-management.md`, under `## Todoist` |
+| This project's Todoist settings: its project and sections, its label, and any setting that differs from the PM's own | `.ai/project/task-management.md`, under `## Todoist` |
 | The task list, the record of truth | `docs/tasks.yaml`; each filed task's Todoist link is in its `link` |
 
 When `~/.lobot/` can't be read or written, every setting goes in the project file instead. Where the two disagree, the project file wins.
@@ -54,7 +54,7 @@ When the PM chooses Todoist (or asks to change how Lobot uses it):
 1. **Check the connection** by listing their Todoist projects, and find out whose account it is (see "Connecting"). If projects the PM expects are missing from a separate assistant account, they haven't been shared with it yet.
 2. **Read the settings already saved,** in `~/.lobot/preferences.md` and then the project file. If they're complete, confirm them in one line and skip to step 5.
 3. **Ask the questions below** that aren't answered yet, in one round, suggesting the likely answer for each.
-4. **Save the answers.** Personal settings go in `~/.lobot/preferences.md` with the PM's approval (pm-profile skill, "Saving to it"); this project's section and label, and anything the PM wants only here, go in the project file. If `~/.lobot/` can't be reached, save everything in the project file and say so.
+4. **Save the answers.** Personal settings go in `~/.lobot/preferences.md` with the PM's approval (pm-profile skill, "Saving to it"); this project's Todoist project, sections, and label, and anything the PM wants only here, go in the project file. If `~/.lobot/` can't be reached, save everything in the project file and say so.
 5. **Record the choice:** set the first line of `.ai/project/task-management.md` to `Task manager: Todoist`.
 6. **Offer to file the backlog:** open PM tasks in `docs/tasks.yaml` with no `link`, as one batch for the PM to approve (see "Filing a task").
 
@@ -63,13 +63,13 @@ When the PM chooses Todoist (or asks to change how Lobot uses it):
 | Setting | Question | Choices |
 |---|---|---|
 | Project | Which Todoist project should Lobot's tasks go in? | One of their projects (list them), or a project per Lobot project (named in the project file). |
-| Sections | Should tasks be grouped into sections? | None; one section per Lobot project (the usual choice when every project shares one Todoist project); or a fixed section. |
+| Sections | Should tasks be grouped into sections? | None; one section per Lobot project (the usual choice when every project shares one Todoist project); one section per scope, such as a site or SOW (the usual choice when the project has its own Todoist project, or sub-project); or a fixed section. |
 | Labels | Which labels go on every task Lobot files? | None; a label that marks what the assistant filed (such as `ai`); a label for the project (its key in lowercase); or both. Lobot never adds other labels unless the PM asks. |
 | Priority | Should Lobot set priorities? | Yes, by the Eisenhower matrix (below); or leave every task at p4 for the PM to set. |
-| Dates | What should the task list's `due` become in Todoist? | A **deadline** (the date it must be done by, leaving the due date for the PM to schedule); a **due date**; or both. |
-| Assignee | Should tasks be assigned to the PM? | Only possible in shared Todoist projects, which is every project a separate assistant account can see. If yes, Lobot needs the PM's Todoist user ID or email: read the ID from a task already assigned to them, or ask. |
+| Dates | What should the task list's `due` become in Todoist? | Todoist has two dates: a **deadline** is when it must be done, or there's a cost to missing it; a **due date** is when the PM plans to work on it. Choices: `due` becomes the deadline, leaving the due date for the PM to schedule; `due` becomes the due date; both; or ask with each task until the PM settles on one. |
+| Assignee | Should tasks be assigned to the PM? | Only possible in shared Todoist projects, which is every project a separate assistant account can see. With a separate account, suggest yes: a task assigned to the assistant's account won't show up in the PM's own views or calendar. Lobot needs the PM's Todoist user ID: look it up among the project's collaborators (`find-project-collaborators`), read it from a task already assigned to them, or ask. |
 
-**Section IDs.** List the project's sections when the connector can. If it can't, ask the PM for the section's link from Todoist (the ID is the last part of it), or have them name a task in that section and read its section from the task. If neither works, file to the project without a section and say so. The section for this project is saved in the project file, never in `~/.lobot/` (it names the project).
+**Section IDs.** List the project's sections when the connector can. If it can't, ask the PM for the section's link from Todoist (the ID is the last part of it), or have them name a task in that section and read its section from the task. If neither works, file to the project without a section and say so. With a section per scope, match each scope in `docs/raci.yaml` (`all`, or a site or program key) to a section, and ask about any scope with no section. This project's sections are saved in the project file, never in `~/.lobot/` (they name the project).
 
 ### Saved settings
 
@@ -95,8 +95,14 @@ Task manager: Todoist
 
 ## Todoist
 
-- Section: Example Redesign (ID 6Xm5HcVq3pJ9fR2w)
+- Todoist project: Example (ID 6Wq2Rk8Pm4Hx7Tv3)
+- Sections by scope:
+  - site-a: Site A redesign (ID 6Xm5HcVq3pJ9fR2w)
+  - site-b: Site B (ID 6Pj7Gc2Xr9Mw5Kb8)
+  - all: no section
 - Project label: exr
+
+A project with one section names it instead: `- Section: Example Redesign (ID 6Xm5HcVq3pJ9fR2w)`.
 ```
 
 ## Filing a task
@@ -106,7 +112,7 @@ Lobot files only the PM's own tasks (tasks skill, "Only the PM's own one-off act
 1. **Draft it** from the task-list entry and the settings:
    - **Title:** the entry's `summary`. It starts with a verb and is short and specific ("Send the homework list to the client").
    - **Description:** the entry's `description`, then a last line `Lobot T-012 · <source>`, so the task leads back to its record.
-   - **Project, section, labels, assignee:** from the settings.
+   - **Project, section, labels, assignee:** from the settings. With sections by scope, the section is the one for the entry's `scope`.
    - **Priority:** from the settings (below).
    - **Dates:** the entry's `due`, as the settings say, written as `YYYY-MM-DD`.
 2. **Get the PM's approval** of the exact values. A meeting's tasks are approved in its review (meeting-notes skill), several at once; otherwise show the draft and ask. Never create, change, complete, or delete a Todoist task without the PM's approval. A task built from untrusted material (email, client documents, web pages) also follows `.ai/general/human-review.md`.
@@ -140,11 +146,11 @@ Todoist is the primary source for the tasks filed there; `docs/tasks.yaml` is th
 
 Updating `docs/tasks.yaml` from Todoist needs no approval: it records what the PM already did.
 
-1. **Read the filed tasks** by their IDs (from the `link`s of open entries) when the connector can look tasks up by ID; otherwise read the project's section (or project, filtered by Lobot's label) 20 at a time, until every linked ID is found or the list runs out.
+1. **Read the filed tasks** by their IDs (from the `link`s of open entries) when the connector can look tasks up by ID; otherwise read the project's sections (or project, filtered by Lobot's label) 20 at a time, until every linked ID is found or the list runs out.
 2. **A linked task that isn't returned:** it's no longer open in Todoist. If the connector lists completed tasks and it's there, mark the entry `done` with a note (`"Completed in Todoist (seen 2026-10-30)."`). If the connector lists completed tasks and it isn't there either, it was deleted: mark it `dropped` (`"Deleted in Todoist (seen 2026-10-30)."`). If the connector can't tell, mark it `done` and say it might have been dropped. List these in one line; the PM corrects any that are wrong.
-3. **Changed in Todoist** (title, description, due date or deadline): update the entry's `summary`, `description`, or `due` to match and say so in the same line. Keep the `Lobot T-###` line out of the entry's description.
-4. **In the project's section with no entry:** the PM added a task there themselves. Add it to `docs/tasks.yaml` with its link (`source`: `"Added by the PM in Todoist"`, owner the PM, scope `all` unless the section says otherwise), and say so. Skip it if the PM has said it isn't project work.
-5. **Changed in the Project Brain, not in Todoist** (the PM closed, re-dated, or reworded it in chat or on the review desk): propose the same change in Todoist and make it once the PM approves. Until then the two disagree, so say so rather than letting the next sync undo the PM's change.
+3. **Changed in Todoist** (title, description, due date or deadline, or moved to another scope's section): update the entry's `summary`, `description`, `due`, or `scope` to match and say so in the same line. Keep the `Lobot T-###` line out of the entry's description.
+4. **In the project's sections with no entry:** the PM added a task there themselves. Add it to `docs/tasks.yaml` with its link (`source`: `"Added by the PM in Todoist"`, owner the PM, scope from its section, or `all`), and say so. Skip it if the PM has said it isn't project work.
+5. **Changed in the Project Brain, not in Todoist** (the PM closed, re-dated, reworded, or re-scoped it in chat or on the review desk): propose the same change in Todoist and make it once the PM approves. Until then the two disagree, so say so rather than letting the next sync undo the PM's change.
 
 ## Rules
 
