@@ -322,7 +322,7 @@ footer a { color: var(--ink-2); }
         <div class="when">After a call<small>meeting notes</small></div>
         <div>
           <div class="say">Process today's meeting with the client.</div>
-          <p>Lucy finds the transcript in Drive (or you drop it in) and writes the meeting notes. Lobot then opens your review desk with the proposed decisions, risks, questions, and action items, and waits for your approval before filing them.</p>
+          <p>Lucy finds the transcript in Drive (or you drop it in), cuts the small talk and anything sensitive, and writes the meeting notes. Lobot then opens your review desk with the proposed cuts, decisions, risks, questions, and action items, and waits for your approval before filing them.</p>
         </div>
       </div>
       <div class="moment">
@@ -424,6 +424,11 @@ footer a { color: var(--ink-2); }
 
     <div class="skills" id="skill-list">
       <div class="group-label" data-group="capture">Capture what happens</div>
+      <article class="skill" data-skill="transcript-cleanup" data-group="capture">
+        <header><h3>Transcript cleanup</h3><span class="owner lucy">Lucy</span></header>
+        <p>Cuts the small talk and anything sensitive from a transcript and drops the filler words, leaving one timestamped paragraph per speaker. You approve the cuts, and only the cleaned copy is committed.</p>
+        <div class="try">"Clean up yesterday's transcript."</div>
+      </article>
       <article class="skill" data-skill="meeting-notes" data-group="capture">
         <header><h3>Meeting notes</h3><span class="owner lucy">Lucy</span></header>
         <p>Turns a transcript into notes with a summary, action items, and flags, and suggests the decisions, tasks, and risks that came out of it.</p>
@@ -578,7 +583,7 @@ footer a { color: var(--ink-2); }
 │  ├─ <span class="y">tasks.yaml</span>        <span class="c"># who owes what</span>
 │  ├─ <span class="y">people.yaml</span>  <span class="y">raci.yaml</span>  <span class="y">glossary.yaml</span>
 │  ├─ <span class="d">work/</span>             <span class="c"># what the team will build</span>
-│  ├─ <span class="d">meetings/</span>  <span class="d">transcripts/</span>
+│  ├─ <span class="d">meetings/</span>  <span class="d">transcripts/</span>  <span class="c"># cleaned; raw/ stays local</span>
 │  ├─ <span class="d">journals/</span>  <span class="d">reports/</span>
 ├─ <span class="d">repo/</span>                <span class="c"># the code, read-only</span>
 └─ <span class="d">tmp/</span>                 <span class="c"># scratch, never saved</span>

@@ -5,6 +5,8 @@
 /Claude outputs/
 .DS_Store
 .claude/settings.local.json
+# Raw meeting transcripts stay on this computer; only cleaned copies are committed (transcript-cleanup skill)
+/docs/transcripts/raw/
 # Local secrets (per-PM tokens). Never commit. See .env.example
 .env
 .env.*
