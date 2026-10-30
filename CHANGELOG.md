@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.33.0](https://github.com/Lullabot/lobot/compare/v0.32.0...v0.33.0) (2026-10-30)
+
+### Added
+
+* **engine:** PMs who keep their to-do list in Todoist can have Lobot file their tasks there and keep the project's copy in step ([#27](https://github.com/Lullabot/lobot/issues/27)) ([ff96c25](https://github.com/Lullabot/lobot/commit/ff96c25d056047e3607af9899c13a09ab7929ff7))
+
 ## [0.32.0](https://github.com/Lullabot/lobot/compare/v0.31.1...v0.32.0) (2026-10-30)
 
 ### Added
