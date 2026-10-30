@@ -16,7 +16,8 @@ Every file has one home, by what it is. Use the first row that fits.
 | Where things live in the project's shared Drive | `docs/sources.yaml` | drive-sources skill |
 | What is true now about the project or a site | `docs/overview/` (the dossier) | dossier skill |
 | What the team will build, before it becomes tickets | `docs/work/<site>/` | work-breakdown skill |
-| A meeting transcript (source; never edited) | `docs/transcripts/` | meeting-notes skill |
+| A raw meeting transcript (source; never edited; git-ignored by default) | `docs/transcripts/raw/` | transcript-cleanup skill |
+| A cleaned meeting transcript (committed; what notes cite) | `docs/transcripts/` | transcript-cleanup skill |
 | Notes from one meeting | `docs/meetings/YYYY-MM-DD-<slug>.md` | meeting-notes skill |
 | What was done in a session, and why | `docs/journals/YYYY-MM-DD.md` | journal skill |
 | A report: an analysis, audit, status snapshot, briefing, or list prepared for someone, true as of a date | `docs/reports/YYYY-MM-DD-<slug>.md` | see "Reports" below |

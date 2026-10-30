@@ -23,6 +23,8 @@ const SKILL_DIRS = { claude: '.claude/skills', agents: '.agents/skills' };
 const SKILL_SOURCES = ['.ai/general/skills', '.ai/project/skills'];
 // Steps a breaking change needs in a project's own files, outside what update touches.
 const MIGRATIONS = path.join(__dirname, 'migrations.json');
+// Migrations the PM chose not to apply, one "id: date" line each. Kept with the project's settings.
+const DECLINED = '.ai/project/declined-migrations.yaml';
 
 function usage() {
   return [
@@ -33,7 +35,7 @@ function usage() {
     '  ' + RUN + ' status [dir]',
     '  ' + RUN + ' update [dir] [--dry-run] [--force] [--harnesses claude,agents]',
     '  ' + RUN + ' link [dir] [--harnesses claude,agents]',
-    '  ' + RUN + ' migrate [dir] [--dry-run]',
+    '  ' + RUN + ' migrate [dir] [--dry-run] [--decline ID]',
     '',
     'init    New Project Brain: copies Lobot to .ai/general/, adds starting files',
     '        (existing files are kept), and makes the skills discoverable.',
@@ -46,7 +48,8 @@ function usage() {
     'migrate Applies the steps a breaking change needs in the project\'s own files (moving',
     '        or renaming a folder, updating a name, converting a record to a new format).',
     '        status and update list them first.',
-    '        Run it after update, once the PM has approved the steps.',
+    '        Run it after update, once the PM has approved the steps. --decline ID',
+    '        records that the PM chose not to apply that migration, so it stops coming up.',
     '',
     '--harnesses  Which assistants to set up: claude (.claude/skills, .claude/agents)',
     '             and/or agents (.agents/skills: Codex, Cursor, Gemini CLI, OpenCode).',
@@ -401,6 +404,16 @@ function copyAgents(project) {
  *        new name, in the project's own markdown and YAML files (not transcripts or journals)
  *   { "split": "<file.yaml>", "field": "<field>" }      shorten a YAML record's long one-line field
  *        to a summary and move the detail into a `description` (see splitTitle)
+ *   { "replace": "<file>", "pattern": "<regex>", "to": "<text>", "label": "<what it does>" }
+ *        replace a regular expression (multiline); the pattern must stop matching once replaced,
+ *        so the step is safe to rerun
+ *   { "ignore": "<line>" }                               add a line to the project's .gitignore
+ *   { "move_files": "<folder>", "to": "<folder>/<sub>", "unless_frontmatter": "<key>" }
+ *        move the files directly inside a folder into one of its subfolders, skipping dotfiles and
+ *        files whose frontmatter has the key, and point links to them at their new path
+ * A migration can also carry "ask": a question for the PM, because applying it is the PM's choice
+ * (declined with migrate --decline), and "needs": the id of a migration it depends on, so declining
+ * that one declines it too.
  */
 function loadMigrations() {
   let list;
@@ -415,10 +428,25 @@ function loadMigrations() {
     return norm === rel && !norm.startsWith('..') && !/^(\.git|\.ai\/general)(\/|$)/.test(norm);
   };
   for (const m of list) {
+    if (m.needs && !list.some((o) => o.id === m.needs)) fail('migration ' + m.id + ' needs an unknown migration: ' + m.needs);
     for (const step of m.steps) {
       const paths = 'move' in step ? [step.move, step.to] : 'replace' in step ? [step.replace]
         : 'convert' in step ? [step.convert, step.to] : 'relink' in step ? [step.relink, step.to]
-        : 'split' in step ? [step.split] : [step.delete];
+        : 'split' in step ? [step.split] : 'ignore' in step ? ['.gitignore']
+        : 'move_files' in step ? [step.move_files, step.to] : [step.delete];
+      if ('ignore' in step && (typeof step.ignore !== 'string' || !step.ignore.trim() || /[\r\n]/.test(step.ignore))) {
+        fail('migration ' + m.id + ' has an ignore step that is not a single line');
+      }
+      if ('move_files' in step && path.posix.dirname(step.to) !== step.move_files) {
+        fail('migration ' + m.id + ' has a move_files step whose destination is not a direct subfolder');
+      }
+      if ('pattern' in step) {
+        try {
+          new RegExp(step.pattern, 'gm');
+        } catch (e) {
+          fail('migration ' + m.id + ' has an invalid pattern: ' + step.pattern);
+        }
+      }
       if ('split' in step && !/^[a-z_]+$/.test(step.field)) fail('migration ' + m.id + ' has a split step with an invalid field: ' + step.field);
       if ('convert' in step && !TABLE_CONVERTERS[step.as]) fail('migration ' + m.id + ' names an unknown converter: ' + step.as);
       if (!paths.every(safe)) fail('migration ' + m.id + ' has a step outside the project\'s own files: ' + JSON.stringify(step));
@@ -431,10 +459,27 @@ function loadMigrations() {
 function pendingMigrations(project) {
   const out = [];
   const at = (rel) => path.join(project, rel);
+  const declined = readDeclined(project);
   for (const m of loadMigrations()) {
+    if (declined[m.id] || (m.needs && declined[m.needs])) continue;
     for (const step of m.steps) {
       let item = null;
-      if ('move' in step) {
+      if ('ignore' in step) {
+        if (gitignoreHas(project, step.ignore)) continue;
+        item = { text: 'ignore   ' + step.ignore + ' in .gitignore' };
+      } else if ('move_files' in step) {
+        const names = filesToMove(project, step);
+        if (!names.length) continue;
+        const links = linksToMoved(project, step, names);
+        item = { text: 'move     ' + names.length + (names.length === 1 ? ' file' : ' files') + ' from ' + step.move_files + '/ into ' + step.to + '/'
+          + (links.length ? ', and update links to them in ' + links.join(', ') : '') };
+        const taken = names.filter((n) => fs.existsSync(at(path.posix.join(step.to, n))));
+        if (taken.length) item.reason = 'already in ' + step.to + ': ' + taken.join(', ') + '; merge them by hand';
+      } else if ('replace' in step && 'pattern' in step) {
+        const file = at(step.replace);
+        if (!fs.existsSync(file) || !new RegExp(step.pattern, 'm').test(fs.readFileSync(file, 'utf8'))) continue;
+        item = { text: 'replace  ' + (step.label || '/' + step.pattern + '/ with "' + step.to + '"') + ' in ' + step.replace };
+      } else if ('move' in step) {
         if (!fs.existsSync(at(step.move))) continue;
         item = { text: 'move     ' + step.move + ' -> ' + step.to };
         if (fs.existsSync(at(step.to))) item.reason = step.to + ' already exists; merge them by hand';
@@ -478,10 +523,66 @@ function pendingMigrations(project) {
         item = { text: 'delete   ' + step.delete };
         if (!fs.statSync(at(step.delete)).isFile()) item.reason = 'it is a folder; delete it by hand';
       }
-      out.push(Object.assign(item, { id: m.id, why: m.why, step, state: item.reason ? 'blocked' : 'ready' }));
+      out.push(Object.assign(item, { id: m.id, why: m.why, ask: m.ask, step, state: item.reason ? 'blocked' : 'ready' }));
     }
   }
   return out;
+}
+
+/** Migrations this project declined: { id: date }. */
+function readDeclined(project) {
+  const file = path.join(project, DECLINED);
+  const out = {};
+  if (!fs.existsSync(file)) return out;
+  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
+    const m = line.match(/^([a-z0-9][a-z0-9-]*):\s*(.*?)\s*$/);
+    if (m) out[m[1]] = m[2] || true;
+  }
+  return out;
+}
+
+function gitignoreHas(project, line) {
+  const file = path.join(project, '.gitignore');
+  if (!fs.existsSync(file)) return false;
+  const norm = (l) => l.trim().replace(/^\//, '').replace(/\/$/, '');
+  return fs.readFileSync(file, 'utf8').split('\n').some((l) => norm(l) === norm(line));
+}
+
+/** Files directly in a move_files step's folder that still need moving. */
+function filesToMove(project, step) {
+  const dir = path.join(project, step.move_files);
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).sort().filter((name) => {
+    if (name.startsWith('.') || !fs.statSync(path.join(dir, name)).isFile()) return false;
+    if (!step.unless_frontmatter) return true;
+    const text = fs.readFileSync(path.join(dir, name), 'utf8');
+    const fm = text.startsWith('---\n') ? text.slice(4, Math.max(text.indexOf('\n---', 4), 4)) : '';
+    return !new RegExp('^' + step.unless_frontmatter + ':', 'm').test(fm);
+  });
+}
+
+/** A pattern for links to a file in a move_files step's folder: "<folder name>/<file>". */
+function movedLinkPattern(step, name) {
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('(^|[\\s/(\\[`\'"])(' + esc(path.posix.basename(step.move_files)) + '/)(' + esc(name) + ')(?![\\w.-])', 'gm');
+}
+
+/** Project files that link to files a move_files step will move (not transcripts or journals). */
+function linksToMoved(project, step, names) {
+  const found = [];
+  const visit = (rel) => {
+    const abs = path.join(project, rel);
+    if (!fs.existsSync(abs)) return;
+    if (fs.statSync(abs).isDirectory()) {
+      if (RELINK_SKIP.has(rel) || rel === step.move_files) return;
+      for (const child of fs.readdirSync(abs).sort()) visit(path.posix.join(rel, child));
+    } else if (TEXT_EXT.has(path.extname(rel))) {
+      const text = fs.readFileSync(abs, 'utf8');
+      if (names.some((n) => movedLinkPattern(step, n).test(text))) found.push(rel);
+    }
+  };
+  ['CLAUDE.md', 'AGENTS.md', 'docs', '.ai/project'].forEach(visit);
+  return found;
 }
 
 /**
@@ -707,7 +808,10 @@ function printMigrations(pending, heading) {
   console.log(heading);
   let last = null;
   for (const p of pending) {
-    if (p.id !== last) console.log('  ' + p.why);
+    if (p.id !== last) {
+      console.log('  ' + p.why);
+      if (p.ask) console.log('  Ask the PM: ' + p.ask + ' (to decline: migrate --decline ' + p.id + ')');
+    }
     last = p.id;
     console.log('    ' + p.text + (p.reason ? '  (blocked: ' + p.reason + ')' : ''));
   }
@@ -716,6 +820,7 @@ function printMigrations(pending, heading) {
 
 function cmdMigrate(project, opts) {
   requireBrain(project);
+  if (opts.decline) return declineMigration(project, opts.decline);
   const stamp = readStamp(project);
   if (!stamp || stamp.lobot_version !== VERSION) {
     fail('this Project Brain has Lobot ' + (stamp ? stamp.lobot_version : 'unversioned') + '. Run update first; the steps are for Lobot ' + VERSION + '.');
@@ -735,7 +840,24 @@ function cmdMigrate(project, opts) {
     }
     const step = p.step;
     try {
-      if ('move' in step) {
+      if ('ignore' in step) {
+        const file = path.join(project, '.gitignore');
+        const text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+        fs.writeFileSync(file, text + (text && !text.endsWith('\n') ? '\n' : '') + step.ignore + '\n');
+      } else if ('move_files' in step) {
+        const names = filesToMove(project, step);
+        for (const rel of linksToMoved(project, step, names)) {
+          const file = path.join(project, rel);
+          let text = fs.readFileSync(file, 'utf8');
+          for (const n of names) text = text.replace(movedLinkPattern(step, n), '$1$2' + path.posix.basename(step.to) + '/$3');
+          fs.writeFileSync(file, text);
+        }
+        fs.mkdirSync(path.join(project, step.to), { recursive: true });
+        for (const n of names) fs.renameSync(path.join(project, step.move_files, n), path.join(project, step.to, n));
+      } else if ('replace' in step && 'pattern' in step) {
+        const file = path.join(project, step.replace);
+        fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(new RegExp(step.pattern, 'gm'), step.to));
+      } else if ('move' in step) {
         fs.mkdirSync(path.dirname(path.join(project, step.to)), { recursive: true });
         fs.renameSync(path.join(project, step.move), path.join(project, step.to));
       } else if ('replace' in step) {
@@ -768,6 +890,21 @@ function cmdMigrate(project, opts) {
   if (blocked.length) printMigrations(blocked, 'Not done; do these by hand:');
   console.log('');
   console.log('Next: review the changes and commit them in the Project Brain.');
+}
+
+function declineMigration(project, id) {
+  const migration = loadMigrations().find((m) => m.id === id);
+  if (!migration) fail('no migration named ' + id + '. status lists the pending ones.');
+  if (readDeclined(project)[id]) return console.log('Already declined: ' + id);
+  const file = path.join(project, DECLINED);
+  const header = '# Lobot migrations this project chose not to apply. status, update, and migrate skip them.\n'
+    + '# Delete a line to be asked again.\n';
+  const text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : header;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, text + (text.endsWith('\n') ? '' : '\n') + id + ': ' + new Date().toISOString().slice(0, 10) + '\n');
+  console.log('Declined ' + id + ' (recorded in ' + DECLINED + '). Commit it with the Project Brain.');
+  const dependents = loadMigrations().filter((m) => m.needs === id).map((m) => m.id);
+  if (dependents.length) console.log('This also skips: ' + dependents.join(', '));
 }
 
 function printEditedAgents(edited) {
@@ -1104,7 +1241,7 @@ function main() {
   const argv = process.argv.slice(2);
   const opts = {};
   const positional = [];
-  const valued = { '--name': 'name', '--key': 'key', '--harnesses': 'harnesses' };
+  const valued = { '--name': 'name', '--key': 'key', '--harnesses': 'harnesses', '--decline': 'decline' };
   const flags = { '--dry-run': 'dryRun', '--force': 'force' };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];

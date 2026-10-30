@@ -75,7 +75,7 @@ items:
     kind: folder
     purpose: transcripts
     handler: meeting-notes
-    copy_to: docs/transcripts/
+    copy_to: docs/transcripts/raw/
     edit: locked
     why: "Where Google Meet saves call transcripts, so new ones can be found and filed."
   meeting-notes:

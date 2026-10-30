@@ -11,7 +11,7 @@ Promote an area by moving it to Autonomous. Promote when the PM has had a run of
 
 ## Sources (read-only)
 
-- `docs/transcripts/`
+- `docs/transcripts/raw/` (raw transcripts; the cleaned copies in `docs/transcripts/` are Lucy's, written with the PM's approval of each cut list)
 - The project's shared Google Drive and the sources mapped in `docs/sources.yaml` (read through the Drive connector)
 
 ## Notes

@@ -240,6 +240,9 @@ def check_sources(sources, layout, scopes, errors, warnings):
                 errors.append(f"{where} a transcripts source needs a handler (meeting-notes)")
             if not s.get("copy_to"):
                 warnings.append(f"{where} no copy_to: transcripts won't be kept in the Project Brain")
+            elif str(s["copy_to"]).rstrip("/") != "docs/transcripts/raw":
+                warnings.append(f"{where} copy_to should be docs/transcripts/raw/: snapshots are raw transcripts, "
+                                "kept apart from the cleaned copies (transcript-cleanup skill)")
         if kind == "folder" and (purpose != "output" or s.get("handler")) and "since" not in s:
             warnings.append(f"{where} no since date: the first check will list every file in the folder")
         if kind != "folder" and ("since" in s or "subfolders" in s):
