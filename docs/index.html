@@ -267,7 +267,7 @@ footer a { color: var(--ink-2); }
       <span class="version" id="version" hidden><span class="dot"></span><span></span></span>
     </div>
     <div class="stats" aria-label="At a glance">
-      <div class="stat"><b data-count="skills">24</b><span>skills the assistant reaches for</span></div>
+      <div class="stat"><b data-count="skills">26</b><span>skills the assistant reaches for</span></div>
       <div class="stat"><b>3</b><span>personalities: Lobot, Lucy, and Pepper</span></div>
       <div class="stat"><b>8</b><span>ground rules on every project</span></div>
       <div class="stat"><b>1</b><span>folder that holds the whole project</span></div>
@@ -458,18 +458,18 @@ footer a { color: var(--ink-2); }
       </article>
       <article class="skill" data-skill="questions" data-group="records">
         <header><h3>Questions log</h3><span class="owner lucy">Lucy</span></header>
-        <p>One list of the questions only you can answer, kept apart from product questions for the client, so you can answer them in a batch and each answer gets filed where it belongs.</p>
+        <p>Every open question in four kinds: the ones only you can answer, product questions for the client, technical questions for developers or client IT, and quick checks for the records. Each one says who answers it and when the answer is needed.</p>
         <div class="try">"What do you need from me?"</div>
       </article>
       <article class="skill" data-skill="risks" data-group="records">
         <header><h3>Risk tracker</h3><span class="owner lucy">Lucy</span></header>
-        <p>Keeps the project's risks with severity, who confirmed them, the next step, and a dated history of how each one developed.</p>
+        <p>Keeps the project's risks with severity, who confirmed them, the next step, and a dated history of how each one developed. Risks, decisions, and questions can live in one Maintenance Logs Sheet in Drive instead.</p>
         <div class="try">"What could go wrong this month?"</div>
       </article>
       <article class="skill" data-skill="tasks" data-group="records">
         <header><h3>Task list</h3><span class="owner lucy">Lucy</span></header>
-        <p>Every action item from your meetings in one list, yours and the ones others owe, with due dates, so you can see what's late and who to chase.</p>
-        <div class="try">"What's on my plate, and who owes us what?"</div>
+        <p>Your own one-off actions from meetings and documents, each with a short summary and a due date. Development work goes to tickets, and what you're waiting on goes to the questions log.</p>
+        <div class="try">"What's on my plate this week?"</div>
       </article>
       <article class="skill" data-skill="todoist" data-group="records">
         <header><h3>Todoist</h3><span class="owner lobot">Lobot</span></header>
@@ -488,7 +488,7 @@ footer a { color: var(--ink-2); }
       </article>
       <article class="skill" data-skill="raci" data-group="records">
         <header><h3>RACI</h3><span class="owner lucy">Lucy</span></header>
-        <p>Who is responsible, accountable, consulted, and informed for each area of work, on both teams, site by site, plus a "who to go to" table to share with the client.</p>
+        <p>Who is responsible, accountable, consulted, and informed for each area of work, on both teams, site by site, plus a "who to go to" table and a Roster &amp; RACI Sheet to share with the client.</p>
         <div class="try">"Who signs off on content changes?"</div>
       </article>
       <article class="skill" data-skill="glossary" data-group="records">
@@ -585,7 +585,7 @@ footer a { color: var(--ink-2); }
 │  ├─ <span class="y">decisions.yaml</span>    <span class="c"># what we decided, and who approved</span>
 │  ├─ <span class="y">risks.yaml</span>        <span class="c"># what could go wrong</span>
 │  ├─ <span class="y">questions.yaml</span>    <span class="c"># what's still open</span>
-│  ├─ <span class="y">tasks.yaml</span>        <span class="c"># who owes what</span>
+│  ├─ <span class="y">tasks.yaml</span>        <span class="c"># your own to-dos</span>
 │  ├─ <span class="y">people.yaml</span>  <span class="y">raci.yaml</span>  <span class="y">glossary.yaml</span>
 │  ├─ <span class="d">work/</span>             <span class="c"># what the team will build</span>
 │  ├─ <span class="d">meetings/</span>  <span class="d">transcripts/</span>  <span class="c"># cleaned; raw/ stays local</span>
