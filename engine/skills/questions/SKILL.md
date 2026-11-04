@@ -107,7 +107,7 @@ A busy log is easier to work through most important first. `priority` says how m
 - **`medium`** (or left out): needed for upcoming work, but nothing is waiting on it yet.
 - **`low`**: worth knowing, but nothing waits on it. Most housekeeping checks are low.
 
-Whoever adds a question sets its priority. The PM can change it, on the review desk or in chat, and a priority the PM set is kept unless the PM changes it. When a question's `needed_by` draws close or work starts waiting on it, raise it to `high`, and say so in the report.
+Whoever adds a question sets its priority, and the PM can change it on the review desk or in chat. After that, only the PM changes it: when a question's `needed_by` draws close or work starts waiting on it, say so in the report and suggest raising it to `high`.
 
 The review desk and the questions page show open questions highest priority first, then by `needed_by`, and let the PM narrow them by kind and priority, so a long list can be worked through in chunks (all high-priority questions, then the housekeeping checks in one batch).
 

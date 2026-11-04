@@ -169,7 +169,7 @@ const CHECK_ST = ["Not started", "In progress", "Done", "Not applicable"];
 const Q_PRI = ["high", "medium", "low"], Q_PRI_LABEL = {high: "High", medium: "Medium", low: "Low"};
 const Q_KINDS = {questions: {project: "Project", housekeeping: "Housekeeping"}, product: {product: "Product", technical: "Technical"}};
 const priOf = d => Q_PRI.includes(d.priority) ? d.priority : "medium";
-const kindOf = d => d.about || "project";
+const kindOf = d => ["housekeeping", "product", "technical"].includes(d.about) ? d.about : "project";
 
 // One entry per tab. coll: database collection; edit: fields the PM can change (compared to `synced`).
 const TABS = [
