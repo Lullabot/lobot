@@ -93,16 +93,16 @@ Each time, update `updated`, add the source to `sources`, and run the validator.
 
 #### Contradictions
 
-A new source sometimes says something different from a fact the dossier already states with its own citation: a meeting revises an earlier estimate, a document disagrees with a walkthrough. Don't replace the fact, even when the dossier is autonomous. Overwriting it loses which source said what, and the PM can't tell a change of plan from a transcription error.
+A new source sometimes says something different from a fact the dossier already states with its own citation: a meeting revises an earlier estimate, a document disagrees with a walkthrough, a newer version of a cited Drive document says something else. Don't replace the fact, even when the dossier is autonomous. Overwriting it loses which source said what, and the PM can't tell a change of plan from a transcription error.
 
 1. Leave the existing fact and its citation as they are.
-2. Propose the change on the review desk as a `Dossier` proposal (tracker-pages skill, "Review desk"), with the two claims side by side, each with its source and locator: `title` names the topic and what differs; `points` are "Now: <the fact> (<source> <locator>)" and "New: <the claim> (<source> <locator>)"; `source` is the material that raised it. In the meeting notes' review list it is one item like any other.
+2. Propose the change on the review desk as a `Dossier` proposal (tracker-pages skill, "Review desk"), with the two claims side by side, each with its source and locator: `title` names the topic and what differs; `points` are "Now: <the fact> (<source> <locator>)" and "New: <the claim> (<source> <locator>)"; `source` is the material that raised it. In the meeting notes' review list it is one item like any other. When no meeting notes raised it (a document, a changed Drive file), record the PM's decision in the journal.
 3. Apply what the PM decides:
    - **Approve:** replace the fact with the new claim and its citation. Keep the earlier value in the sentence when the change itself matters (see "Writing rules").
    - **Approve with change:** do what the note says. When it says to ask someone, add a question to the questions log (questions skill) and mark the fact *(unverified, see Q-###)* until it is answered.
    - **Drop:** keep the existing fact. The new claim isn't recorded in the dossier.
 
-A fact marked *(unverified)* isn't a cited fact yet: a source that confirms or corrects it is recorded as usual. Two accounts that disagree within the same new material are still recorded as *(unverified)* and asked through the questions log (see "Who does what").
+A fact marked *(unverified)* isn't settled yet: a source that confirms or corrects it is recorded as usual. Two accounts that disagree within the same new material are still recorded as *(unverified)* and asked through the questions log (see "Who does what").
 
 ### Answer a question about the project
 
