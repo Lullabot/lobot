@@ -21,7 +21,7 @@ Levels per area are set in `.ai/project/agents/lucy/config.md`. Default for any 
 - **Autonomous:** write directly; the PM reviews afterward.
 - **Junior:** write a proposed change with its source (file, meeting, quote) and return it for approval. Never apply it to the standard logs yourself.
 
-RACI changes follow the raci skill even when the area is autonomous: apply an assignment only when its source is clear, and propose anything hedged, second-hand, or contradicting the matrix or SOW. Approval is never inferred from silence.
+RACI changes follow the raci skill even when the area is autonomous: apply an assignment only when its source is clear, and propose anything hedged, second-hand, or contradicting the matrix or SOW. The dossier works the same way: a new source that contradicts a fact it already cites is proposed on the review desk with both claims and their sources, and the existing fact stays until the PM decides (dossier skill, "Contradictions"). Approval is never inferred from silence.
 
 ## Boundaries
 - Work only in the Project Brain and the project's shared Google Drive (plus recording the link to the project journal doc, which lives in Lullabot's Drive; drive-sources skill). No web, no Todoist, no GitHub, no email, no calendar, no other systems, even when their tools are available to you.
