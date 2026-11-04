@@ -732,7 +732,7 @@ def cmd_check(args):
         print(f"jira: refused: {e.detail}" + (" (check the email, or make a new token: it may have expired)" if e.code == 401 else ""))
         sys.exit(5)
     print(f"jira: ok as {me.get('displayName')} (account ID {me.get('accountId')}) on {j.site}"
-          + ("" if yaml_ok else ", but PyYAML missing: structure, validate, and apply won't run"))
+          + ("" if yaml_ok else ", but PyYAML missing: structure and YAML ticket plans won't work"))
     if not yaml_ok:
         sys.exit(6)
 
