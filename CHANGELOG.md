@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.33.2](https://github.com/Lullabot/lobot/compare/v0.33.1...v0.33.2) (2026-11-04)
+
+### Fixed
+
+* **engine:** Jira setup checks for the Python package its tools need, and uses the project's own Python when it has one ([#33](https://github.com/Lullabot/lobot/issues/33)) ([68565df](https://github.com/Lullabot/lobot/commit/68565dfd4e43c315c3edfef9692e0845b7b49d15)), closes [#17](https://github.com/Lullabot/lobot/issues/17)
+
+## [0.33.1](https://github.com/Lullabot/lobot/compare/v0.33.0...v0.33.1) (2026-11-04)
+
+### Fixed
+
+* **engine:** questions carry a priority, and the review desk lists the most important first, filterable by kind and priority ([#32](https://github.com/Lullabot/lobot/issues/32)) ([08571c6](https://github.com/Lullabot/lobot/commit/08571c6a38f5bd606902ca33b818494015eae5d2)), closes [#10](https://github.com/Lullabot/lobot/issues/10)
+
+### Wording and documentation
+
+* bring the Pages site in line with the questions, tasks, and Sheets changes ([7a51aab](https://github.com/Lullabot/lobot/commit/7a51aabc499630c989275768b2ac3627c0f7c5c4))
+* show the PM's core records in detail on the Pages site ([#19](https://github.com/Lullabot/lobot/issues/19)) ([25ac3ab](https://github.com/Lullabot/lobot/commit/25ac3ab56d01021eb8008b4fb708fedda7cf18f6))
+
 ## [0.33.0](https://github.com/Lullabot/lobot/compare/v0.32.0...v0.33.0) (2026-10-30)
 
 ### Added
