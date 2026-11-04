@@ -43,6 +43,7 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,te
 .s-done{color:var(--done);background:var(--done-bg)} .s-na{color:var(--na);background:var(--na-bg)}
 .s-sync{color:var(--sync);background:var(--sync-bg)}
 .s-scope{color:var(--accent);background:var(--accent-soft)}
+.s-hi{color:var(--sync);background:var(--sync-bg)}
 section.queue,section.add{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px}
 .queue h2,.list h2,.add h2{font-size:15px;margin:0}
 .qrow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding-top:10px;border-top:1px solid var(--line)}
@@ -105,8 +106,17 @@ details.answered>ol{margin-top:10px}
       <div class="filters" role="group" aria-label="Filter by kind">
         <span class="lbl">Kind</span>
         <button id="ab-any" data-ab="any" aria-pressed="true">All</button>
-        <button id="ab-project" data-ab="project" aria-pressed="false">For you</button>
+        <button id="ab-project" data-ab="project" aria-pressed="false">Project</button>
+        <button id="ab-housekeeping" data-ab="housekeeping" aria-pressed="false">Housekeeping</button>
         <button id="ab-product" data-ab="product" aria-pressed="false">Product</button>
+        <button id="ab-technical" data-ab="technical" aria-pressed="false">Technical</button>
+      </div>
+      <div class="filters" role="group" aria-label="Filter by priority">
+        <span class="lbl">Priority</span>
+        <button id="pr-any" data-pr="any" aria-pressed="true">All</button>
+        <button id="pr-high" data-pr="high" aria-pressed="false">High</button>
+        <button id="pr-medium" data-pr="medium" aria-pressed="false">Medium</button>
+        <button id="pr-low" data-pr="low" aria-pressed="false">Low</button>
       </div>
       <div class="filters" role="group" aria-label="Filter by scope" id="scopeFilters">
         <span class="lbl">Scope</span>
@@ -132,7 +142,9 @@ details.answered>ol{margin-top:10px}
       <textarea id="newQ" aria-label="Question text" placeholder="What do you need answered?" required></textarea>
       <div class="addrow">
         <label for="newAbout">Kind</label>
-        <select id="newAbout"><option value="project" selected>For you (project)</option><option value="product">Product</option></select>
+        <select id="newAbout"><option value="project" selected>Project (for you)</option><option value="housekeeping">Housekeeping (for you)</option><option value="product">Product</option><option value="technical">Technical</option></select>
+        <label for="newPri">Priority</label>
+        <select id="newPri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select>
         <input type="text" id="newAsk" aria-label="Who answers it" placeholder="Who answers it" hidden>
         <label for="newScope" id="newScopeLbl">Scope</label>
         <select id="newScope"></select>
@@ -151,9 +163,15 @@ const CONFIG = {
 };
 const HAS_SCOPES = Object.keys(CONFIG.scopes || {}).length > 0;   // no scopes: hide scope UI, everything is "all"
 const SCOPES = {...(CONFIG.scopes || {}), all: "Project-wide"};
-const FIELDS = {status: "Status", answer: "Answer"};
-let qs = [], scopeF = "any", statusF = "any", aboutF = "any", coll = null, canWrite = true;
-const aboutOf = q => q.about === "product" ? "product" : "project";
+const FIELDS = {status: "Status", answer: "Answer", priority: "Priority"};
+let qs = [], scopeF = "any", statusF = "any", aboutF = "any", priF = "any", coll = null, canWrite = true;
+// Kinds and priority from the questions skill. Product and technical questions are for others; a question without a priority counts as medium.
+const KINDS = {project: "Project", housekeeping: "Housekeeping", product: "Product", technical: "Technical"};
+const PRI = ["high", "medium", "low"], PRI_LABEL = {high: "High", medium: "Medium", low: "Low"};
+const aboutOf = q => KINDS[q.about] ? q.about : "project";
+const forOthers = q => ["product", "technical"].includes(aboutOf(q));
+const priOf = q => PRI.includes(q.priority) ? q.priority : "medium";
+const byPriority = (a, b) => PRI.indexOf(priOf(a)) - PRI.indexOf(priOf(b)) || String(a.neededBy || "9999").localeCompare(String(b.neededBy || "9999")) || String(a.id).localeCompare(String(b.id), undefined, {numeric: true});
 const drafts = {};          // unsaved answer text, keyed by question id
 const editing = new Set();  // answered questions with the answer editor open
 
@@ -191,13 +209,14 @@ function render(){
 
   // Summary
   const open = qs.filter(q => q.status !== "answered");
-  const openProduct = open.filter(q => aboutOf(q) === "product").length;
+  const openOthers = open.filter(forOthers).length, openHigh = open.filter(q => priOf(q) === "high").length;
   const pending = qs.filter(isPending);
   $("tally").replaceChildren(
     ...(HAS_SCOPES
       ? Object.entries(SCOPES).map(([k, label]) => { const n = open.filter(q => q.scope === k).length; return pill(n ? "s-prog" : "s-todo", `${label}: ${n} open`); })
       : [pill(open.length ? "s-prog" : "s-todo", `${open.length} open`)]),
-    pill("s-scope", `${open.length - openProduct} for you, ${openProduct} product`),
+    pill("s-scope", `${open.length - openOthers} for you, ${openOthers} for others`),
+    ...(openHigh ? [pill("s-hi", `${openHigh} high priority`)] : []),
     pill("s-done", `${qs.length - open.length} answered`),
     ...(pending.length ? [pill("s-sync", `${pending.length} waiting for Claude`)] : []));
 
@@ -212,8 +231,8 @@ function render(){
   }));
 
   // Lists
-  const match = q => (scopeF === "any" || q.scope === scopeF) && (aboutF === "any" || aboutOf(q) === aboutF);
-  const openVis = statusF === "answered" ? [] : open.filter(match);
+  const match = q => (scopeF === "any" || q.scope === scopeF) && (aboutF === "any" || aboutOf(q) === aboutF) && (priF === "any" || priOf(q) === priF);
+  const openVis = statusF === "answered" ? [] : open.filter(match).sort(byPriority);
   const ansVis = statusF === "open" ? [] : qs.filter(q => q.status === "answered" && match(q));
   if (!qs.length) return;
   $("open").hidden = statusF === "answered";
@@ -231,9 +250,11 @@ function render(){
 function card(q){
   const answered = q.status === "answered";
   const meta = el("div", {className: "meta"}, [
-    pill("s-scope flag", aboutOf(q) === "product" ? "Product" : "For you"),
+    pill("s-scope flag", KINDS[aboutOf(q)]),
+    ...(answered ? [] : [pill(priOf(q) === "high" ? "s-hi flag" : "s-todo flag", PRI_LABEL[priOf(q)] + " priority")]),
     ...(HAS_SCOPES ? [pill("s-scope flag", SCOPES[q.scope] || q.scope)] : []), statusPill(q.status),
-    ...(aboutOf(q) === "product" ? [el("span", {textContent: "Ask: " + (q.ask || "nobody named")})] : []),
+    ...(forOthers(q) ? [el("span", {textContent: "Ask: " + (q.ask || "nobody named")})] : []),
+    ...(!answered && q.neededBy ? [el("span", {textContent: "Needed by " + q.neededBy})] : []),
     ...(q.link ? [el("a", {href: q.link, target: "_blank", rel: "noopener", textContent: "Ticket"})] : []),
     ...(isPending(q) ? [pill("s-sync flag", q.synced ? "Changed here" : "New")] : []),
     el("span", {textContent: "Raised " + (q.raised || "—")}),
@@ -247,6 +268,13 @@ function card(q){
     const go = el("button", {className: "primary", id: "btn-" + q.id, textContent: answered ? "Save answer" : "Answer", disabled: !canWrite,
       onclick: () => { const v = ta.value.trim(); if (!v) { ta.focus(); notice(`Type an answer for ${q.id} first.`); return; } save(q, {answer: v, status: "answered"}, () => { delete drafts[q.id]; editing.delete(q.id); }); }});
     const ctl = [go];
+    if (!answered) {
+      const ps = el("select", {id: "pri-" + q.id, disabled: !canWrite});
+      ps.setAttribute("aria-label", `Priority for ${q.id}`);
+      PRI.forEach(v => ps.append(el("option", {value: v, textContent: PRI_LABEL[v] + " priority", selected: v === priOf(q)})));
+      ps.onchange = () => save(q, {priority: ps.value});
+      ctl.push(ps);
+    }
     if (answered) ctl.push(el("button", {textContent: "Cancel", onclick: () => { delete drafts[q.id]; editing.delete(q.id); render(); }}));
     kids.push(ta, el("div", {className: "controls"}, ctl));
   } else {
@@ -279,7 +307,7 @@ $("addForm").addEventListener("submit", async e => {
   $("addBtn").disabled = true;
   try {
     const about = $("newAbout").value;
-    await coll.doc(id).set({id, question: text, about, ...(about === "product" ? {ask: $("newAsk").value.trim(), link: ""} : {}), scope: HAS_SCOPES ? $("newScope").value : "all", raised: today(), source: "Questions Log page", status: "open", answer: "", synced: null, updatedAt: new Date().toISOString()});
+    await coll.doc(id).set({id, question: text, about, priority: $("newPri").value, ...(["product", "technical"].includes(about) ? {ask: $("newAsk").value.trim(), link: ""} : {}), scope: HAS_SCOPES ? $("newScope").value : "all", raised: today(), source: "Questions Log page", status: "open", answer: "", synced: null, updatedAt: new Date().toISOString()});
     $("newQ").value = ""; $("newAsk").value = ""; notice("");
   } catch (err) { notice("The question wasn't added. You may only have view access to this page."); }
   $("addBtn").disabled = !canWrite;
@@ -292,7 +320,8 @@ function wireFilters(attr, set){
 wireFilters("sc", v => scopeF = v);
 wireFilters("st", v => statusF = v);
 wireFilters("ab", v => aboutF = v);
-$("newAbout").onchange = () => { $("newAsk").hidden = $("newAbout").value !== "product"; };
+wireFilters("pr", v => priF = v);
+$("newAbout").onchange = () => { $("newAsk").hidden = !["product", "technical"].includes($("newAbout").value); };
 
 (async () => {
   const db = await window.claude?.use?.("db");

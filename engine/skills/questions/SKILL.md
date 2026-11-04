@@ -1,6 +1,6 @@
 ---
 name: questions
-description: Keep the questions log (docs/questions.yaml), the list of outstanding questions, in four kinds kept apart: project questions only the PM can answer (unclear owners, scope, schedule, process, and contract questions, values to set), product questions the team needs a stakeholder to answer (content, copy, design, features), technical questions for developers or client IT (data feeds, integrations, hosting), and housekeeping checks for the Project Brain (who someone is, a mistranscribed term), each with who answers it, its status, and when it's needed by. Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
+description: Keep the questions log (docs/questions.yaml), the list of outstanding questions, in four kinds kept apart: project questions only the PM can answer (unclear owners, scope, schedule, process, and contract questions, values to set), product questions the team needs a stakeholder to answer (content, copy, design, features), technical questions for developers or client IT (data feeds, integrations, hosting), and housekeeping checks for the Project Brain (who someone is, a mistranscribed term), each with who answers it, its priority, its status, and when it's needed by. Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
 ---
 
 # Questions log
@@ -26,7 +26,7 @@ If `docs/questions.yaml` doesn't exist, create it from the format below with no 
 ## Format
 
 ```yaml
-# Questions log: questions for the PM (about: project | housekeeping) and for others (about: product | technical), with who answers each, and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.
+# Questions log: questions for the PM (about: project | housekeeping) and for others (about: product | technical), with who answers each, a priority (high | medium | low; medium when left out), and their answers. Ordered by ID (Q-001, Q-002, ...); IDs are never reused.
 # Managed by the questions skill: .ai/general/skills/questions/SKILL.md
 # Validate after every edit: python3 .ai/general/skills/questions/validate.py docs/questions.yaml
 
@@ -43,6 +43,7 @@ Q-002:
   scope: site-a
   raised: 2026-10-09
   source: "docs/meetings/2026-10-08-kickoff.md"
+  priority: low
   status: open
 
 Q-003:
@@ -53,7 +54,9 @@ Q-003:
   scope: site-a
   raised: 2026-10-10
   source: "docs/meetings/2026-10-09-design-review.md"
+  priority: high
   status: open
+  needed_by: 2026-10-20
 ```
 
 | Field | Required | Holds |
@@ -66,6 +69,7 @@ Q-003:
 | `scope` | Yes | `all`, or a site or program key when the project declares scopes (the same keys as `docs/raci.yaml` and `docs/sources.yaml`). |
 | `raised` | Yes | The date it was logged. |
 | `source` | Yes | The file, meeting, or record that raised it. Quoted. |
+| `priority` | No | `high`, `medium` (the default when left out), or `low` (see "Priority"). |
 | `status` | Yes | `open`, `asked`, `partly-answered`, or `answered` (see "Who answers and when"). |
 | `needed_by` | No | The date the answer is needed by, while unanswered. |
 | `answer` | When answered | The answer, with who gave it and when. A partial answer can sit on an open question. Quoted. |
@@ -95,12 +99,24 @@ The review desk shows product and technical questions on "Questions for others" 
 - **`needed_by`**: the date the answer is needed before it blocks work or a milestone, when there is one (a design review, a build that depends on it). Remove it once the question is answered.
 - **`status`**: `open` (logged, not yet put to whoever answers it), `asked` (put to them, waiting), `partly-answered` (some answer is in `answer`; say what is still open), `answered`. Move a question to `asked` only when the PM says it was asked, or a source shows it.
 
+## Priority
+
+A busy log is easier to work through most important first. `priority` says how much the answer holds up:
+
+- **`high`**: work is blocked without it, or the answer could change scope, cost, the schedule, or a milestone. A `needed_by` within the next week usually makes a question high.
+- **`medium`** (or left out): needed for upcoming work, but nothing is waiting on it yet.
+- **`low`**: worth knowing, but nothing waits on it. Most housekeeping checks are low.
+
+Whoever adds a question sets its priority. The PM can change it, on the review desk or in chat, and a priority the PM set is kept unless the PM changes it. When a question's `needed_by` draws close or work starts waiting on it, raise it to `high`, and say so in the report.
+
+The review desk and the questions page show open questions highest priority first, then by `needed_by`, and let the PM narrow them by kind and priority, so a long list can be worked through in chunks (all high-priority questions, then the housekeeping checks in one batch).
+
 ## Adding a question
 
-1. Decide its kind (above).
+1. Decide its kind (above) and its priority.
 2. Check the log first; don't add a duplicate. If an open question covers it, sharpen that one.
 3. Check the records the question is about (people, RACI, glossary, overview). If they answer it, it isn't a question.
-4. Add the entry with the next ID and run the validator.
+4. Add the entry with the next ID, with a `priority` unless it's `medium`, and run the validator.
 
 Meeting notes keep their own "Open questions" section for what was raised in the meeting; the questions go here, and the notes link to the log.
 
