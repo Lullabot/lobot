@@ -88,6 +88,7 @@ Facts reach the dossier from:
 - **Meeting notes.** When processing a meeting, record its facts in the dossier topics they belong to and list the files changed in the notes' "Context updates". (At junior autonomy, propose them in the review list instead.)
 - **Research notes** in `docs/research/` and documents in Drive: summarize the findings in the topic they affect and link the note.
 - **Answered questions.** When the PM answers a question that fills a gap, update the topic and remove the gap.
+- **Changed sources.** When a Drive file the dossier cites has changed, the drive-sources check lists the facts drawn from it (its `cited.py`). Recheck each against the new version when the file is processed again, and change the ones it no longer supports following the rules in this section, citing the new version.
 
 Each time, update `updated`, add the source to `sources`, and run the validator.
 
