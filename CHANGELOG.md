@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.33.2](https://github.com/Lullabot/lobot/compare/v0.33.1...v0.33.2) (2026-11-04)
+
+### Fixed
+
+* **engine:** Jira setup checks for the Python package its tools need, and uses the project's own Python when it has one ([#33](https://github.com/Lullabot/lobot/issues/33)) ([68565df](https://github.com/Lullabot/lobot/commit/68565dfd4e43c315c3edfef9692e0845b7b49d15)), closes [#17](https://github.com/Lullabot/lobot/issues/17)
+
 ## [0.33.1](https://github.com/Lullabot/lobot/compare/v0.33.0...v0.33.1) (2026-11-04)
 
 ### Fixed
