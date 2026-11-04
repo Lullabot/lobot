@@ -9,7 +9,7 @@
   --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
   --accent:#1f5f8b; --accent-soft:#e3eef6;
   --todo:#6b7585; --todo-bg:#eef0f3; --prog:#9a5b00; --prog-bg:#fdf0db;
-  --done:#1d7a46; --done-bg:#e1f3e8; --na:#7b8290; --na-bg:#f0f1f3;
+  --done:#1d7a46; --done-bg:#e1f3e8; --na:#5f6672; --na-bg:#eceef1;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
@@ -74,7 +74,8 @@ const DATA = {{OVERVIEW_JSON}};
 const $ = id => document.getElementById(id);
 const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
 const pill = (cls, text) => el("span", {className: "pill " + cls, textContent: text});
-const link = (url, text) => url ? el("a", {href: url, target: "_blank", rel: "noopener", textContent: text || "Open"}) : null;
+// Only web addresses become links; anything else in the data is shown as text.
+const link = (url, text) => /^https?:\/\//i.test(url || "") ? el("a", {href: url, target: "_blank", rel: "noopener", textContent: text || "Open"}) : (url ? el("span", {className: "mono", textContent: url}) : null);
 const row = (k, ...v) => el("div", {className: "row"}, [el("span", {className: "k", textContent: k}), el("span", {className: "v"}, v.filter(x => x != null && x !== ""))]);
 const note = t => t ? el("span", {className: "note", textContent: t}) : null;
 const notSet = (t = "Not set") => pill("s-prog", t);
@@ -91,7 +92,7 @@ $("gaps").hidden = !gaps.length;
 $("gapList").replaceChildren(...gaps.map(g => el("li", {}, [g.what, el("span", {className: "say"}, ["Say: ", el("q", {textContent: g.say})])])));
 
 // Project
-const scopes = (DATA.drive || {}).scopes || {};
+const scopes = ((DATA.library || {}).drive || {}).scopes || {};
 $("project").replaceChildren(...[
   row("Name", P.name || notSet()),
   row("Short name", P.key ? el("span", {className: "mono", textContent: P.key}) : notSet()),

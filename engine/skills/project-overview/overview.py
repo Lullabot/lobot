@@ -97,7 +97,10 @@ def env_values():
         m = re.match(r"\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.*)$", line)
         if not m or line.lstrip().startswith("#"):
             continue
-        key, value = m.group(1), m.group(2).strip().strip("'\"")
+        value = m.group(2).strip()
+        if not value.startswith(("'", '"')):
+            value = re.sub(r"(^|\s+)#.*$", "", value)  # a comment isn't a value
+        key, value = m.group(1), value.strip().strip("'\"")
         if value:
             filled.add(key)
             if key == "GH_TOKEN_EXPIRES":
@@ -109,6 +112,8 @@ def env_values():
 
 def git_url(path):
     """The repository at `path` as a browser link (SSH remotes converted), or None."""
+    if not os.path.exists(os.path.join(path, ".git")):  # not a repository itself; git would look in parent folders
+        return None
     try:
         out = subprocess.run(["git", "-C", path, "remote", "get-url", "origin"],
                              capture_output=True, text=True, timeout=10)
@@ -119,7 +124,8 @@ def git_url(path):
         return None
     url = re.sub(r"^git@([^:]+):", r"https://\1/", url)
     url = re.sub(r"^ssh://git@([^/]+)/", r"https://\1/", url)
-    url = re.sub(r"https://[^@/]+@", "https://", url)  # drop any credentials in the address
+    url = re.sub(r"^([a-z][a-z0-9+.-]*://)[^@/]+@", r"\1", url)  # drop any credentials in the address
+    url = re.sub(r"^http://github\.com/", "https://github.com/", url)
     return re.sub(r"\.git$", "", url)
 
 
@@ -155,6 +161,8 @@ def claude_md_rows():
 def pages(rows):
     out = []
     for first, second in rows:
+        if re.sub(r"[`*]", "", first).strip().lower().startswith("project overview"):
+            continue  # the overview's own link, one row per PM
         for cell in (second, first):
             hit = LINK_RE.search(cell) or URL_RE.search(cell)
             if hit and "claude.ai" in hit.group(0):
@@ -168,8 +176,11 @@ def code_repo(rows):
     url = git_url("repo") if os.path.isdir(os.path.join("repo", ".git")) else None
     note = next((second for first, second in rows if first.strip("`") in ("repo/", "repo")), "")
     if not url:
-        m = re.search(r"\b([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b", note) if "TODO" not in note else None
-        if m and "/" in m.group(1) and not m.group(1).startswith("."):
+        full = re.search(r"https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", note) if "TODO" not in note else None
+        m = re.search(r"\b([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)\b", note) if "TODO" not in note and not full else None
+        if full:
+            url = re.sub(r"\.git$", "", full.group(0))
+        elif m and not m.group(1).startswith(".") and "." not in m.group(1).split("/")[0]:
             url = "https://github.com/" + m.group(1)
     return {"name": repo_name(url) if url else None, "url": url, "cloned": os.path.isdir("repo"),
             "note": None if "TODO" in note else (note or None)}
@@ -245,7 +256,7 @@ def brain_library(brain_url, sheets):
 def sheets_holding(sources):
     """docs/ record file -> [{name, url}] for records that live in Google Sheets (holds_record: true)."""
     out = {}
-    for key, src in ((sources or {}).get("sources") or {}).items():
+    for key, src in as_map(as_map(sources).get("sources")).items():
         if isinstance(src, dict) and src.get("holds_record"):
             records = src.get("record") or []
             for rec in records if isinstance(records, list) else [records]:
@@ -264,15 +275,22 @@ def local_library(code):
     ]
 
 
+def as_map(value):
+    return value if isinstance(value, dict) else {}
+
+
 def drive(sources):
-    sources = sources if isinstance(sources, dict) else {}
-    layout = (load_yaml(LAYOUT) or {}).get("items", {})
-    scopes = sources.get("scopes") or {}
-    roots = sources.get("shared_drive") or {}
-    if isinstance(roots, dict) and "url" in roots:
+    sources = as_map(sources)
+    layout = as_map(as_map(load_yaml(LAYOUT)).get("items"))
+    scopes = as_map(sources.get("scopes"))
+    roots = sources.get("shared_drive")
+    if isinstance(roots, str):
+        roots = {"all": {"url": roots}}
+    roots = as_map(roots)
+    if "url" in roots:
         roots = {"all": roots}
-    mapped = sources.get("sources") or {}
-    not_used = sources.get("not_used") or {}
+    mapped = {k: v for k, v in as_map(sources.get("sources")).items() if isinstance(v, dict)}
+    not_used = as_map(sources.get("not_used"))
     items, seen = [], set()
 
     def entry(key, src, scope, std):
@@ -341,7 +359,8 @@ def main(args):
         },
     }
     data["gaps"] = gaps(data)
-    text = json.dumps(data, indent=2, default=str)
+    # "<" is escaped so text from the records (a note containing </script>) can't break out of the page's script.
+    text = json.dumps(data, indent=2, default=str).replace("<", "\\u003c")
     if out_path:
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(text + "\n")
