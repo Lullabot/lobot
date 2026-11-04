@@ -13,6 +13,7 @@ Usage (from the Project Brain root):
   python3 .ai/general/skills/jira/jira.py search JQL [--limit N] [--fields a,b]
   python3 .ai/general/skills/jira/jira.py view KEY [--comments]
   python3 .ai/general/skills/jira/jira.py transitions KEY
+  python3 .ai/general/skills/jira/jira.py sprint SPACE [--stale DAYS]
   python3 .ai/general/skills/jira/jira.py validate PLAN.yaml
   python3 .ai/general/skills/jira/jira.py apply PLAN.yaml [--dry-run]
   python3 .ai/general/skills/jira/jira.py link KEY "blocks" KEY [--dry-run]
@@ -30,6 +31,11 @@ Jira mention when `key` is in docs/people.yaml with an `ids.jira` account ID.
 `structure` writes a space's work types, the fields a plan can set (by their
 names in Jira, with kinds and allowed values), statuses, link types, sprints,
 and open epics to .ai/project/jira/SPACE.yaml, for writing plans without Jira.
+
+`sprint` reports each active sprint on the space's Scrum boards: its dates,
+days left, and its unfinished work items, flagging those that are blocked
+(a blocked status, the Flagged field, or an open "is blocked by" link) and
+those in progress with no update in DAYS (default 7). Read-only.
 
 `validate` and `apply` read a ticket plan (YAML or JSON), the tracker-neutral
 format Pepper drafts (tickets skill, "Ticket plans").
@@ -863,6 +869,73 @@ def cmd_search(args):
         print(fmt_issue(i))
     if more:
         print(f"(stopped at {args.limit}; use --limit for more)")
+
+
+def _day(value):
+    """The date part of a Jira timestamp, or None."""
+    try:
+        return datetime.date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return None
+
+
+def sprint_report(j, M, space, stale_days, today=None):
+    """Active sprints with dates and their unfinished items, each marked blocked or stale."""
+    today = today or datetime.date.today()
+    flagged = [m["id"] for m in M.all_fields().find("Flagged")]
+    fields = ["summary", "status", "assignee", "updated", "issuelinks"] + flagged
+    out = []
+    for s in M.sprints(space).values():
+        if s.get("state") != "active":
+            continue
+        end = _day(s.get("endDate"))
+        issues, more = search(j, f"sprint = {int(s['id'])} AND statusCategory != Done ORDER BY rank", fields, 200)
+        items = []
+        for i in issues:
+            f = i.get("fields", {})
+            status = f.get("status") or {}
+            blocked = None
+            if "block" in status.get("name", "").lower():
+                blocked = f"status {status['name']}"
+            elif any(f.get(fid) for fid in flagged):
+                blocked = "flagged"
+            else:
+                for link in f.get("issuelinks") or []:
+                    other = link.get("inwardIssue")
+                    phrase = (link.get("type") or {}).get("inward", "")
+                    done = (((other or {}).get("fields") or {}).get("status") or {}).get("statusCategory", {}).get("key") == "done"
+                    if other and "blocked by" in phrase.lower() and not done:
+                        blocked = f"blocked by {other['key']}"
+                        break
+            updated = _day(f.get("updated"))
+            idle = (today - updated).days if updated else None
+            stale = idle if (idle is not None and idle >= stale_days
+                             and status.get("statusCategory", {}).get("key") == "indeterminate") else None
+            items.append({"key": i["key"], "summary": f.get("summary", ""), "status": status.get("name", ""),
+                          "assignee": (f.get("assignee") or {}).get("displayName"), "updated": str(updated or ""),
+                          "blocked": blocked, "stale_days": stale, "url": j.url(i["key"])})
+        out.append({"id": s["id"], "name": s.get("name", ""), "goal": s.get("goal") or "",
+                    "start": str(_day(s.get("startDate")) or ""), "end": str(end or ""),
+                    "days_left": (end - today).days if end else None, "open_items": len(items),
+                    "more": more, "items": items})
+    return out
+
+
+def cmd_sprint(args):
+    j = Jira()
+    report = sprint_report(j, Meta(j), args.space, args.stale)
+    if args.json:
+        return as_json(report)
+    if not report:
+        print(f"no active sprint on {args.space}'s Scrum boards")
+        return
+    for s in report:
+        left = "" if s["days_left"] is None else f", {s['days_left']} days left"
+        print(f"{s['name']}: {s['start']} to {s['end']}{left}, {s['open_items']} unfinished" + (" (stopped at 200)" if s["more"] else ""))
+        for i in s["items"]:
+            flags = [x for x in (i["blocked"] and f"BLOCKED ({i['blocked']})", i["stale_days"] and f"no update in {i['stale_days']} days") if x]
+            if flags:
+                print("\t".join([i["key"], i["status"], i["summary"], "; ".join(flags)]))
 
 
 def cmd_view(args):
@@ -1770,6 +1843,7 @@ def main():
     add("search", cmd_search, (["jql"], {}), (["--limit"], {"type": int, "default": 50}), (["--fields"], {}))
     add("view", cmd_view, (["key"], {}), (["--comments"], {"action": "store_true"}))
     add("transitions", cmd_transitions, (["key"], {}))
+    add("sprint", cmd_sprint, (["space"], {}), (["--stale"], {"type": int, "default": 7}))
     add("apply", cmd_apply, (["plan"], {}), json_flag=False, dry=True)
     add("link", cmd_link, (["a"], {}), (["phrase"], {}), (["b"], {}), json_flag=False, dry=True)
     add("transition", cmd_transition, (["key"], {}), (["status"], {}), json_flag=False, dry=True)

@@ -1,0 +1,196 @@
+<!-- Lobot tracker page template: daily board. Fill the {{…}} placeholders and CONFIG, then publish with capabilities {"db": {}}. Read-only: Claude writes the database each morning; the page never edits records. See .ai/general/skills/tracker-pages/SKILL.md, "Daily board". -->
+<title>{{PROJECT_NAME}} Daily Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one screen. Header with the board's date, a stale-board notice, a row of "waiting on you" counts, then the short sections in one column (two when the page is at least 1000px wide, never beside the chat). Every item links to where the PM acts on it. Tokens match the other tracker pages. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6;
+  --todo:#6b7585; --todo-bg:#eef0f3;
+  --prog:#9a5b00; --prog-bg:#fdf0db;
+  --done:#1d7a46; --done-bg:#e1f3e8;
+  --sync:#a33a2b; --sync-bg:#fbe6e2;
+  --crit:#b3261e; --crit-bg:#fbe4e2; --warn:#9a5b00; --calm:#2f6f8f;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a;
+  --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025;
+  --sync:#f08b7a; --sync-bg:#3a201c; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --calm:#7cb4dc; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a;
+  --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025;
+  --sync:#f08b7a; --sync-bg:#3a201c; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --calm:#7cb4dc; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1100px;margin:0 auto;padding-block:24px 40px;display:grid;gap:16px;container-type:inline-size}
+header{display:grid;gap:4px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin:0;font-weight:700}
+.sub{color:var(--muted);margin:0;font-size:14px}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.notice{background:var(--sync-bg);color:var(--sync);border-radius:8px;padding:10px 12px;font-size:14px}
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.count{display:grid;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-decoration:none;color:var(--fg)}
+a.count:hover{border-color:var(--accent)}
+.count .n{font-size:28px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.count .l{font-size:13px;color:var(--muted);font-weight:600}
+.count.hot .n{color:var(--prog)}
+.count.zero .n{color:var(--muted);opacity:.7}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+/* Two columns only when the page itself is wide; beside the chat it stays one column. */
+@container (min-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+section.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px;min-width:0}
+section.card.wide{grid-column:1/-1}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.stat{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.summary{margin:0;font-size:14px;white-space:pre-line;overflow-wrap:anywhere}
+ul.items{list-style:none;margin:0;padding:0;display:grid}
+ul.items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:7px 0 7px 10px;border-top:1px solid var(--line);border-left:3px solid transparent;font-size:14px}
+ul.items li:first-child{border-top:0}
+ul.items li.crit{border-left-color:var(--crit)} ul.items li.warn{border-left-color:var(--warn)} ul.items li.calm{border-left-color:var(--calm)}
+.text{min-width:0;overflow-wrap:anywhere}
+.ref{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-right:6px}
+.when{font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+li.crit .when{color:var(--crit);font-weight:600}
+.meta{grid-column:1/-1;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.more{font-size:13px;color:var(--muted);margin:0}
+.foot{color:var(--muted);font-size:13px;margin:0}
+@media (max-width:640px){h1{font-size:22px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <h1 id="title">Today</h1>
+    <p class="sub" id="asof">What you need to know to start the day. Each item links to where you act on it.</p>
+  </header>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <nav class="counts" id="counts" aria-label="Waiting on you"></nav>
+
+  <div class="grid" id="grid">
+    <p class="empty">Loading today's board. If nothing shows, ask Claude to start the day.</p>
+  </div>
+
+  <p class="foot">A summary, refreshed by Claude when you start the day. Lobot's files are the record; work on them at the links.</p>
+</div>
+
+<script>
+const CONFIG = {
+  project: "{{PROJECT_NAME}}",   // eyebrow: "<project> · Lobot"
+  maxItems: 6,                   // items shown per section before "and N more"
+};
+// Sections in display order. A section with no document in the database (or `hidden: true`) isn't shown,
+// so sprint and meetings simply disappear on a project without a tracker sprint or a calendar.
+const SECTIONS = [
+  {key: "journal", title: "Last session", empty: "No journal entry yet."},
+  {key: "transcripts", title: "Transcripts", empty: "Every transcript has been processed."},
+  {key: "meetings", title: "Today's meetings", empty: "No meetings today."},
+  {key: "tasks", title: "Today's tasks", empty: "Nothing due today or overdue."},
+  {key: "questions", title: "Questions", empty: "No questions urgent today."},
+  {key: "drive", title: "Drive changes", empty: "No mapped file has changed since it was last read."},
+  {key: "sprint", title: "Sprint", empty: "Nothing blocked or stuck."},
+  {key: "risks", title: "Risks", empty: "No risks raised or updated since the last board."},
+];
+const data = {board: {}, meta: null};
+let loaded = false;
+
+const $ = id => document.getElementById(id);
+const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const safeUrl = u => { try { const x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; } catch (e) { return null; } };
+const nice = iso => { const [y, m, d] = String(iso || "").split("-").map(Number); if (!y || !m || !d) return iso || ""; return new Date(y, m - 1, d).toLocaleDateString(undefined, {weekday: "long", month: "long", day: "numeric"}); };
+const linked = (text, url, cls) => { const u = safeUrl(url); return u ? el("a", {href: u, target: "_blank", rel: "noopener", textContent: text, className: cls || ""}) : el("span", {textContent: text, className: cls || ""}); };
+
+function notice(msg){ $("notice").textContent = msg; $("notice").hidden = !msg; }
+
+function renderCounts(){
+  const box = $("counts"); box.replaceChildren();
+  const w = data.board.waiting;
+  const counts = (w && !w.hidden && Array.isArray(w.counts)) ? w.counts : [];
+  box.hidden = counts.length === 0;
+  for (const c of counts) {
+    const n = Number(c.count) || 0;
+    const kids = [el("span", {className: "n", textContent: String(n)}), el("span", {className: "l", textContent: c.label || ""})];
+    const u = safeUrl(c.link);
+    const cls = "count " + (n === 0 ? "zero" : (c.hot ? "hot" : ""));
+    box.append(u ? el("a", {className: cls, href: u, target: "_blank", rel: "noopener"}, kids) : el("div", {className: cls}, kids));
+  }
+}
+
+function item(it){
+  const li = el("li", {className: ["crit", "warn", "calm"].includes(it.tone) ? it.tone : ""});
+  const text = el("span", {className: "text"});
+  if (it.ref) text.append(el("span", {className: "ref", textContent: it.ref}));
+  text.append(linked(it.text || "", it.link));
+  li.append(text, el("span", {className: "when", textContent: it.when || ""}));
+  if (it.meta) li.append(el("span", {className: "meta", textContent: it.meta}));
+  return li;
+}
+
+function renderSections(){
+  const grid = $("grid"); grid.replaceChildren();
+  const shown = SECTIONS.filter(s => data.board[s.key] && !data.board[s.key].hidden);
+  if (!shown.length) { grid.append(el("p", {className: "empty", textContent: loaded ? "Today's board hasn't been filled in yet. Ask Claude to start the day." : "Loading today's board."})); return; }
+  for (const s of shown) {
+    const d = data.board[s.key];
+    const items = Array.isArray(d.items) ? d.items : [];
+    const card = el("section", {className: "card" + (d.wide ? " wide" : "")});
+    card.setAttribute("aria-label", d.title || s.title);
+    const head = el("div", {className: "head"}, [el("h2", {textContent: d.title || s.title})]);
+    if (d.stat) head.append(el("span", {className: "stat", textContent: d.stat}));
+    card.append(head);
+    if (d.summary) card.append(el("p", {className: "summary", textContent: d.summary}));
+    if (items.length) {
+      const ul = el("ul", {className: "items"});
+      items.slice(0, CONFIG.maxItems).forEach(it => ul.append(item(it)));
+      card.append(ul);
+      if (items.length > CONFIG.maxItems) {
+        const rest = items.length - CONFIG.maxItems;
+        const p = el("p", {className: "more"});
+        p.append(d.moreLink ? linked(`and ${rest} more`, d.moreLink) : `and ${rest} more`);
+        card.append(p);
+      }
+    } else if (!d.summary) card.append(el("p", {className: "empty", textContent: d.empty || s.empty}));
+    if (d.link) card.append(el("p", {className: "more"}, [linked(d.linkLabel || "Open", d.link)]));
+    grid.append(card);
+  }
+}
+
+function render(){
+  $("eyebrow").textContent = CONFIG.project && !CONFIG.project.startsWith("{{") ? `${CONFIG.project} · Lobot` : "Lobot";
+  const m = data.meta;
+  if (m && m.date) {
+    $("title").textContent = nice(m.date);
+    if (loaded && m.date !== today()) notice(`This board is from ${nice(m.date)}. Ask Claude to start the day to refresh it.`);
+    else notice("");
+  }
+  renderCounts();
+  renderSections();
+}
+
+render();
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) { notice("This view can't load today's board. Sign in to claude.ai to see it."); return; }
+  const seen = new Set();
+  const ready = c => { seen.add(c); if (seen.size >= 2) loaded = true; render(); };
+  db.collection("board").onSnapshot(snap => { data.board = Object.fromEntries(snap.docs.map(x => [x.id, x.data()])); ready("board"); },
+    () => notice("Today's board couldn't load. Reload the page to try again."));
+  db.collection("meta").onSnapshot(snap => { const info = snap.docs.find(x => x.id === "info"); data.meta = info ? info.data() : null; ready("meta"); }, () => ready("meta"));
+})();
+</script>
