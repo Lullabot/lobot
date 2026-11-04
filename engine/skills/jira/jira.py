@@ -41,6 +41,11 @@ recorded in PLAN.created.json next to the plan, so running it again after a
 failure skips what already exists. `apply` refuses a plan without
 `approved_by` and `approved_at` (.ai/general/human-review.md).
 
+YAML plans, docs/people.yaml, and the structure file need PyYAML. When the
+Python running this lacks it and the Project Brain has its own virtualenv
+(.venv/ or venv/), the script reruns itself with that Python; `check` reports
+whether PyYAML is available.
+
 Exit codes: 0 ok, 1 usage or data error, 2 Jira unreachable or refused.
 """
 import base64
@@ -67,6 +72,35 @@ PEOPLE = "docs/people.yaml"
 def fail(msg, code=1):
     print(f"ERROR: {msg}", file=sys.stderr)
     sys.exit(code)
+
+
+# ---------------------------------------------------------------- PyYAML
+
+VENV_PYTHONS = (".venv/bin/python", "venv/bin/python")
+
+
+def have_yaml():
+    try:
+        import yaml  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def yaml_help(what):
+    return (f"PyYAML is needed {what}, and this Python ({sys.executable}) doesn't have it. "
+            "Install it for your user with: python3 -m pip install --user pyyaml "
+            "(the jira skill, \"Connecting to Jira\", says what to do if pip refuses)")
+
+
+def use_project_python():
+    """Without PyYAML, rerun once under the Project Brain's own virtualenv, if it has one."""
+    if have_yaml() or os.environ.get("LOBOT_JIRA_RERUN"):
+        return
+    for py in VENV_PYTHONS:
+        if os.access(py, os.X_OK) and os.path.abspath(py) != os.path.abspath(sys.executable):
+            os.environ["LOBOT_JIRA_RERUN"] = "1"
+            os.execv(py, [py] + sys.argv)
 
 
 def load_env(path=".env"):
@@ -111,7 +145,7 @@ def load_data(path):
     try:
         import yaml
     except ImportError:
-        fail("PyYAML is required for YAML plans (pip install pyyaml), or write the plan as .json")
+        fail(yaml_help("to read YAML plans") + ", or write the plan as .json")
     try:
         return yaml.safe_load(text)
     except yaml.YAMLError as e:
@@ -130,7 +164,7 @@ def people():
             try:
                 import yaml
             except ImportError:
-                fail(f"PyYAML is required to read {PEOPLE} (pip install pyyaml)")
+                fail(yaml_help(f"to read {PEOPLE}"))
             try:
                 with open(PEOPLE, encoding="utf-8") as f:
                     data = yaml.safe_load(f) or {}
@@ -678,8 +712,11 @@ ENV_KEYS = ("JIRA_SITE", "JIRA_EMAIL", "JIRA_API_TOKEN")
 
 
 def cmd_check(args):
-    """Is Jira reachable from here? The last line is one of:
-    jira: ok as NAME | jira: missing KEYS | jira: blocked | jira: refused | jira: unreachable"""
+    """Is Jira reachable from here, and can this Python read YAML? The last line is one of:
+    jira: ok as NAME | jira: missing KEYS | jira: blocked | jira: refused | jira: unreachable
+    An ok line ends with "PyYAML missing" when the YAML commands won't run (exit 6)."""
+    yaml_ok = have_yaml()
+    print(f"pyyaml: ok ({sys.executable})" if yaml_ok else f"pyyaml: missing ({sys.executable})")
     env = load_env()
     missing = [k for k in ENV_KEYS if not env.get(k)]
     if missing:
@@ -694,7 +731,10 @@ def cmd_check(args):
     except JiraError as e:
         print(f"jira: refused: {e.detail}" + (" (check the email, or make a new token: it may have expired)" if e.code == 401 else ""))
         sys.exit(5)
-    print(f"jira: ok as {me.get('displayName')} (account ID {me.get('accountId')}) on {j.site}")
+    print(f"jira: ok as {me.get('displayName')} (account ID {me.get('accountId')}) on {j.site}"
+          + ("" if yaml_ok else ", but PyYAML missing: structure, validate, and apply won't run"))
+    if not yaml_ok:
+        sys.exit(6)
 
 
 def cmd_setup(args):
@@ -1639,7 +1679,7 @@ def cmd_structure(args):
     try:
         import yaml
     except ImportError:
-        fail("PyYAML is required to write the structure file (pip install pyyaml)")
+        fail(yaml_help("to write the structure file"))
     j = Jira()
     M = Meta(j)
     space = args.space
@@ -1743,6 +1783,7 @@ def cmd_adf(args):
 
 
 def main():
+    use_project_python()
     import argparse
     ap = argparse.ArgumentParser(description="Read and write Jira Cloud work items.")
     sub = ap.add_subparsers(dest="cmd", required=True)
