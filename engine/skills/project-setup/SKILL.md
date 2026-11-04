@@ -60,6 +60,7 @@ When `token-expires` is two weeks away or less, tell the PM and walk them throug
 2. Stage by name, not with `git add -A`: `.ai`, `.claude`, `docs`, `CLAUDE.md`, `README.md`, `.env.example`, `.gitignore`, and `AGENTS.md` or `.agents` if they exist. Show the PM what's included in a line or two.
 3. Commit ("Set up the Project Brain with Lobot x.y.z", using the installed version) and push with the command in the github skill's "Saving the Project Brain". The repository is empty, so skip the pull before it: there's nothing to get yet.
 4. Tell the PM the repository's address and that the next PM can join from it. Then "Keeping it saved" and "Record it".
+5. Publish the project overview (project-overview skill), or update it if the project has one, so the PM can see what's set up and what's left.
 
 ## Access ladder
 
@@ -129,7 +130,7 @@ For a PM taking over or joining a project that already has a repository. Their f
    - `repo/`: clone the code repository named in the root `CLAUDE.md`;
    - the PM's personal profile in `~/.lobot/` (pm-profile skill).
 4. **Check the Lobot version** (lobot skill) and offer an update if one is waiting.
-5. **Hand over**: run the start-of-session routine, then recap the journal from the latest handoff entry.
+5. **Hand over**: run the start-of-session routine, then recap the journal from the latest handoff entry, and publish the joining PM's own project overview (project-overview skill), since its connections are theirs.
 
 ## Keeping it saved
 
