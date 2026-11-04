@@ -3,9 +3,11 @@
 #   bash .ai/general/skills/github/gh-setup.sh
 # - Makes sure .env is git-ignored (adds it to .gitignore if not).
 # - Installs gh if missing (through gh-env.sh) and checks for a working login.
-# - Without a login, creates .env from .env.example (owner-only) with a GH_TOKEN= line.
+# - Without a login, creates the PM's token file from .env.example (owner-only) with a GH_TOKEN= line:
+#   .env at the root, or ~/.lobot/<key>.env for a Project Brain kept in a shared drive
+#   (scripts/env-file.sh), where a .gitignore can't keep it from syncing.
 # Never prints the token. The last line is the result:
-#   auth: ok as <login>   token: missing   auth: failed   gh: not installed   ignore: STOP
+#   auth: ok as <login>   token: missing   auth: failed   gh: not installed   ignore: STOP   env: STOP
 set -u
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$here/../../../.." && pwd)"
@@ -13,6 +15,13 @@ root="$(cd "$here/../../../.." && pwd)"
 [ -f "$here/../../../tools/lobot.js" ] && root="$(cd "$here/../../.." && pwd)"
 cd "$root" || exit 1
 say() { printf '%s: %s\n' "$1" "$2"; }
+# shellcheck source=/dev/null
+source "$here/../../scripts/env-file.sh"
+envf="$(lobot_env_file "$root")"
+say home "$(lobot_brain_home "$root")"
+say env-file "$envf"
+note="$(lobot_env_note "$root")"
+case "$note" in STOP*) say env "$note"; exit 4 ;; ?*) say env "$note"; exit 5 ;; esac
 
 # 1. Keep .env out of git.
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -43,22 +52,23 @@ if gh auth status >/dev/null 2>&1; then
   exit 0
 fi
 
-# 3. No working login: make sure .env is ready for a token.
-if [ ! -f .env ]; then
+# 3. No working login: make sure the token file is ready for a token.
+if [ ! -f "$envf" ]; then
+  [ -d "$(dirname "$envf")" ] || { mkdir -p "$(dirname "$envf")" && chmod 700 "$(dirname "$envf")"; }
   if [ -f .env.example ]; then
-    cp .env.example .env
+    (umask 077; cp .env.example "$envf")
   else
-    printf '%s\n' '# Local only; never commit. Each PM uses their own values.' \
-      '# GitHub personal access token for gh (classic; scopes: repo, project, read:org).' 'GH_TOKEN=' > .env
+    (umask 077; printf '%s\n' '# Local only; never commit or share. Each PM uses their own values.' \
+      '# GitHub personal access token for gh (classic; scopes: repo, project, read:org).' 'GH_TOKEN=' > "$envf")
   fi
-  say env "created .env"
+  say env "created $envf"
 fi
-chmod 600 .env 2>/dev/null
-grep -q '^GH_TOKEN=' .env || { printf 'GH_TOKEN=\n' >> .env; say env "added a GH_TOKEN= line"; }
+chmod 600 "$envf" 2>/dev/null
+grep -q '^GH_TOKEN=' "$envf" || { printf 'GH_TOKEN=\n' >> "$envf"; say env "added a GH_TOKEN= line"; }
 
 if [ -z "${GH_TOKEN:-}" ]; then
-  say token "missing: paste it after GH_TOKEN= in $root/.env"
+  say token "missing: paste it after GH_TOKEN= in $envf"
   exit 2
 fi
-say auth "failed: GitHub rejected the token in .env (expired, missing a scope, or not authorized for the org's SSO)"
+say auth "failed: GitHub rejected the token in $envf (expired, missing a scope, or not authorized for the org's SSO)"
 exit 3

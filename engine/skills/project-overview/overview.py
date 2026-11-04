@@ -23,6 +23,16 @@ import re
 import subprocess
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "scripts"))
+try:
+    from env_file import brain_home, env_file
+except ImportError:
+    def brain_home(root="."):
+        return "local"
+
+    def env_file(root="."):
+        return os.path.abspath(".env")
+
 try:
     import yaml
 except ImportError:
@@ -93,7 +103,7 @@ def first_line(path):
 def env_values():
     """Names of .env keys that have a value, plus GH_TOKEN_EXPIRES. Values are never kept."""
     filled, expires = set(), None
-    for line in (read(".env") or "").splitlines():
+    for line in (read(env_file(".")) or "").splitlines():
         m = re.match(r"\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.*)$", line)
         if not m or line.lstrip().startswith("#"):
             continue
@@ -193,7 +203,7 @@ def brain_repo():
     url = git_url(".")
     if not url and m:
         url = "https://github.com/" + m.group(1)
-    return {"name": m.group(1) if m else repo_name(url), "url": url,
+    return {"name": m.group(1) if m else repo_name(url), "url": url, "home": brain_home("."),
             "pending": None if not pending or pending.group(1).strip().lower() == "none" else pending.group(1).strip()}
 
 
@@ -271,8 +281,17 @@ def local_library(code):
     return [
         {"name": "Code repository clone", "path": "repo/", "exists": os.path.isdir("repo"), "url": code.get("url")},
         {"name": "Your personal profile", "path": "~/.lobot/", "exists": os.path.isdir(profile)},
-        {"name": "Your tokens", "path": ".env", "exists": os.path.isfile(".env"), "note": "never shared or committed"},
+        {"name": "Your tokens", "path": shown_env_path(), "exists": os.path.isfile(env_file(".")),
+         "note": "never shared or committed"},
     ]
+
+
+def shown_env_path():
+    """The token file as the PM would find it: .env, or ~/.lobot/<key>.env for a shared-drive Project Brain."""
+    path = env_file(".")
+    if os.path.abspath(path) == os.path.abspath(".env"):
+        return ".env"
+    return "~/.lobot/" + os.path.basename(path)
 
 
 def as_map(value):
@@ -355,7 +374,7 @@ def main(args):
             "github": {"set": all(k in env for k in ENV_CONNECTIONS["github"]), "expires": expires},
             "jira": {"set": all(k in env for k in ENV_CONNECTIONS["jira"]),
                      "missing": [k for k in ENV_CONNECTIONS["jira"] if k not in env]},
-            "env_file": os.path.isfile(".env"),
+            "env_file": os.path.isfile(env_file(".")),
         },
     }
     data["gaps"] = gaps(data)
@@ -375,7 +394,12 @@ def gaps(d):
     out = []
     add = lambda what, say: out.append({"what": what, "say": say})
     repos = d["repositories"]
-    if not repos["brain"]["url"]:
+    if repos["brain"]["home"] == "shared-drive" and not repos["brain"]["url"]:
+        pass  # kept in the project's shared drive: Drive is the backup, no repository needed
+    elif repos["brain"]["home"] == "synced":
+        add("This Project Brain is in a synced folder that isn't the project's shared drive.",
+            "Move the Project Brain to the project's shared drive.")
+    elif not repos["brain"]["url"]:
         add("This Project Brain isn't saved to GitHub yet.", "Set up the Project Brain repository.")
     elif repos["brain"]["pending"]:
         add(f"Project Brain repository: {repos['brain']['pending']}", "Pick up the Project Brain repository setup.")

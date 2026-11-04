@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# Reports where this Project Brain stands with version control and GitHub, so the project-setup
+# Reports where this Project Brain lives and where it stands with version control and GitHub, so the project-setup
 # skill can pick the next step. Changes nothing in the Project Brain or on GitHub, and never prints a
 # token (like gh-env.sh, it may install gh into ~/.local/gh if it's missing).
 #   bash .ai/general/skills/project-setup/brain-state.sh
 # Run it in the shell that runs git and gh. Prints one "key: value" line per fact; the last line is
 #   state: no-git | no-remote | no-login | no-access | behind | unsaved | saved
+#        | shared-drive (kept in the project's shared drive, no git: Drive is the backup)
+#        | shared-drive-git (in the shared drive, but still a git repository)
+#        | synced-other (in a synced folder that isn't a shared drive)
 set -u
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$here/../../../.." && pwd)"
@@ -20,6 +23,13 @@ days_left() { # YYYY-MM-DD -> whole days from now (GNU or BSD date)
   echo $(( (t - n) / 86400 ))
 }
 ORG="Lullabot"
+# shellcheck source=/dev/null
+source "$here/../../scripts/env-file.sh"
+home="$(lobot_brain_home "$root")"
+envf="$(lobot_env_file "$root")"
+say home "$home"
+say env-file "$envf"
+note="$(lobot_env_note "$root")"; [ -n "$note" ] && say env-warning "$note"
 
 # Lobot, and the repository name the convention gives this project: the code repository's name plus
 # -pm, or the project key in lowercase plus -pm when no code repository can be found.
@@ -63,11 +73,17 @@ if [ -z "$origin" ]; then
   if [ -n "$name" ]; then say suggested-repo "$ORG/$name (from the $basis)"; else say suggested-repo "unknown (no code repository or project key found; ask the PM)"; fi
 fi
 
-# The token's expiry, if the PM recorded it beside the token. Only that line of .env is read.
-exp="$(sed -n 's/^GH_TOKEN_EXPIRES=//p' .env 2>/dev/null | tail -1 | tr -d '"'"'"' \r')"
+# The token's expiry, if the PM recorded it beside the token. Only that line of the token file is read.
+exp="$(sed -n 's/^GH_TOKEN_EXPIRES=//p' "$envf" 2>/dev/null | tail -1 | tr -d '"'"'"' \r')"
 if [ -n "$exp" ]; then
   left="$(days_left "$exp" || true)"
   say token-expires "$exp${left:+ (in $left days)}"
+fi
+
+# A Project Brain in a synced folder needs no GitHub repository: Drive is its backup.
+if [ "$home" != local ] && [ "$state" = no-git ]; then
+  if [ "$home" = shared-drive ]; then say state shared-drive; else say state synced-other; fi
+  exit 0
 fi
 
 # GitHub.
@@ -128,4 +144,8 @@ else
     esac
   fi
 fi
+case "$home" in
+  shared-drive) state="shared-drive-git" ;;
+  synced) state="synced-other" ;;
+esac
 say state "$state"

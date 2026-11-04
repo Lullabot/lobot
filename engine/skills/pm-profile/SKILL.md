@@ -16,6 +16,7 @@ A PM's working style doesn't change when they change projects. How they write, h
 | The PM's voice: how they write, overall and by context (tickets, client email, team chat) | `~/.lobot/voice.md` (see the pm-voice skill) |
 | The PM's preferences: Lobot's settings, formats, and working habits | `~/.lobot/preferences.md`, from `template.md` in this skill's folder |
 | Anything that only applies to one project | `.ai/project/voice/<people-key>.md` and the project's own rule files, never `~/.lobot/` |
+| The PM's tokens for a Project Brain kept in a shared drive | `~/.lobot/<key>.env`, managed by the github and jira skills' setup scripts, never by this skill. The one project-named file allowed here: it holds the PM's own tokens, which must not sync. |
 
 `~` is the home folder of the person at the computer (`%USERPROFILE%` on Windows). Create `~/.lobot/` the first time the PM approves saving something there.
 

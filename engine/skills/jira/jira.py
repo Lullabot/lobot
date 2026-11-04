@@ -22,7 +22,9 @@ Usage (from the Project Brain root):
 Add --json to any read for Jira's raw response.
 
 Reads JIRA_SITE (yoursite.atlassian.net), JIRA_EMAIL, and JIRA_API_TOKEN from
-the environment or the Project Brain's .env. Never prints the token.
+the environment or the PM's token file: the Project Brain's .env, or
+~/.lobot/<key>.env for a Project Brain kept in a shared drive
+(.ai/general/scripts/env_file.py). Never prints the token.
 
 Descriptions and comments are written in markdown and converted to Jira's
 document format (ADF); `view` converts them back. `@key` in markdown becomes a
@@ -84,6 +86,14 @@ def fail(msg, code=1):
 
 VENV_PYTHONS = (".venv/bin/python", "venv/bin/python")
 
+# The PM's token file (run from the Project Brain root).
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "scripts"))
+try:
+    from env_file import env_file as _env_file, env_note as _env_note
+    ENV_FILE, ENV_NOTE = _env_file("."), _env_note(".")
+except ImportError:
+    ENV_FILE, ENV_NOTE = os.path.abspath(".env"), ""
+
 
 def have_yaml():
     try:
@@ -109,8 +119,9 @@ def use_project_python():
             os.execv(py, [py] + sys.argv)
 
 
-def load_env(path=".env"):
-    """Values from .env, without overriding the environment."""
+def load_env(path=None):
+    """Values from the token file, without overriding the environment."""
+    path = path or ENV_FILE
     env = {}
     try:
         with open(path, encoding="utf-8") as f:
@@ -126,7 +137,7 @@ def load_env(path=".env"):
     except FileNotFoundError:
         pass
     except OSError as e:
-        # A sandbox or file permissions can hide .env; say so rather than
+        # A sandbox or file permissions can hide the token file; say so rather than
         # reporting its values as missing.
         fail(f"can't read {path}: {e.strerror}. It exists but this shell isn't "
              "allowed to read it; run the command from a shell that can.")
@@ -211,9 +222,9 @@ class Jira:
         self.site, self.dry = site, dry
         email, token = env.get("JIRA_EMAIL"), env.get("JIRA_API_TOKEN")
         if not site:
-            fail("JIRA_SITE is not set. Add it to the Project Brain's .env (yoursite.atlassian.net); see .env.example.")
+            fail(f"JIRA_SITE is not set. Add it to {ENV_FILE} (yoursite.atlassian.net); see .env.example.")
         if not email or not token:
-            fail("JIRA_EMAIL and JIRA_API_TOKEN must be set in the Project Brain's .env (see .env.example); never paste a token in chat.")
+            fail(f"JIRA_EMAIL and JIRA_API_TOKEN must be set in {ENV_FILE} (see .env.example); never paste a token in chat.")
         self.base = f"https://{site}/rest/api/3"
         self.agile = f"https://{site}/rest/agile/1.0"
         self.auth = "Basic " + base64.b64encode(f"{email}:{token}".encode()).decode()
@@ -723,10 +734,13 @@ def cmd_check(args):
     An ok line ends with "PyYAML missing" when the YAML commands won't run (exit 6)."""
     yaml_ok = have_yaml()
     print(f"pyyaml: ok ({sys.executable})" if yaml_ok else f"pyyaml: missing ({sys.executable})")
+    if ENV_NOTE.startswith("STOP"):
+        print(f"env: {ENV_NOTE}")
+        sys.exit(7)
     env = load_env()
     missing = [k for k in ENV_KEYS if not env.get(k)]
     if missing:
-        print(f"jira: missing {', '.join(missing)} in .env (run `setup`, then the PM pastes the token)")
+        print(f"jira: missing {', '.join(missing)} in {ENV_FILE} (run `setup`, then the PM pastes the token)")
         sys.exit(3)
     j = Jira()
     try:
@@ -744,9 +758,15 @@ def cmd_check(args):
 
 
 def cmd_setup(args):
-    """Get .env ready for the PM's token: git-ignored, with the three lines, and site and email filled in when given.
-    Never reads out or changes the token."""
+    """Get the token file ready for the PM's token: git-ignored, with the three lines, and site and email filled in
+    when given. Never reads out or changes the token."""
     import subprocess
+
+    if ENV_NOTE:
+        print(f"env: {ENV_NOTE}")
+        sys.exit(4 if ENV_NOTE.startswith("STOP") else 5)
+    path = ENV_FILE
+    in_brain = os.path.abspath(path) == os.path.abspath(".env")
 
     def git(*a):
         try:
@@ -754,7 +774,9 @@ def cmd_setup(args):
         except OSError:
             return None
 
-    if git("rev-parse", "--is-inside-work-tree") == 0:
+    if not in_brain:
+        print("ignore: not needed (the token file is outside the Project Brain)")
+    elif git("rev-parse", "--is-inside-work-tree") == 0:
         if git("ls-files", "--error-unmatch", ".env") == 0:
             print("ignore: STOP: .env is committed to this repository. Untrack it, and revoke any token it held.")
             sys.exit(4)
@@ -767,11 +789,11 @@ def cmd_setup(args):
     else:
         print("ignore: not a git repository; skipped")
 
-    exists = os.path.exists(".env")
+    exists = os.path.exists(path)
     try:
-        lines = open(".env", encoding="utf-8").read().splitlines() if exists else []
+        lines = open(path, encoding="utf-8").read().splitlines() if exists else []
     except OSError as e:
-        fail(f"can't read .env: {e.strerror}")
+        fail(f"can't read {path}: {e.strerror}")
     want = {"JIRA_SITE": re.sub(r"^https?://", "", args.site or "").strip("/"), "JIRA_EMAIL": (args.email or "").strip()}
     found = {}
     for i, line in enumerate(lines):
@@ -794,14 +816,16 @@ def cmd_setup(args):
             found[k] = (len(lines) - 1, want.get(k, ""))
         changed = True
     if changed:
-        fd = os.open(".env", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        if not in_brain:
+            os.makedirs(os.path.dirname(path), mode=0o700, exist_ok=True)
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
     try:
-        os.chmod(".env", 0o600)
+        os.chmod(path, 0o600)
     except OSError:
         pass
-    print(f"env: {'created' if not exists else 'updated' if changed else 'ready'} ({os.path.abspath('.env')})")
+    print(f"env: {'created' if not exists else 'updated' if changed else 'ready'} ({os.path.abspath(path)})")
     for k, label_ in (("JIRA_SITE", "site"), ("JIRA_EMAIL", "email")):
         print(f"{label_}: {found[k][1] or 'missing'}")
     print(f"token: {'present' if found['JIRA_API_TOKEN'][1] else 'missing'}")

@@ -103,7 +103,7 @@ $("project").replaceChildren(...[
 // Code and tickets
 const R = DATA.repositories || {}, T = DATA.tickets || {};
 $("work").replaceChildren(
-  row("Project Brain repository", R.brain && R.brain.url ? link(R.brain.url, R.brain.name || "Open") : notSet("Not saved to GitHub"), R.brain && R.brain.pending ? pill("s-prog", "Pending: " + R.brain.pending) : null),
+  row("Project Brain repository", R.brain && R.brain.url ? link(R.brain.url, R.brain.name || "Open") : R.brain && R.brain.home === "shared-drive" ? "None needed: kept in the project's shared drive" : notSet("Not saved to GitHub"), R.brain && R.brain.pending ? pill("s-prog", "Pending: " + R.brain.pending) : null),
   row("Code repository", R.code && R.code.url ? link(R.code.url, R.code.name || "Open") : notSet("Not recorded"), note(R.code && R.code.cloned ? "cloned in repo/" : "not cloned here")),
   row("Tickets", T.set ? (T.url ? link(T.url, T.value) : T.value) : notSet("No tracker chosen"), T.board_url ? link(T.board_url, "Board") : null),
   row("Your tasks", DATA.task_manager || "Lobot", note(DATA.task_manager && DATA.task_manager !== "Lobot" ? "kept in step with the project's task list" : "the project's task list and the review desk")),

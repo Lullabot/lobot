@@ -33,6 +33,7 @@ By default the Project Brain's `.gitignore` lists `/docs/transcripts/raw/`, so o
 A choice the PM declines is recorded in `.ai/project/declined-migrations.yaml`.
 
 - `transcript.py verify docs/transcripts` reports raw transcripts still at the top level, and a missing ignore line. If it reports either and neither choice is recorded as declined, put the question in your report for the assistant to ask the PM. Never move, untrack, or delete committed transcripts yourself; the migration does that.
+- A Project Brain kept in the project's shared drive has no git, so nothing is committed and `raw/` syncs to the drive with everything else (project-setup skill, "Keep it in the shared drive"). Clean every transcript all the same: the cleaned copy is the one meeting notes cite and the one read when the project is picked up. A dropped-in file is then in the drive too, so tell the PM it's now visible to everyone who can open the drive.
 - A raw transcript exists only where it was saved. For a Meet call, Drive keeps the original. A file the PM dropped in exists only on this computer: say so, and suggest adding it to the project's Drive transcripts folder.
 
 ## What to cut

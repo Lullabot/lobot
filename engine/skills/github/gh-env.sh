@@ -2,7 +2,8 @@
 # Source this before running gh:  source .ai/general/skills/github/gh-env.sh
 # - Uses an existing gh install + login when present (Claude Code on the PM's machine).
 # - Otherwise installs gh into ~/.local/gh (Linux/macOS, amd64/arm64; checksum-verified) and loads GH_TOKEN
-#   from the Project Brain's gitignored .env (Cowork, cloud sandboxes).
+#   from the PM's token file (Cowork, cloud sandboxes): the Project Brain's gitignored .env, or
+#   ~/.lobot/<key>.env for a Project Brain kept in a shared drive (scripts/env-file.sh).
 # Never prints the token.
 
 _pb_here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -35,11 +36,15 @@ if ! command -v gh >/dev/null 2>&1; then
 fi
 
 # Load the token only if gh isn't already logged in and none is set.
+# shellcheck source=/dev/null
+source "$_pb_here/../../scripts/env-file.sh"
+_pb_env="$(lobot_env_file "$_pb_root")"
+_pb_note="$(lobot_env_note "$_pb_root")"; [ -n "$_pb_note" ] && echo "gh-env: $_pb_note" >&2
 if [ -z "${GH_TOKEN:-}" ] && ! gh auth status >/dev/null 2>&1; then
-  if [ -f "$_pb_root/.env" ]; then
-    GH_TOKEN="$(sed -n 's/^GH_TOKEN=//p' "$_pb_root/.env" | tail -1 | tr -d '"'"'"' \r')"
+  if [ -f "$_pb_env" ]; then
+    GH_TOKEN="$(sed -n 's/^GH_TOKEN=//p' "$_pb_env" | tail -1 | tr -d '"'"'"' \r')"
     export GH_TOKEN
   fi
-  [ -z "${GH_TOKEN:-}" ] && echo "gh-env: no gh login and no GH_TOKEN in $_pb_root/.env (see .env.example)" >&2
+  [ -z "${GH_TOKEN:-}" ] && echo "gh-env: no gh login and no GH_TOKEN in $_pb_env (see .env.example)" >&2
 fi
-unset _pb_here _pb_root _gh_bin _os _arch _ver _ext _file _base _want _got
+unset _pb_here _pb_root _pb_env _pb_note _gh_bin _os _arch _ver _ext _file _base _want _got

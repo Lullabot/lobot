@@ -20,14 +20,14 @@ Everything important lives in files here. Chat history, Claude memory, and accou
 
 ### 1. Get the files
 
-1. Clone this Project Brain repository.
+1. Get this Project Brain. If it lives in the project's shared drive (`.ai/project/brain-home.md` says so), install Google Drive for desktop, make sure you can open the shared drive, and make this folder available offline. If it lives on GitHub, clone its repository.
 2. Clone the project's code repository into `repo/`.
 
 The project's shared Google Drive isn't copied here. The assistant reads it through a Google Drive connector (the drive-sources skill), so connect one in your assistant if it offers it.
 
 ### 2. Add your credentials
 
-Copy `.env.example` to `.env` (gitignored) and fill in your own values, then `chmod 600 .env`. Currently: a GitHub personal access token (`GH_TOKEN`), needed only for Cowork or other tools that can't use your own `gh auth login`. Or ask your assistant to "connect GitHub": it creates `.env`, installs what it needs, and tells you where to paste the token. Never commit `.env`.
+Copy `.env.example` to `.env` (gitignored) and fill in your own values, then `chmod 600 .env`. For a Project Brain in the shared drive, use `~/.lobot/<key>.env` instead (the project key in lowercase): Drive would copy a `.env` here to everyone who can open the drive. Currently: a GitHub personal access token (`GH_TOKEN`), needed only for Cowork or other tools that can't use your own `gh auth login`. Or ask your assistant to "connect GitHub": it creates `.env`, installs what it needs, and tells you where to paste the token. Never commit `.env`.
 
 ### 3. Set up your assistant
 
@@ -77,7 +77,7 @@ The files are plain markdown and YAML, so any assistant that can read a folder c
 
 When a PM leaves or joins:
 
-1. The outgoing PM makes sure the journal and `docs/` are current and everything is committed and pushed, then deletes their `.env` token and revokes it in GitHub.
+1. The outgoing PM makes sure the journal and `docs/` are current and, on GitHub, everything is committed and pushed. Then they delete their tokens (`.env`, or `~/.lobot/<key>.env`) and revoke them.
 2. The incoming PM follows **Getting started** above.
 3. The incoming PM's first session: run the start-of-session routine, then read the journal from the beginning, or at least the latest handoff entry.
 

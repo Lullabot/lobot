@@ -825,8 +825,8 @@ footer a { color: var(--ink-2); }
       </article>
       <article class="skill" data-skill="project-setup" data-group="setup">
         <header><h3>Project setup</h3><span class="owner lobot">Lobot</span></header>
-        <p>Puts the Project Brain in a private GitHub repository, helps a new PM join an existing one, and when GitHub says no, drafts the request for whoever has to approve it.</p>
-        <div class="try">"Put this Project Brain on GitHub."</div>
+        <p>Keeps the Project Brain in the project's shared drive, where Google Drive backs it up with no git, or in a private GitHub repository. Helps a new PM join, and when GitHub says no, drafts the request for whoever has to approve it.</p>
+        <div class="try">"Keep this Project Brain in the shared drive."</div>
       </article>
       <article class="skill" data-skill="lobot" data-group="setup">
         <header><h3>Lobot</h3><span class="owner lobot">Lobot</span></header>
@@ -939,7 +939,7 @@ footer a { color: var(--ink-2); }
     <div class="head">
       <div class="eyebrow">Get started</div>
       <h2>Let the assistant set it up for you.</h2>
-      <p class="lede">Make an empty folder for the Project Brain, open your assistant in it (in Claude Cowork, connect the folder to the session), and paste one of these prompts. The assistant asks for the details and does the terminal work.</p>
+      <p class="lede">Make an empty folder for the Project Brain (in the project's shared drive, or anywhere for a GitHub repository), open your assistant in it (in Claude Cowork, connect the folder to the session), and paste one of these prompts. The assistant asks for the details and does the terminal work.</p>
     </div>
     <div class="grid-2">
       <div class="prompt">
@@ -949,14 +949,15 @@ Set up a new Lobot Project Brain in this folder. Lobot: https://github.com/Lulla
 
 ## What I'll do
 - Give you the project's name, a short project key (like EXU), and its code repository.
-- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Tell you whether to keep the Project Brain in the project's shared drive or on GitHub.
+- Create any token when you walk me through it, and paste it only where you tell me, never into this chat.
 - Approve anything other people will see, like creating the GitHub repository.
 
 ## What you'll do
 1. Check that Node 18 or later is installed, and help me install it if it isn't.
 2. Install Lobot here with: npx --yes github:Lullabot/lobot init --name "&lt;name&gt;" --key &lt;KEY&gt;
 3. Clone the code repository into repo/.
-4. Read the new CLAUDE.md, then follow the project-setup skill to put this Project Brain on GitHub.
+4. Read the new CLAUDE.md, then follow the project-setup skill to finish setting up where this Project Brain is kept (shared drive or GitHub).
 5. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
 
 ## How
@@ -965,16 +966,16 @@ Do the terminal work for me, explain what's happening in plain language, and sto
       <div class="prompt">
         <header><b>Joining an existing project</b><button class="copy" data-copy="p-join">Copy</button></header>
 <pre id="p-join">## Goal
-Join a project whose Project Brain is already on GitHub, and set it up in this folder.
+Join a project that already has a Project Brain, and set it up.
 
 ## What I'll do
-- Tell you the Project Brain's repository (it ends in -pm, like Lullabot/example-site-pm).
+- Tell you where the Project Brain is: a folder in the project's shared drive (connected to this session), or its GitHub repository (it ends in -pm, like Lullabot/example-site-pm).
 - Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
 - Approve anything other people will see.
 
 ## What you'll do
 1. Read the project-setup skill: https://github.com/Lullabot/lobot/blob/main/engine/skills/project-setup/SKILL.md
-2. Follow its "Join a project" section to bring the Project Brain into this folder and set up what it leaves out.
+2. Follow its "Join a project" section to bring the Project Brain into this folder (or connect its shared-drive folder) and set up what it leaves out.
 3. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
 4. Run the start-of-session routine and catch me up on the project.
 

@@ -21,7 +21,7 @@ Run this at the start of **every** shell command that uses `gh` (each Cowork she
 source .ai/general/skills/github/gh-env.sh
 ```
 
-In Cowork, run `gh` in the shell on the PM's computer (the one with the Project Brain folder mounted), from the Project Brain root. Not the cloud workspace's shell: it has its own `gh` with an unrelated `GH_TOKEN`, it can't see the PM's `.env`, and its proxy blocks the GraphQL API that `gh project` commands use. If `gh` reports "command not found" or a bad token, first check you're in the right shell and sourced this script.
+In Cowork, run `gh` in the shell on the PM's computer (the one with the Project Brain folder mounted), from the Project Brain root. Not the cloud workspace's shell: it has its own `gh` with an unrelated `GH_TOKEN`, it can't see the PM's token file, and its proxy blocks the GraphQL API that `gh project` commands use. If `gh` reports "command not found" or a bad token, first check you're in the right shell and sourced this script.
 
 Source it directly in the same shell that runs `gh`. Don't pipe it (`source … | sed`) or wrap it in `( … )`: that runs it in a subshell, and `PATH` and `GH_TOKEN` are lost (symptom: `gh: command not found`). Don't fall back to `gh auth login` or a device-code login; if the script can't authenticate, report why.
 
@@ -30,7 +30,9 @@ It works for both tools:
 | Tool | Auth | What the script does |
 |---|---|---|
 | Claude Code on the PM's machine | PM's own `gh auth login` (token in OS keychain) | Nothing; uses the installed, logged-in `gh`. |
-| Cowork / cloud sandbox | Personal access token in the Project Brain's gitignored `.env` (`GH_TOKEN=`) | Installs `gh` into `~/.local/gh` if missing, loads `GH_TOKEN` from `.env`. |
+| Cowork / cloud sandbox | Personal access token in the PM's token file (`GH_TOKEN=`) | Installs `gh` into `~/.local/gh` if missing, loads `GH_TOKEN` from the token file. |
+
+**The PM's token file** is `.env` at the Project Brain root, git-ignored. For a Project Brain kept in the project's shared drive (project-setup skill, "Keep it in the shared drive"), it is `~/.lobot/<key>.env` instead (`<key>` is the project key in lowercase, such as `~/.lobot/exu.env`): Drive has no `.gitignore` and would copy a `.env` to everyone who can open the drive. `.ai/general/scripts/env-file.sh` (and `env_file.py`, for Python) decides which, and every script here prints the path it uses as `env-file:`. In Cowork, `~/.lobot` must be connected to the session (guided-setup skill).
 
 Token: classic PAT, scopes `repo`, `project`, `read:org`, SSO-authorized for the org, short expiry. See `.env.example`. If the org blocks classic tokens, or the PM would rather use a fine-grained one, follow the access ladder in the project-setup skill (`.ai/general/skills/project-setup/SKILL.md`).
 
@@ -44,7 +46,10 @@ Use this when the PM asks to set up or connect GitHub, or when the check above f
 bash .ai/general/skills/github/gh-setup.sh
 ```
 
-It's safe to run again. It makes sure `.env` is git-ignored (adding it to `.gitignore` if not), installs `gh` if missing, and checks the login. Without a login, it creates `.env` from `.env.example` with owner-only permissions. It never prints the token. Act on its output:
+It's safe to run again. It makes sure `.env` is git-ignored (adding it to `.gitignore` if not), installs `gh` if missing, and checks the login. Without a login, it creates the token file (its `env-file:` line) from `.env.example` with owner-only permissions. It never prints the token. Act on its output:
+
+- **`env: STOP …`**: a `.env` sits in a Project Brain kept in a synced folder, where everyone with access to the drive can read it. Tell the PM, move it to the path the line names (with their approval), and walk them through replacing every token it held: Drive keeps earlier versions of the file.
+- **`env: …` (anything else)**: fix what it names first (connect `~/.lobot` to the session, or remove a `.env` link), then run the script again.
 
 - **`ignore: added …`**: tell the PM `.gitignore` changed and should be committed.
 - **`ignore: STOP …`**: `.env` is tracked by git. Stop and tell the PM; any token it ever held must be revoked.
@@ -52,7 +57,7 @@ It's safe to run again. It makes sure `.env` is git-ignored (adding it to `.giti
   1. Open https://github.com/settings/tokens/new (Settings → Developer settings → Personal access tokens → Tokens (classic)).
   2. Name it for the project and tool (for example "Lobot, Cowork"), set a short expiration, and tick the `repo`, `project`, and `read:org` scopes.
   3. Generate it. If the org uses SSO, choose **Configure SSO** next to the token and authorize it for the org.
-  4. Open `.env` at the top of the Project Brain folder (in Finder, Cmd+Shift+. shows hidden files) and paste the token right after `GH_TOKEN=`, with no quotes or spaces. Save.
+  4. Open the token file (`.env` at the top of the Project Brain folder, or `~/.lobot/<key>.env` for a shared-drive Project Brain; in Finder, Cmd+Shift+. shows hidden files) and paste the token right after `GH_TOKEN=`, with no quotes or spaces. Save.
   5. Tell the assistant it's done. Never paste the token into the chat.
 - **`auth: failed …`**: name the likely cause from the message and stop; don't retry in a loop. If the cause is the org's token policy, follow the access ladder in the project-setup skill.
 - **`auth: ok as <login>`**: confirm with a read-only call on the project's repo (`gh issue list -R OWNER/REPO --limit 1`). If `.ai/project/github.md` is missing, continue with "Discovering a project's setup".
@@ -63,11 +68,13 @@ If the PM pastes a token into the chat anyway, don't use it: it's now in the con
 
 - Never print, echo, log, or copy the token. Never run `gh auth token`.
 - If command output could contain it, redact `gh[pousr]_…` before showing it.
-- Never write the token anywhere except the PM's own `.env`.
+- Never write the token anywhere except the PM's own token file, and never into a synced folder.
 
 ## Saving the Project Brain
 
-The Project Brain is its own git repository, separate from the code in `repo/`. The PM shouldn't need a terminal or git knowledge to keep it saved: the assistant does the git work, in plain language, with the PM's approval. If it isn't in git yet or has no GitHub repository, use the project-setup skill first. Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
+A Project Brain kept in the project's shared drive isn't in git: Drive saves it as it changes, so skip this section (project-setup skill, "Keep it in the shared drive").
+
+Otherwise the Project Brain is its own git repository, separate from the code in `repo/`. The PM shouldn't need a terminal or git knowledge to keep it saved: the assistant does the git work, in plain language, with the PM's approval. If it isn't in git yet or has no GitHub repository, use the project-setup skill first. Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
 
 **Before the first git command in a session:**
 
@@ -190,4 +197,4 @@ Record the repo, each board (number, title, purpose, URL, node ID), the Status/P
 
 ## Handoff
 
-When a PM rolls off: delete their `.env` token line and revoke the token in GitHub settings. The next PM follows `README.md` setup with their own token, or the project-setup skill's "Join a project".
+When a PM rolls off: delete their token file's `GH_TOKEN` line and revoke the token in GitHub settings. The next PM follows `README.md` setup with their own token, or the project-setup skill's "Join a project".

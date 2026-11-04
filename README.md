@@ -41,7 +41,7 @@ Things the assistant knows how to do. You can ask for them by name, but usually 
 | **GitHub** | Reads and updates issues, pull requests, and project boards, and reports on sprint status. |
 | **Project overview** | Gives you one page that shows how the project is set up and where everything lives: its name and short name, the Project Brain and code repositories, where tickets go, the project's library (records and folders in the Project Brain, in Google Drive, and on your computer), your tracker pages, which tools are connected, and what isn't set up yet, with what to say to set it up. Everything links to where it lives. Ask "is that set?" or "where is this?" and the assistant answers from it. |
 | **Guided setup** | When something can't be done because access is missing (a GitHub or Jira token, a folder the assistant can't see), says what's missing and offers to walk you through setting it up, one step at a time, on your Mac or Windows computer: making the token, finding and editing the hidden `.env` file, and connecting your project and profile folders. You never need a terminal, and your token never goes in the chat. |
-| **Project setup** | Puts the Project Brain in a private GitHub repository for you, helps a new PM join an existing one, and when GitHub says no, walks you through the next route and drafts the request for whoever has to approve it. |
+| **Project setup** | Keeps the Project Brain in the project's shared drive (Drive backs it up, no git needed) or a private GitHub repository for you, helps a new PM join an existing one, and when GitHub says no, walks you through the next route and drafts the request for whoever has to approve it. |
 | **Tickets** | Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links, and comments that get answers. Drafts a batch of tickets as one ticket plan, the same whichever tracker you choose for the project. |
 | **Jira** | Explains what Jira's screens are asking for, recommends the right option, and walks you through setting up spaces, boards, and workflows, including copying another space's setup. Audits a site's spaces, workflows, statuses, and work types into a workbook where you decide what to keep. Reads and writes work items with your own API token: searches and summarizes them, and creates a whole backlog of epics, stories, and links from Pepper's ticket plan once you approve it, instead of typing each one in. |
 | **Lobot** | Checks which version of Lobot your project has, updates it, and helps send improvements back. |
@@ -89,7 +89,9 @@ You'll need [Node 18 or later](https://nodejs.org/). Some skills also need Pytho
 
 ### Add Lobot to a project folder
 
-The easiest way is to let your assistant do it. Make an empty folder for the Project Brain, open your assistant in it (in Claude Cowork, connect the folder to the session), and paste one of these prompts. You can paste them as they are; the assistant asks for the details.
+A Project Brain is kept in one of two places: a hidden folder in the project's Lullabot shared drive (such as `.exu-lobot`), which Google Drive for desktop backs up with no git or GitHub needed, or a private GitHub repository. The shared drive is simpler, as long as no one outside Lullabot can open it; GitHub keeps a full history. The project-setup skill explains both.
+
+The easiest way is to let your assistant do it. Make an empty folder for the Project Brain (for the shared drive, inside the project's folder there), open your assistant in it (in Claude Cowork, connect the folder to the session), and paste one of these prompts. You can paste them as they are; the assistant asks for the details.
 
 #### Starting a new project
 
@@ -99,14 +101,15 @@ Set up a new Lobot Project Brain in this folder. Lobot: https://github.com/Lulla
 
 ## What I'll do
 - Give you the project's name, a short project key (like EXU), and its code repository.
-- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Tell you whether to keep the Project Brain in the project's shared drive or on GitHub.
+- Create any token when you walk me through it, and paste it only where you tell me, never into this chat.
 - Approve anything other people will see, like creating the GitHub repository.
 
 ## What you'll do
 1. Check that Node 18 or later is installed, and help me install it if it isn't.
 2. Install Lobot here with: npx --yes github:Lullabot/lobot init --name "<name>" --key <KEY>
 3. Clone the code repository into repo/.
-4. Read the new CLAUDE.md, then follow the project-setup skill to put this Project Brain on GitHub.
+4. Read the new CLAUDE.md, then follow the project-setup skill to finish setting up where this Project Brain is kept (shared drive or GitHub).
 5. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
 
 ## How
@@ -117,16 +120,16 @@ Do the terminal work for me, explain what's happening in plain language, and sto
 
 ```text
 ## Goal
-Join a project whose Project Brain is already on GitHub, and set it up in this folder.
+Join a project that already has a Project Brain, and set it up.
 
 ## What I'll do
-- Tell you the Project Brain's repository (it ends in -pm, like Lullabot/example-site-pm).
+- Tell you where the Project Brain is: a folder in the project's shared drive (connected to this session), or its GitHub repository (it ends in -pm, like Lullabot/example-site-pm).
 - Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
 - Approve anything other people will see.
 
 ## What you'll do
 1. Read the project-setup skill: https://github.com/Lullabot/lobot/blob/main/engine/skills/project-setup/SKILL.md
-2. Follow its "Join a project" section to bring the Project Brain into this folder and set up what it leaves out.
+2. Follow its "Join a project" section to bring the Project Brain into this folder (or connect its shared-drive folder) and set up what it leaves out.
 3. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
 4. Run the start-of-session routine and catch me up on the project.
 

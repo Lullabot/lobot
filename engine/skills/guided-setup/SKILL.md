@@ -37,11 +37,11 @@ When a task can't go ahead because something isn't set up, say so in one line, s
 3. **One step per message, then wait.** Each step says what to do, with the exact words on the button or menu in **bold**, and what they should see after. Wait for "done" before the next. Two small steps can share a message if they happen on the same screen.
 4. **Plain words.** Explain a term the first time it comes up, in a sentence, and not again. The terms most walkthroughs need:
    - **Token:** a password made for one tool. You can set it to expire, and cancel it without changing your real password.
-   - **`.env`:** a small text file in the project folder that holds your tokens. It stays on your computer and is never saved to GitHub.
+   - **`.env`:** a small text file in the project folder that holds your tokens. It stays on your computer and is never saved to GitHub. For a project folder kept in a shared drive, the file is in your own `.lobot` folder instead (`.lobot/<key>.env`), so it isn't copied to everyone who can open the drive.
    - **Hidden file:** a file whose name starts with a dot. A Mac hides these unless you ask to see them.
    - **Scope** or **permission:** what a token is allowed to do.
    - **SSO:** your organization's sign-in. A token has to be approved for it before it works on the organization's repositories.
-5. **Never ask for the token.** It goes from the website straight into `.env`, and never into the chat, a screenshot, or an email. If the PM pastes it into the chat anyway, don't use it; walk them through cancelling it and making a new one.
+5. **Never ask for the token.** It goes from the website straight into the token file, and never into the chat, a screenshot, or an email. If the PM pastes it into the chat anyway, don't use it; walk them through cancelling it and making a new one.
 6. **Check it worked.** Run the check (`gh-setup.sh`, `jira.py check`, reading the folder) and say what it means in plain words: "GitHub knows it's you." Then go back to the task that was waiting.
 7. **When they're stuck,** ask what they see on the screen. A screenshot helps, as long as the token isn't on it. If the screen doesn't match the steps, believe the PM: the website may have changed. Check the vendor's current help pages and adjust, and offer to report the out-of-date step to Lobot (lobot-feedback skill).
 8. **Let them stop.** If they need to stop (an admin has to approve something, they ran out of time), say where you left off and what's left, and pick it up next time it comes up. Nothing secret goes in the notes.
@@ -50,7 +50,7 @@ When a task can't go ahead because something isn't set up, say so in one line, s
 
 ### Find and edit `.env`
 
-Most token walkthroughs end here. Before you start, make sure `.env` exists (the github skill's `gh-setup.sh` or the jira skill's `jira.py setup` creates it) and tell the PM the name of the folder it's in.
+Most token walkthroughs end here. Before you start, make sure the token file exists (the github skill's `gh-setup.sh` or the jira skill's `jira.py setup` creates it, and prints its path) and tell the PM the name of the folder it's in. For a Project Brain kept in a shared drive it is `<key>.env` in the PM's `.lobot` folder, not `.env` in the project folder: in step 1 open that folder instead (Mac: in Finder, **Go**, **Go to Folder…**, type `~/.lobot`; Windows: type `%USERPROFILE%\.lobot` in File Explorer's address bar), and read `.env` below as that file's name.
 
 **Mac**
 
@@ -115,7 +115,7 @@ Then check: list the folder. For `~/.lobot`, carry on with the pm-profile skill 
 
 ## Hard limits
 
-- Never ask for, read out, print, or copy a token, and never have the PM paste one anywhere but their own `.env`.
+- Never ask for, read out, print, or copy a token, and never have the PM paste one anywhere but their own token file (`.env`, or `~/.lobot/<key>.env` for a shared-drive Project Brain).
 - Never ask the PM to open a terminal or run a command. Commands are the assistant's job.
 - Never change a security or organization setting for the PM, or tell them to turn off a protection (SSO, an approval, a firewall rule) to get past a step. If the organization says no, use the project-setup skill's access ladder.
 - Never walk a PM through giving a token more access than the task needs.

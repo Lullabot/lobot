@@ -8,7 +8,7 @@ Lobot works without most of this access. The sections say what each kind adds, a
 
 | Priority | Access | Without it |
 |---|---|---|
-| Must have | GitHub | The Project Brain can't be shared, handed off, or backed up |
+| Must have | GitHub, or the project's shared drive in Google Drive for desktop | The Project Brain can't be shared, handed off, or backed up |
 | Should have | Google Drive, Docs, and Sheets; a ticket system (Jira or GitHub Projects); Claude's hosted pages | The PM copies files and tickets in and out by hand |
 | Could have | A personal task manager (such as Todoist) | The task list in the Project Brain is used instead |
 
@@ -24,7 +24,7 @@ Lobot's instructions tell the assistant to ask before acting and to stay away fr
 - **Merging and force-pushing are governed by branch rules, not the token.** A token with Contents write on a repository can do whatever that repository's rules allow anyone with write access to do. Where it matters (the code repository's default branch, for one), require pull request reviews and block force-pushes with branch protection or rulesets.
 - **The organization's token policy applies.** Owners can block classic tokens, require approval for each fine-grained token, and cap token lifetimes.
 - **Connectors carry the PM's own permissions.** The Google Drive and Atlassian connectors act as the PM in those tools. Lobot can't narrow them: what the PM can see or change there, the assistant can too.
-- **The token file is the PM's.** `.env` is created readable only by the PM's own account and is ignored by git, so it isn't committed with the Project Brain.
+- **The token file is the PM's.** It is created readable only by the PM's own account. In a Project Brain saved to GitHub it is `.env`, ignored by git, so it isn't committed. In a Project Brain kept in a shared drive it is `~/.lobot/<key>.env`, outside the synced folder, because Drive has no ignore list and would copy a `.env` to everyone who can open the drive; Lobot's scripts stop if they find one there.
 
 **Lobot's instructions (lower the chance of a mistake; not a control):**
 
@@ -43,6 +43,8 @@ Lobot's instructions tell the assistant to ask before acting and to stay away fr
 **Why.** The Project Brain is version-controlled in a private repository in the Lullabot organization, named after the project's code repository with `-pm` on the end. That's how a new PM picks up a project, and how its history is kept. GitHub is also where most projects track their work.
 
 **What's in the Project Brain repository.** Cleaned meeting transcripts (small talk and sensitive passages cut, with the PM's approval; raw transcripts stay on the PM's computer by default) and notes, decisions, risks, open questions, action items, a people directory (work contact details and usernames), and Lobot's own files. No code, and no credentials by Lobot's rules. Who can read it is set by the repository's access in GitHub, like any private repository in the organization.
+
+**Or the project's shared drive.** A project can keep its Project Brain in the project's Lullabot shared drive instead, as a folder synced by Google Drive for desktop (for example `.exu-lobot` beside the project's other folders). Drive is then its backup and version history, and a new PM picks it up by being given access to the drive, so it needs no GitHub repository or token. Everything in the folder syncs, including the raw transcript copies that git would leave out, so it is only for a shared drive that no one outside Lullabot can open. A PM's own My Drive or another sync service doesn't qualify. GitHub is still needed for GitHub Projects and ADRs.
 
 **What it uses.** The PM's own personal access token. Lobot works with either kind:
 
@@ -87,7 +89,7 @@ The PM sets the token's expiry when they make it, as short as is practical. When
 
 **Why.** Reporting on work, keeping tickets tidy, and drafting tickets to a shared standard.
 
-**What it uses.** GitHub Projects goes through the GitHub token above. Jira goes through either Atlassian's own connector, signed in as the PM, or Jira's REST API with the PM's own Atlassian API token, kept in the Project Brain's git-ignored `.env` and sent only to the project's Jira site. Both act with the PM's Jira permissions; an API token can't be narrowed below them, so the PM sets a short expiry and revokes it when they leave the project. Reading a space's workflows through the connector needs a Jira admin to turn on that part of it.
+**What it uses.** GitHub Projects goes through the GitHub token above. Jira goes through either Atlassian's own connector, signed in as the PM, or Jira's REST API with the PM's own Atlassian API token, kept in the PM's token file (above) and sent only to the project's Jira site. Both act with the PM's Jira permissions; an API token can't be narrowed below them, so the PM sets a short expiry and revokes it when they leave the project. Reading a space's workflows through the connector needs a Jira admin to turn on that part of it.
 
 **What it does.** Reads spaces, boards, work items, and workflows. With the PM's approval of each change: creates and edits work items, boards, and filters, and, when the PM asks, workflows and other space settings. Lobot's instructions rule out deleting a space, board, filter, or scheme, or changing permissions beyond the PM's own team, unless the PM explicitly asks. The connector itself allows whatever the PM's Jira permissions do.
 
@@ -119,7 +121,7 @@ Lobot has no email, chat, or calendar skills. It drafts messages for the PM to s
 
 ## When a PM leaves a project
 
-The PM deletes their token from `.env` and revokes it in GitHub, and disconnects any connectors they no longer need. Nothing is shared between PMs: the next PM sets up their own token and connectors.
+The PM deletes their tokens from their token file and revokes them in GitHub and Atlassian, and disconnects any connectors they no longer need. Nothing is shared between PMs: the next PM sets up their own token and connectors.
 
 ## Lobot itself
 
