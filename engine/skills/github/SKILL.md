@@ -113,6 +113,17 @@ gh project field-list N --owner ORG --format json
 - For board summaries (counts by status, what's in progress, what's stale), pull `item-list` JSON once and aggregate it.
 - Cite issues and PRs as `#123` with links when reporting to the PM.
 
+**Current sprint.** On a board with an iteration field, the sprint is the iteration whose dates include today. Read the field's iterations (title, start date, length in days) once, then the board's items:
+
+```sh
+gh api graphql -F org=ORG -F n=N -f query='query($org:String!,$n:Int!){organization(login:$org){projectV2(number:$n){field(name:"Iteration"){... on ProjectV2IterationField{configuration{iterations{title startDate duration}}}}}}}'
+gh project item-list N --owner ORG --limit 500 --format json   # each item's "iteration" (title) and "status"
+gh api repos/OWNER/REPO/issues/123/dependencies/blocked_by --jq '[.[] | select(.state == "open") | .number]'
+gh search issues --repo OWNER/REPO --state open --updated "<YYYY-MM-DD" --json number,updatedAt --limit 200
+```
+
+Use the field name recorded in `.ai/project/github.md` if the board calls it something other than "Iteration". Days left is the iteration's start date plus its length, minus today. An open item in the current iteration is **blocked** when its Status is a blocked option, it has a "blocked" label, or an open issue blocks it; it is **stale** when it is in progress or in review and wasn't updated within the threshold in `.ai/project/tickets.md` (default 7 days; the search above, with that date). A board with no iteration field has no sprint.
+
 ## Writing (approval required)
 
 Anything the team or client can see is a write: creating, editing, commenting on, labeling, assigning, or closing issues/PRs; adding items to a project; changing a project field (status, priority, dates).
