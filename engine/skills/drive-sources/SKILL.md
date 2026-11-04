@@ -19,6 +19,7 @@ Every Lullabot client project has its own shared drive, and most project materia
 | Source map and processed list | `docs/sources.yaml` |
 | Standard shared drive layout | `layout.yaml` in this skill's folder |
 | Validator | `validate.py` in this skill's folder |
+| What was built from a file | `cited.py` in this skill's folder (see "Check for new and changed files") |
 | Snapshots of transcripts read from Drive (raw; git-ignored by default) | `docs/transcripts/raw/` (the source's `copy_to`) |
 
 If `docs/sources.yaml` doesn't exist (projects installed before this skill), create it with the header comment from the format below, `sources: {}`, `not_used: {}`, and `processed: []`.
@@ -188,7 +189,12 @@ Run this when the PM asks, during the start-of-session routine (report only; pro
    - Changed: files in `processed` whose current `modifiedTime` is later than the latest `modified` recorded for them.
    - A shortcut (`application/vnd.google-apps.shortcut`) points at another file. Get its metadata to find the target; if the target can't be read, list it as a question for the PM.
 3. **Files** (skip `project-journal`: it changes every week and is read when the PJE is drafted): get each file's metadata and compare `modifiedTime` with its latest `processed` entry. A file with no entry has never been read.
-4. **Report** in one short list per source: title, date, and why it's listed (new, changed, can't read). Say nothing else when there's nothing new.
+4. **Find what each changed file fed.** For every file listed as changed, run:
+   ```sh
+   python3 .ai/general/skills/drive-sources/cited.py ID [ID ...]
+   ```
+   It lists what was built from the earlier version (the `result` of each `processed` entry) and every dossier file whose `sources` cite it, directly or through those results or a snapshot of it, with the lines of the facts that cite it. Use the script rather than searching by hand, so every check finds the same things.
+5. **Report** in one short list per source: title, date, and why it's listed (new, changed, can't read). Under a changed file, add what `cited.py` found in a line or two (for example "feeds the meeting notes of 2026-10-08 and 6 facts in site A's data.md"), so the PM knows which facts may now be stale. Say nothing else when there's nothing new.
 
 ## Process new files
 
@@ -206,10 +212,10 @@ Only after the PM says which files to process.
    ---
    ```
    The snapshot keeps the Project Brain usable without Drive access (portability rule). Never edit it afterwards; to refresh it, write a new snapshot. A transcript snapshot is raw: it goes in `docs/transcripts/raw/`, which is git-ignored by default, and the cleaned copy the Project Brain commits is made from it (transcript-cleanup skill, which meeting-notes runs first).
-3. **Run the handler** skill (e.g. meeting-notes) on the snapshot, then record the file in `processed` with the resulting path as `result`.
+3. **Run the handler** skill (e.g. meeting-notes) on the snapshot, then record the file in `processed` with the resulting path as `result`. For a file processed again because it changed, also recheck every fact `cited.py` listed against the new version (dossier skill, "Add facts"), and update or correct the ones it changed.
 4. **Skipped files:** when the PM says to skip a file, record it with `result: "skipped: <reason>"` so it stops coming up.
 
-For `reference` and `deliverable` sources, read the file when a task needs it and cite it by title and link. Record a `processed` entry when the PM has reviewed a change, so the next check reports only newer edits.
+For `reference` and `deliverable` sources, read the file when a task needs it and cite it by title and link. When one has changed, recheck the facts `cited.py` lists against the new version with the PM, then record a `processed` entry, so the next check reports only newer edits.
 
 ## Mirror a Sheet locally
 
