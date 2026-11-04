@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.36.0](https://github.com/Lullabot/lobot/compare/v0.35.0...v0.36.0) (2026-11-04)
+
+### Added
+
+* **engine:** when access is missing, Lobot offers to walk you through setting it up, step by step on a Mac or Windows ([#47](https://github.com/Lullabot/lobot/issues/47)) ([b0425c6](https://github.com/Lullabot/lobot/commit/b0425c6e9edc9099be829d46893f1c6091584d8f))
+
+### Fixed
+
+* **engine:** weekly board links to the review desk open the desk and name the tab to look at ([#46](https://github.com/Lullabot/lobot/issues/46)) ([23bc9ff](https://github.com/Lullabot/lobot/commit/23bc9fff9a0fc7103851a2498a17d39ab2b1f13c))
+
 ## [0.35.0](https://github.com/Lullabot/lobot/compare/v0.34.0...v0.35.0) (2026-11-04)
 
 ### Added
