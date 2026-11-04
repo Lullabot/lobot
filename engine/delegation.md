@@ -15,6 +15,8 @@ More agents get added to this table as they are created.
 
 Work that falls in an agent's column "Owns" goes to that agent. Work that matches no agent is done by the assistant directly. When a task spans two agents, split it and sequence the pieces (see below). Lucy uses the Google Drive connector when the assistant has one. If she reports that she can't reach Drive, the assistant reads the file and saves a snapshot, then Lucy files it (see the drive-sources skill). For example, after a meeting Lucy files the notes first, then Pepper drafts tickets for the action items the PM wants tracked.
 
+When an agent reports that it can't reach a tool because access is missing (Pepper with no GitHub login or Jira token), the assistant keeps the rest of the report, offers to walk the PM through the setup (guided-setup skill), and once it works, reruns only the part that needed it.
+
 ## Rules
 
 1. **The assistant is the go-between.** The PM talks to the assistant. The assistant briefs the agent, gets the report back, and relays it. Agents don't write ephemeral notes to files.

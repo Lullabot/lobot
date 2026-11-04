@@ -30,7 +30,7 @@ At the start of a session, read `~/.lobot/preferences.md` if it exists. Apply it
 **When it can't be read**, say so in one line and carry on with the project's files and the defaults. This happens when the assistant can only see the project folder:
 
 - **Claude Code** asks before reading outside the project. To stop it asking, the PM can add `~/.lobot` to `permissions.additionalDirectories` in `~/.claude/settings.json`.
-- **Claude Cowork** can see it only if the PM connects the `~/.lobot` folder to the session.
+- **Claude Cowork** can see it only if the PM connects the `~/.lobot` folder to the session. It's a hidden folder and may not exist yet; the guided-setup skill's "Connect a folder" walks the PM through both.
 - Other assistants vary. If one can't reach it, the PM can say "use my profile from <path>" or paste it in.
 
 Offer the fix once per session, not on every draft.

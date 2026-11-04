@@ -163,7 +163,7 @@ You do everything except the token, which only the PM touches.
    python3 .ai/general/skills/jira/jira.py setup --site SITE --email EMAIL
    ```
    Take the site from `.ai/project/jira.md` (or the address the PM opens Jira at, such as `example.atlassian.net`) and the email from the PM's `ids.email` in `docs/people.yaml`; ask only if neither has it. It makes sure `.env` is git-ignored, creates it readable only by the PM, and fills in the site and email. It never reads out or changes a token. If it says `ignore: added`, tell the PM `.gitignore` changed and should be committed. If it says `ignore: STOP`, stop and tell the PM: `.env` was committed, and any token it held must be revoked.
-2. **Walk the PM through the token,** in plain words like these:
+2. **Walk the PM through the token,** one step at a time as the guided-setup skill describes (it has the Windows steps for `.env`), in plain words like these:
    1. Open https://id.atlassian.com/manage-profile/security/api-tokens, signed in to Atlassian as yourself.
    2. Choose **Create API token**, the plain one, not the one "with scopes".
    3. Name it after the project (for example "Lobot, Example project"), pick an expiry date a few months away, and choose **Create**. Then choose **Copy**.

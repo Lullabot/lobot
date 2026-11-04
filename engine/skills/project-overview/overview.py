@@ -397,6 +397,9 @@ def gaps(d):
         add("GitHub isn't connected on this computer.", "Connect GitHub.")
     if "jira" in (d["tickets"].get("value") or "").lower() and not conn["jira"]["set"]:
         add("Jira isn't connected on this computer.", "Connect to Jira.")
+    profile = next((i for i in d["library"]["local"] if i["path"] == "~/.lobot/"), None)
+    if profile and not profile["exists"]:
+        add("Your personal profile folder (~/.lobot) isn't set up or connected here.", "Walk me through connecting my profile folder.")
     for agent in d["agents"]:
         if not agent["configured"]:
             add(f"{agent['name']} has no settings for this project yet.", f"Set up {agent['name'].split()[0]}'s settings.")

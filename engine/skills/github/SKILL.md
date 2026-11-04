@@ -48,7 +48,7 @@ It's safe to run again. It makes sure `.env` is git-ignored (adding it to `.giti
 
 - **`ignore: added …`**: tell the PM `.gitignore` changed and should be committed.
 - **`ignore: STOP …`**: `.env` is tracked by git. Stop and tell the PM; any token it ever held must be revoked.
-- **`token: missing`**: walk the PM through creating a token, then run the script again once they say it's in:
+- **`token: missing`**: walk the PM through creating a token, then run the script again once they say it's in. The guided-setup skill ("GitHub token") says how to walk a PM through it, with the steps for finding and editing `.env` on a Mac or Windows:
   1. Open https://github.com/settings/tokens/new (Settings → Developer settings → Personal access tokens → Tokens (classic)).
   2. Name it for the project and tool (for example "Lobot, Cowork"), set a short expiration, and tick the `repo`, `project`, and `read:org` scopes.
   3. Generate it. If the org uses SSO, choose **Configure SSO** next to the token and authorize it for the org.
