@@ -212,7 +212,7 @@ Only after the PM says which files to process.
    ---
    ```
    The snapshot keeps the Project Brain usable without Drive access (portability rule). Never edit it afterwards; to refresh it, write a new snapshot. A transcript snapshot is raw: it goes in `docs/transcripts/raw/`, which is git-ignored by default, and the cleaned copy the Project Brain commits is made from it (transcript-cleanup skill, which meeting-notes runs first).
-3. **Run the handler** skill (e.g. meeting-notes) on the snapshot, then record the file in `processed` with the resulting path as `result`. For a file processed again because it changed, also recheck every fact `cited.py` listed against the new version (dossier skill, "Add facts"), and update or correct the ones it changed.
+3. **Run the handler** skill (e.g. meeting-notes) on the snapshot, then record the file in `processed` with the resulting path as `result`. For a file processed again because it changed, also recheck every fact `cited.py` listed against the new version, and change the ones it no longer supports as the dossier skill's "Add facts" says.
 4. **Skipped files:** when the PM says to skip a file, record it with `result: "skipped: <reason>"` so it stops coming up.
 
 For `reference` and `deliverable` sources, read the file when a task needs it and cite it by title and link. When one has changed, recheck the facts `cited.py` lists against the new version with the PM, then record a `processed` entry, so the next check reports only newer edits.

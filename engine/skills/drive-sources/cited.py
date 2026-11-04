@@ -107,7 +107,8 @@ def dossier_citations(fid, results, cache):
                 value = str(value or "")
                 if not (has_id.search(value) or norm(value) in results or snapshot_id(value, cache) == fid):
                     continue
-                cite = re.compile(r"\(" + re.escape(str(label)) + r"\b")
+                # The label as a whole token at the start of a citation, which may hold several: (a 00:12; b §2)
+                cite = re.compile(r"\((?:[^()]*?[;,]\s*)?" + re.escape(str(label)) + r"(?=[\s;,)])")
                 lines = [start + i for i, line in enumerate(body.split("\n")) if cite.search(line)]
                 hits.append((path, label, lines))
     return hits
@@ -117,12 +118,13 @@ def main(args):
     if not args or args[0] in ("-h", "--help"):
         print(__doc__.strip())
         return 0 if args else 1
+    if not os.path.isfile(SOURCES):
+        print(f"ERROR: no {SOURCES} here ({os.getcwd()}). Run this from the Project Brain root.")
+        return 1
     try:
         with open(SOURCES, encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
-    except OSError:
-        data = {}
-    except yaml.YAMLError as e:
+    except (OSError, yaml.YAMLError) as e:
         print(f"ERROR: {SOURCES} does not parse: {e}")
         return 1
     processed = (data.get("processed") or []) if isinstance(data, dict) else []
