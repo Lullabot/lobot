@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.34.0](https://github.com/Lullabot/lobot/compare/v0.33.2...v0.34.0) (2026-11-04)
+
+### Added
+
+* **engine:** a weekly board lays out the week's milestones, sprint, due questions and tasks, risks, and reporting on one page ([#42](https://github.com/Lullabot/lobot/issues/42)) ([ade3b2b](https://github.com/Lullabot/lobot/commit/ade3b2bce115897a73f5ac303a2a31b677f45d9b)), closes [#39](https://github.com/Lullabot/lobot/issues/39) [#40](https://github.com/Lullabot/lobot/issues/40)
+* **engine:** see how your project is set up and where everything lives on one page ([#41](https://github.com/Lullabot/lobot/issues/41)) ([df501b3](https://github.com/Lullabot/lobot/commit/df501b3dd8218283f7c02f63e3c2548323674c36)), closes [#38](https://github.com/Lullabot/lobot/issues/38)
+
+### Fixed
+
+* **engine:** Pepper writes tickets to match the code team's documented conventions when the repository keeps them ([#36](https://github.com/Lullabot/lobot/issues/36)) ([351a7b3](https://github.com/Lullabot/lobot/commit/351a7b32236ca185f7a7407ce4212fcf6fb0b941)), closes [#31](https://github.com/Lullabot/lobot/issues/31)
+* **engine:** when a Drive document changes, the check lists the dossier facts and records built from it, so they get rechecked ([#34](https://github.com/Lullabot/lobot/issues/34)) ([e5c1527](https://github.com/Lullabot/lobot/commit/e5c152721ef8e7696ec5191a3390e928eff8da71)), closes [#29](https://github.com/Lullabot/lobot/issues/29)
+* **engine:** when a new source contradicts a dossier fact, Lucy shows you both on the review desk instead of overwriting it ([#35](https://github.com/Lullabot/lobot/issues/35)) ([568d019](https://github.com/Lullabot/lobot/commit/568d019363910938e997b1bfaa15812d7d7b4aa6)), closes [#30](https://github.com/Lullabot/lobot/issues/30)
+
 ## [0.33.2](https://github.com/Lullabot/lobot/compare/v0.33.1...v0.33.2) (2026-11-04)
 
 ### Fixed
