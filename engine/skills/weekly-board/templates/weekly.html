@@ -83,7 +83,7 @@ const DESK_TABS = {review: "Lucy's proposals", questions: "Questions for you", p
 const SECTIONS = [
   {key: "schedule", label: "Schedule goals", lead: "Milestones and deliverables due this week."},
   {key: "sprint", label: "Sprint"},
-  {key: "questions", label: "Questions", tab: "questions", lead: "Needed by the end of the week, or already late."},
+  {key: "questions", label: "Questions", tab: "questions", lead: "High priority, or needed by the end of the week, or already late. Most important first."},
   {key: "tasks", label: "Your tasks", tab: "mine", lead: "Due this week, or overdue."},
   {key: "risks", label: "Risks and decisions", tab: "risks", lead: "Open risks by severity, and decisions still pending."},
   {key: "reporting", label: "Reporting", lead: "What's owed this week, and where each stands."},
@@ -164,7 +164,8 @@ function render(){
       out.push(card(sec, [el("div", {className: "group", textContent: `Open risks (${risks.length})`}), list(risks, sec) || empty("No open risks."),
         el("div", {className: "group", textContent: `Pending decisions (${decs.length})`}), list(decs, {...sec, tab: "decisions"}) || empty("No decisions pending.")], risks.length + decs.length));
     } else if (sec.key === "questions") {
-      const you = of("questions").filter(q => q.forPm).sort(byDue), others = of("questions").filter(q => !q.forPm).sort(byDue);
+      const PRI = {high: 0, medium: 1, low: 2}, byPri = (a, b) => (PRI[a.priority] ?? 1) - (PRI[b.priority] ?? 1) || byDue(a, b);
+      const you = of("questions").filter(q => q.forPm).sort(byPri), others = of("questions").filter(q => !q.forPm).sort(byPri);
       out.push(card(sec, [el("div", {className: "group", textContent: `For you (${you.length})`}), list(you, sec) || empty("Nothing due from you."),
         el("div", {className: "group", textContent: `For others (${others.length})`}), list(others, {...sec, tab: "product"}) || empty("Nothing due from others.")], you.length + others.length));
     } else {

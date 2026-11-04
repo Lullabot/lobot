@@ -72,7 +72,7 @@ Your voice and preferences live in `~/.lobot/`, outside any one project. In Clau
 
 ## How to use it
 
-Open your assistant in the Project Brain folder and talk to it the way you would talk to a project coordinator. At the start of each session it reads the rules, catches up on the latest journal entry, and tells you where things stand. On the first workday of the week it also opens your weekly board: what's due, the sprint, and the week's reporting.
+Open your assistant in the Project Brain folder and talk to it the way you would talk to a project coordinator. At the start of each session it reads the rules, catches up on the latest journal entry, and tells you where things stand. On the first workday of the week it also opens your weekly board: what's due, the sprint, and the week's reporting. On other days it opens your daily board: what changed since your last session, what's waiting on you, and what's due today.
 
 **After a client call.** Drop the transcript into `docs/transcripts/raw/` and say "process today's meeting with the client." If the project's Google Meet transcript folder is mapped (Drive sources), skip the drop: Lucy finds the new transcript in Drive and saves a copy for you. Lucy cleans the transcript and writes the meeting notes. The assistant then opens your review desk with the proposed transcript cuts, decisions, risks, and record changes, the new questions, and the action items, and waits for your approval before applying them. Only the cleaned transcript is committed.
 

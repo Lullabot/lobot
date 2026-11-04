@@ -216,6 +216,7 @@ python3 $J users "name or email"       # account IDs, for docs/people.yaml
 python3 $J search 'project = SPACE AND statusCategory != Done ORDER BY rank' --limit 100
 python3 $J view SPACE-123 --comments   # fields, links, children, and the description as markdown
 python3 $J transitions SPACE-123       # statuses it can move to now
+python3 $J sprint SPACE                # active sprint: dates, days left, unfinished items that are blocked or stale (--stale DAYS, default 7)
 ```
 
 Add `--json` for Jira's raw response, and filter that rather than reading it whole.
