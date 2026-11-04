@@ -75,10 +75,11 @@ li.row.t-crit{border-left-color:var(--crit)} li.row.t-warn{border-left-color:var
 <script>
 const CONFIG = {
   project: "{{PROJECT_NAME}}",          // eyebrow: "<project> · Lobot"
-  reviewDesk: "{{REVIEW_DESK_URL}}",    // the review desk's link, or "" when the project has none; record items without their own link go to its tab
+  reviewDesk: "{{REVIEW_DESK_URL}}",    // the review desk's link, or "" when the project has none; record items without their own link go to it
   scopes: {{SCOPES_JSON}},              // {} on a single-site project, else {"site-a": "Site A", ...}
 };
-// Sections in order. key: the `section` field on an item document; tab: the review desk tab an item links to when it has no link of its own.
+const DESK_TABS = {review: "Lucy's proposals", questions: "Questions for you", product: "Questions for others", mine: "My tasks", risks: "Risks", decisions: "Decisions", checklist: "Checklists"};
+// Sections in order. key: the `section` field on an item document; tab: the review desk tab an item belongs on when it has no link of its own (named on the link; claude.ai drops a #tab in an artifact link, so the link opens the desk itself).
 const SECTIONS = [
   {key: "schedule", label: "Schedule goals", lead: "Milestones and deliverables due this week."},
   {key: "sprint", label: "Sprint"},
@@ -107,7 +108,7 @@ function linkFor(it, sec){
   const own = safeUrl(it.link);
   if (own) return {href: own, label: it.linkLabel || ""};
   const desk = safeUrl(CONFIG.reviewDesk);
-  if (desk && sec.tab) return {href: desk.replace(/#.*$/, "") + "#" + (it.tab || sec.tab), label: "Review desk"};
+  if (desk && sec.tab) return {href: desk.replace(/#.*$/, ""), label: "", tip: `Opens the review desk: look on the ${DESK_TABS[it.tab || sec.tab] || "matching"} tab`};
   return null;
 }
 function due(it){
@@ -119,7 +120,7 @@ function due(it){
 }
 function row(it, sec){
   const l = linkFor(it, sec);
-  const text = l ? el("a", {href: l.href, target: "_blank", rel: "noopener", textContent: it.title || "(untitled)"}) : document.createTextNode(it.title || "(untitled)");
+  const text = l ? el("a", {href: l.href, target: "_blank", rel: "noopener", title: l.tip || "", textContent: it.title || "(untitled)"}) : document.createTextNode(it.title || "(untitled)");
   const what = el("div", {className: "what"}, [it.ref ? el("span", {className: "id", textContent: it.ref}) : null, text]);
   const bits = [it.meta, it.scope && SCOPES[it.scope] ? SCOPES[it.scope] : "", l && l.label && safeUrl(it.link) ? l.label : ""].filter(Boolean);
   const tone = it.tone || TONE[it.severity] || (it.due && !it.done && it.due < today ? "crit" : "");
