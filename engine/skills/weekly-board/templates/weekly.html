@@ -1,0 +1,184 @@
+<!-- Lobot page template: weekly board. Fill the {{…}} placeholders and CONFIG, then publish with capabilities {"db": {}}. Read-only: the page shows what the database holds and writes nothing. See .ai/general/skills/weekly-board/SKILL.md. -->
+<title>{{PROJECT_NAME}} Weekly Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column of sections in the order a PM plans a week. Each section is a card of linked rows; nothing on the page is editable. Tokens match the tracker pages. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6;
+  --todo:#6b7585; --todo-bg:#eef0f3; --prog:#9a5b00; --prog-bg:#fdf0db;
+  --done:#1d7a46; --done-bg:#e1f3e8; --crit:#b3261e; --crit-bg:#fbe4e2; --warn:#9a5b00; --calm:#2f6f8f;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --calm:#7cb4dc; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --calm:#7cb4dc; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;display:grid;gap:18px}
+header{display:grid;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:15px;margin:0;display:flex;gap:8px;align-items:center}
+.sub{color:var(--muted);margin:0;max-width:68ch}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.notice{background:var(--crit-bg);color:var(--crit);border-radius:8px;padding:10px 12px;font-size:14px}
+.gaps{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:14px;margin:0;display:grid;gap:4px}
+.pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.p-todo{color:var(--todo);background:var(--todo-bg)} .p-prog{color:var(--prog);background:var(--prog-bg)}
+.p-done{color:var(--done);background:var(--done-bg)} .p-crit{color:var(--crit);background:var(--crit-bg)}
+.p-acc{color:var(--accent);background:var(--accent-soft)}
+section.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.count{font-size:12px;font-weight:700;min-width:1.7em;text-align:center;padding:1px 6px;border-radius:999px;background:var(--todo-bg);color:var(--todo);font-variant-numeric:tabular-nums}
+.lead{color:var(--muted);font-size:14px;margin:0}
+ol.rows{list-style:none;margin:0;padding:0;display:grid}
+li.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 14px;padding:9px 0 9px 10px;border-top:1px solid var(--line);border-left:3px solid transparent}
+li.row:first-child{border-top:0}
+li.row.t-crit{border-left-color:var(--crit)} li.row.t-warn{border-left-color:var(--warn)} li.row.t-calm{border-left-color:var(--calm)}
+.what{min-width:0;overflow-wrap:anywhere}
+.what .id{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-right:6px}
+.meta{grid-column:1;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.when{grid-column:2;grid-row:1;justify-self:end}
+.group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:4px 0 -4px}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px}
+.facts b{font-weight:600}
+.recap{margin:0;white-space:pre-line;font-size:14px}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.foot{color:var(--muted);font-size:13px}
+@media (max-width:520px){li.row{grid-template-columns:1fr}.when{grid-column:1;grid-row:auto;justify-self:start}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <h1 id="title">This week</h1>
+    <p class="sub">The shape of the week: what's due, where the sprint stands, what you're waiting on, and what's owed to the client and to Lullabot. Each item links to where you act on it.</p>
+    <div class="mono" id="refreshed"></div>
+  </header>
+  <div class="notice" id="notice" hidden></div>
+  <div class="gaps" id="gaps" hidden></div>
+  <div id="board" style="display:grid;gap:14px"><p class="empty">Loading the week from Lobot. If nothing shows, ask Claude to refresh the weekly board.</p></div>
+  <p class="foot">A summary of Lobot's records, refreshed by Claude. Nothing here is edited: change things where each link goes, or on the review desk.</p>
+</div>
+
+<script>
+const CONFIG = {
+  project: "{{PROJECT_NAME}}",          // eyebrow: "<project> · Lobot"
+  reviewDesk: "{{REVIEW_DESK_URL}}",    // the review desk's link, or "" when the project has none; record items without their own link go to its tab
+  scopes: {{SCOPES_JSON}},              // {} on a single-site project, else {"site-a": "Site A", ...}
+};
+// Sections in order. key: the `section` field on an item document; tab: the review desk tab an item links to when it has no link of its own.
+const SECTIONS = [
+  {key: "schedule", label: "Schedule goals", lead: "Milestones and deliverables due this week."},
+  {key: "sprint", label: "Sprint"},
+  {key: "questions", label: "Questions", tab: "questions", lead: "Needed by the end of the week, or already late."},
+  {key: "tasks", label: "Your tasks", tab: "mine", lead: "Due this week, or overdue."},
+  {key: "risks", label: "Risks and decisions", tab: "risks", lead: "Open risks by severity, and decisions still pending."},
+  {key: "reporting", label: "Reporting", lead: "What's owed this week, and where each stands."},
+  {key: "recap", label: "Last week"},
+];
+const TONE = {High: "crit", Medium: "warn", Low: "calm"};
+const $ = id => document.getElementById(id);
+const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
+const pill = (cls, text) => el("span", {className: "pill " + cls, textContent: text});
+const pad = n => String(n).padStart(2, "0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = iso(new Date());
+const dayName = s => { const d = new Date(s + "T12:00:00"); return isNaN(d) ? s : d.toLocaleDateString(undefined, {weekday: "short", month: "short", day: "numeric"}); };
+const safeUrl = u => (typeof u === "string" && /^https?:\/\//i.test(u)) ? u : "";
+const SCOPES = {...(CONFIG.scopes || {}), all: ""};
+let items = [], info = null;
+
+$("eyebrow").textContent = `${CONFIG.project} · Lobot`;
+function notice(msg){ $("notice").textContent = msg || ""; $("notice").hidden = !msg; }
+
+function linkFor(it, sec){
+  const own = safeUrl(it.link);
+  if (own) return {href: own, label: it.linkLabel || ""};
+  const desk = safeUrl(CONFIG.reviewDesk);
+  if (desk && sec.tab) return {href: desk.replace(/#.*$/, "") + "#" + (it.tab || sec.tab), label: "Review desk"};
+  return null;
+}
+function due(it){
+  if (!it.due) return null;
+  if (it.done) return pill("p-done", dayName(it.due));
+  if (it.due < today) return pill("p-crit", "Late · " + dayName(it.due));
+  if (it.due === today) return pill("p-prog", "Today");
+  return pill("p-todo", dayName(it.due));
+}
+function row(it, sec){
+  const l = linkFor(it, sec);
+  const text = l ? el("a", {href: l.href, target: "_blank", rel: "noopener", textContent: it.title || "(untitled)"}) : document.createTextNode(it.title || "(untitled)");
+  const what = el("div", {className: "what"}, [it.ref ? el("span", {className: "id", textContent: it.ref}) : null, text]);
+  const bits = [it.meta, it.scope && SCOPES[it.scope] ? SCOPES[it.scope] : "", l && l.label && safeUrl(it.link) ? l.label : ""].filter(Boolean);
+  const tone = it.tone || TONE[it.severity] || (it.due && !it.done && it.due < today ? "crit" : "");
+  return el("li", {className: "row" + (tone ? " t-" + tone : "")}, [what, el("div", {className: "when"}, [it.severity ? pill(TONE[it.severity] === "crit" ? "p-crit" : "p-todo", it.severity) : due(it)]), bits.length ? el("div", {className: "meta", textContent: bits.join(" · ")}) : null]);
+}
+function list(rows, sec){ return rows.length ? el("ol", {className: "rows"}, rows.map(it => row(it, sec))) : null; }
+const byDue = (a, b) => (a.due || "9999").localeCompare(b.due || "9999") || (a.ref || "").localeCompare(b.ref || "");
+const SEV = {High: 0, Medium: 1, Low: 2, TBD: 3};
+
+function card(sec, kids, n){
+  const h = el("h2", {}, [el("span", {textContent: sec.label}), n == null ? null : el("span", {className: "count", textContent: String(n)})]);
+  return el("section", {className: "card", id: "s-" + sec.key}, [h, sec.lead ? el("p", {className: "lead", textContent: sec.lead}) : null, ...kids]);
+}
+const empty = t => el("p", {className: "empty", textContent: t});
+
+function render(){
+  if (!info) return;
+  $("title").textContent = info.weekOf ? `Week of ${dayName(info.weekOf)}` : "This week";
+  $("refreshed").textContent = info.refreshed ? `Refreshed ${info.refreshed.replace("T", " ").slice(0, 16)}` : "";
+  const gaps = (info.gaps || []).filter(Boolean);
+  $("gaps").replaceChildren(...gaps.map(g => el("div", {textContent: g}))); $("gaps").hidden = !gaps.length;
+  const of = k => items.filter(it => it.section === k);
+  const out = [];
+  for (const sec of SECTIONS) {
+    if (sec.key === "sprint") {
+      const s = info.sprint;
+      if (!s) { out.push(card(sec, [empty(info.sprintNote || "No sprint data this week.")])); continue; }
+      const name = safeUrl(s.link) ? el("a", {href: s.link, target: "_blank", rel: "noopener", textContent: s.name || "Current sprint"}) : el("b", {textContent: s.name || "Current sprint"});
+      const facts = el("div", {className: "facts"}, [name, s.start || s.end ? el("span", {textContent: `${s.start ? dayName(s.start) : "?"} – ${s.end ? dayName(s.end) : "?"}`}) : null, s.end ? pill(s.end < today ? "p-crit" : "p-acc", s.end < today ? "Ended" : `Ends ${dayName(s.end)}`) : null]);
+      const rolled = of("rollover").sort(byDue);
+      out.push(card(sec, [facts, s.goal ? el("p", {className: "recap", textContent: "Goal: " + s.goal}) : null,
+        el("div", {className: "group", textContent: `Rolled over from the last sprint (${rolled.length})`}),
+        list(rolled, sec) || empty(s.rolloverNote || "Nothing rolled over.")]));
+    } else if (sec.key === "recap") {
+      const r = info.recap || {};
+      const links = (r.links || []).filter(x => safeUrl(x.link)).map(x => el("a", {href: x.link, target: "_blank", rel: "noopener", textContent: x.title || x.link}));
+      out.push(card(sec, [r.text ? el("p", {className: "recap", textContent: r.text}) : empty("No journal entries last week."), links.length ? el("div", {className: "facts"}, links) : null]));
+    } else if (sec.key === "risks") {
+      const risks = of("risks").sort((a, b) => (SEV[a.severity] ?? 4) - (SEV[b.severity] ?? 4) || (a.ref || "").localeCompare(b.ref || ""));
+      const decs = of("decisions").sort(byDue);
+      out.push(card(sec, [el("div", {className: "group", textContent: `Open risks (${risks.length})`}), list(risks, sec) || empty("No open risks."),
+        el("div", {className: "group", textContent: `Pending decisions (${decs.length})`}), list(decs, {...sec, tab: "decisions"}) || empty("No decisions pending.")], risks.length + decs.length));
+    } else if (sec.key === "questions") {
+      const you = of("questions").filter(q => q.forPm).sort(byDue), others = of("questions").filter(q => !q.forPm).sort(byDue);
+      out.push(card(sec, [el("div", {className: "group", textContent: `For you (${you.length})`}), list(you, sec) || empty("Nothing due from you."),
+        el("div", {className: "group", textContent: `For others (${others.length})`}), list(others, {...sec, tab: "product"}) || empty("Nothing due from others.")], you.length + others.length));
+    } else {
+      const rows = of(sec.key).sort(byDue);
+      out.push(card(sec, [list(rows, sec) || empty(sec.key === "schedule" ? (info.scheduleNote || "Nothing due this week.") : "Nothing this week.")], rows.length));
+    }
+  }
+  $("board").replaceChildren(...out);
+}
+
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) { notice("This view can't load the week from Lobot. Sign in to claude.ai to see it."); return; }
+  let got = 0; const ready = () => { if (++got >= 2) render(); else if (info) render(); };
+  db.collection("items").onSnapshot(snap => { items = snap.docs.map(x => ({...x.data(), id: x.id})); ready(); }, () => notice("The week's items couldn't load. Reload the page to try again."));
+  db.collection("meta").onSnapshot(snap => { const d = snap.docs.find(x => x.id === "info"); info = d ? d.data() : {}; ready(); }, () => notice("The board couldn't load. Reload the page to try again."));
+})();
+</script>

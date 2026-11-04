@@ -67,6 +67,7 @@ details.waiting>summary{cursor:pointer;font-weight:600;font-size:14px;display:fl
 .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .toolbar .lbl{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-right:2px}
 .toolbar button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.qfilters{display:grid;gap:6px}
 .panel{display:grid;gap:12px}
 .lead{color:var(--muted);font-size:14px;margin:0;max-width:72ch}
 ol.items{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
@@ -164,17 +165,22 @@ const RISK_SEV = ["High", "Medium", "Low", "TBD"], RISK_ST = ["Open", "Monitorin
 const TASK_ST = ["open", "waiting", "done", "dropped"];
 const DEC_ST = ["pending", "approved", "denied", "superseded", "deprecated"];
 const CHECK_ST = ["Not started", "In progress", "Done", "Not applicable"];
+// Questions (questions skill): priority, high first (a question without one counts as medium), and the kinds each questions tab can be narrowed to.
+const Q_PRI = ["high", "medium", "low"], Q_PRI_LABEL = {high: "High", medium: "Medium", low: "Low"};
+const Q_KINDS = {questions: {project: "Project", housekeeping: "Housekeeping"}, product: {product: "Product", technical: "Technical"}};
+const priOf = d => Q_PRI.includes(d.priority) ? d.priority : "medium";
+const kindOf = d => ["housekeeping", "product", "technical"].includes(d.about) ? d.about : "project";
 
 // One entry per tab. coll: database collection; edit: fields the PM can change (compared to `synced`).
 const TABS = [
   {key: "review", label: "Lucy's proposals", coll: "review", edit: ["decision", "note"],
    lead: "Changes Lucy proposes from the material she processed. Approve, approve with a change (say what), or drop each one. Claude applies the approved ones.",
    attention: d => !d.decision, closedLabel: "Decided"},
-  {key: "questions", label: "Questions for you", coll: "questions", edit: ["status", "answer"], filter: d => d.about !== "product" && d.about !== "technical",
-   lead: "Questions about the project that only you can answer. Type an answer and Claude files it into the record it affects.",
+  {key: "questions", label: "Questions for you", coll: "questions", edit: ["status", "answer", "priority"], filter: d => d.about !== "product" && d.about !== "technical",
+   lead: "Questions about the project that only you can answer, highest priority first, then the soonest needed. Narrow the list by kind or priority to work through it in chunks. Type an answer and Claude files it into the record it affects.",
    attention: d => d.status !== "answered", closedLabel: "Answered"},
-  {key: "product", label: "Questions for others", coll: "questions", edit: ["status", "answer"], filter: d => d.about === "product" || d.about === "technical",
-   lead: "Product and technical questions the work is waiting on, each with who answers it. Chase them with whoever is named; when you have an answer, record it here and Claude files it.",
+  {key: "product", label: "Questions for others", coll: "questions", edit: ["status", "answer", "priority"], filter: d => d.about === "product" || d.about === "technical",
+   lead: "Product and technical questions the work is waiting on, each with who answers it, highest priority first. Chase them with whoever is named; when you have an answer, record it here and Claude files it.",
    attention: d => d.status !== "answered", closedLabel: "Answered"},
   {key: "mine", label: "My tasks", coll: "tasks", edit: ["status", "due", "note"], filter: d => !!d.mine,
    lead: "Your own one-off actions. Set a status or date; done and dropped items fold away. What others owe you is on the questions tabs.",
@@ -193,6 +199,9 @@ const COLLS = [...new Set(TABS.map(t => t.coll))];
 const data = Object.fromEntries(COLLS.map(c => [c, []]));
 let db = null, canWrite = true, scopeF = "any", current = "review", loaded = false;
 const drafts = {}, openText = new Set(), editing = new Set();
+// Kind and priority filters on the questions tabs, one set per tab.
+const qf = Object.fromEntries(Object.keys(Q_KINDS).map(k => [k, {kind: "any", pri: "any"}]));
+const qMatch = (t, d) => { const f = qf[t.key]; return !f || ((f.kind === "any" || kindOf(d) === f.kind) && (f.pri === "any" || priOf(d) === f.pri)); };
 
 const $ = id => document.getElementById(id);
 const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
@@ -268,9 +277,11 @@ function render(){
 
   // Current panel
   const t = tabOf(current);
-  const all = rows(t).filter(inScope);
+  const all = rows(t).filter(inScope).filter(d => qMatch(t, d));
   const open = sortFor(t, all.filter(t.attention)), closed = sortFor(t, all.filter(d => !t.attention(d)));
   const kids = [el("p", {className: "lead", textContent: t.lead})];
+  const narrowed = qf[t.key] && (qf[t.key].kind !== "any" || qf[t.key].pri !== "any");
+  if (qf[t.key] && loaded) kids.push(qFilters(t, rows(t).filter(inScope).filter(t.attention)));
   // A record that lives in Google Sheets (records-in-sheets.md) has no items here, only links to its Sheets.
   const sheets = info && info.sheets && info.sheets[t.coll];
   if (sheets && sheets.length) kids.push(el("div", {className: "sheets"}, [
@@ -282,7 +293,8 @@ function render(){
       const groups = [...new Set(open.map(d => d.scope || "all"))];
       if (!open.length) kids.push(list([], t));
       groups.forEach(g => { kids.push(el("div", {className: "group", textContent: SCOPES[g] || g})); kids.push(list(open.filter(d => (d.scope || "all") === g), t)); });
-    } else kids.push(list(open, t));
+    } else if (!open.length && narrowed) kids.push(el("ol", {className: "items"}, [el("li", {className: "empty", textContent: "No open questions match these filters."})]));
+    else kids.push(list(open, t));
     if (closed.length) {
       const box = el("details", {className: "closed", id: "closed-" + t.key, open: openText.has("closed-" + t.key)}, [el("summary", {textContent: `${t.closedLabel} (${closed.length})`}), list(closed, t, true)]);
       box.ontoggle = () => box.open ? openText.add(box.id) : openText.delete(box.id);
@@ -295,11 +307,30 @@ function render(){
   if (actId && $(actId)) { const n = $(actId); n.focus(); if (sel) try { n.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
 }
 
+// Filter buttons for a questions tab: kind and priority, each with its count of open questions.
+function qFilters(t, open){
+  const f = qf[t.key];
+  const group = (label, key, opts, of) => {
+    const g = el("div", {className: "toolbar"}, [el("span", {className: "lbl", textContent: label})]);
+    g.setAttribute("role", "group"); g.setAttribute("aria-label", "Filter by " + label.toLowerCase());
+    [["any", "All"], ...Object.entries(opts)].forEach(([v, l]) => {
+      const n = v === "any" ? open.length : open.filter(d => of(d) === v).length;
+      const b = el("button", {id: `qf-${t.key}-${key}-${v}`, type: "button", textContent: `${l} (${n})`});
+      b.setAttribute("aria-pressed", String(f[key] === v));
+      b.onclick = () => { f[key] = v; render(); };
+      g.append(b);
+    });
+    return g;
+  };
+  return el("div", {className: "qfilters"}, [group("Kind", "kind", Q_KINDS[t.key], kindOf), group("Priority", "pri", Q_PRI_LABEL, priOf)]);
+}
+
 function summaryText(d){ return d.title || d.item || d.question || d.summary || d.task || d.risk || d.decision || ""; }
 
 function sortFor(t, list){
   const byId = (a, b) => String(a.id).localeCompare(String(b.id), undefined, {numeric: true});
   if (t.coll === "tasks") return list.sort((a, b) => (a.due || "9999") .localeCompare(b.due || "9999") || byId(a, b));
+  if (t.coll === "questions") return list.sort((a, b) => Q_PRI.indexOf(priOf(a)) - Q_PRI.indexOf(priOf(b)) || (a.neededBy || "9999").localeCompare(b.neededBy || "9999") || byId(a, b));
   if (t.coll === "risks") return list.sort((a, b) => RISK_SEV.indexOf(a.severity) - RISK_SEV.indexOf(b.severity) || byId(a, b));
   if (t.coll === "checklist") return list.sort((a, b) => String(a.scope).localeCompare(String(b.scope)) || (a.row || 0) - (b.row || 0));
   return list.sort(byId);
@@ -325,9 +356,9 @@ function longText(id, text, refs){
   return [p, b];
 }
 
-function selectFor(id, label, options, value, onchange){
+function selectFor(id, label, options, value, onchange, labels){
   const s = el("select", {id, disabled: !canWrite}); s.setAttribute("aria-label", label);
-  options.forEach(o => s.append(el("option", {value: o, textContent: o, selected: o === value})));
+  options.forEach(o => s.append(el("option", {value: o, textContent: (labels && labels[o]) || o, selected: o === value})));
   if (!options.includes(value) && value) s.prepend(el("option", {value, textContent: value, selected: true}));
   s.onchange = () => onchange(s.value); return s;
 }
@@ -423,8 +454,10 @@ function card(t, d, closed){
   }
   else if (k === "questions" || k === "product") {
     const answered = d.status === "answered";
-    side.push(kv("ID", id), k === "product" ? kv("Ask", d.ask || "Nobody named") : null, scope,
+    side.push(kv("ID", id), kv("Kind", Q_KINDS[k][kindOf(d)] || kindOf(d)), k === "product" ? kv("Ask", d.ask || "Nobody named") : null, scope,
+      answered ? null : kv("Priority", selectFor("pri-" + id, `Priority for ${id}`, Q_PRI, priOf(d), v => save(t, d, {priority: v}), Q_PRI_LABEL)),
       kv("Status", pill(answered ? "s-done" : "s-prog", {answered: "Answered", asked: "Asked", "partly-answered": "Partly answered"}[d.status] || "Open")), d.neededBy ? kv("Needed by", d.neededBy) : null, kv("Raised", d.raised));
+    if (!answered && priOf(d) === "high") li.classList.add("edge-crit");
     main.push(...longText(id, d.question, d.refs));
     if (!answered || editing.has(id)) {
       const ta = el("textarea", {id: "ans-" + id, value: drafts["ans-" + id] ?? d.answer ?? "", placeholder: "Your answer", disabled: !canWrite});
@@ -493,13 +526,19 @@ function scopeSelect(id){
 function addForm(t){
   if (!["questions", "product", "mine", "others", "risks"].includes(t.key) || !canWrite) return null;
   const f = el("form", {className: "add", id: "add-" + t.key});
-  const text = el("textarea", {id: "new-" + t.key, required: true, placeholder: {questions: "What do you need answered?", product: "What does the team need to know about the product?", mine: "What do you need to do?", others: "What does someone owe?", risks: "The risk in a few words"}[t.key]});
+  const text = el("textarea", {id: "new-" + t.key, required: true, placeholder: {questions: "What do you need answered?", product: "What does the team need to know?", mine: "What do you need to do?", others: "What does someone owe?", risks: "The risk in a few words"}[t.key]});
   text.setAttribute("aria-label", "New item");
   const keep = (n, k) => { if (drafts[k] != null) n.value = drafts[k]; n.addEventListener("input", () => { drafts[k] = n.value; }); };
   keep(text, "new-" + t.key);
   const scope = scopeSelect("newscope-" + t.key);
   const row = el("div", {className: "row"}, [scope]);
-  let owner, due, sev, ask;
+  let owner, due, sev, ask, kind, pri;
+  if (Q_KINDS[t.key]) {
+    kind = el("select", {id: "newkind-" + t.key}); kind.setAttribute("aria-label", "Kind");
+    Object.entries(Q_KINDS[t.key]).forEach(([v, l]) => kind.append(el("option", {value: v, textContent: l})));
+    pri = selectFor("newpri-" + t.key, "Priority", Q_PRI, "medium", () => {}, Q_PRI_LABEL); pri.disabled = false;
+    row.append(kind, pri);
+  }
   if (t.key === "product") { ask = el("input", {id: "newask-product", type: "text", placeholder: "Who answers it", className: "grow"}); ask.setAttribute("aria-label", "Who answers it"); keep(ask, "newask-product"); row.append(ask); }
   if (t.key === "mine" || t.key === "others") {
     owner = el("input", {id: "newowner-" + t.key, type: "text", placeholder: "Owner", value: t.key === "mine" ? CONFIG.pm : "", required: true, className: "grow"}); owner.setAttribute("aria-label", "Owner");
@@ -508,7 +547,7 @@ function addForm(t){
     row.append(owner, due);
   }
   if (t.key === "risks") { sev = selectFor("newsev", "Severity", RISK_SEV, "TBD", () => {}); sev.disabled = false; row.append(sev); }
-  const btn = el("button", {className: "primary", type: "submit", textContent: {questions: "Add question", product: "Add product question", mine: "Add task", others: "Add follow-up", risks: "Add risk"}[t.key]});
+  const btn = el("button", {className: "primary", type: "submit", textContent: {questions: "Add question", product: "Add question for others", mine: "Add task", others: "Add follow-up", risks: "Add risk"}[t.key]});
   row.append(btn);
   let desc;
   if (t.key === "risks") {
@@ -522,8 +561,8 @@ function addForm(t){
     const v = text.value.trim(); if (!v || !db) return;
     const now = new Date().toISOString(), sc = HAS_SCOPES ? scope.value : "all";
     let id, doc;
-    if (t.key === "questions") { id = nextId("questions", "Q-"); doc = {question: v, about: "project", raised: today(), status: "open", answer: ""}; }
-    else if (t.key === "product") { id = nextId("questions", "Q-"); doc = {question: v, about: "product", ask: ask.value.trim(), link: "", raised: today(), status: "open", answer: ""}; }
+    if (t.key === "questions") { id = nextId("questions", "Q-"); doc = {question: v, about: kind.value, priority: pri.value, raised: today(), status: "open", answer: ""}; }
+    else if (t.key === "product") { id = nextId("questions", "Q-"); doc = {question: v, about: kind.value, priority: pri.value, ask: ask.value.trim(), link: "", raised: today(), status: "open", answer: ""}; }
     else if (t.key === "risks") { id = nextId("risks", "R-"); doc = {risk: v, description: desc.value.trim(), severity: sev.value, status: "Open", nextStep: "", confirmedBy: ""}; }
     else { id = nextId("tasks", "T-"); doc = {summary: v, owner: owner.value.trim() || CONFIG.pm, mine: t.key === "mine", due: due.value, status: "open", note: "", link: ""}; }
     btn.disabled = true;

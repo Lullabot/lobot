@@ -138,10 +138,21 @@ Use the first connection that works. Find out yourself: don't ask the PM which o
    | It says | Meaning | Next |
    |---|---|---|
    | `jira: ok as <name>` | Connected. | Carry on. |
+   | `jira: ok …` ending in `but PyYAML missing …` | Connected, but this Python can't read or write YAML, so `structure` and YAML ticket plans won't work. | "PyYAML" below. |
    | `jira: missing …` | No token in this folder yet. | "Setting up the token" below. |
    | `jira: blocked …` | This shell can't reach Jira. Cowork is blocked until the organization allows the PM's Jira site. | "Using Claude Code" below. |
    | `jira: refused …` | Jira turned the token down. Usually it expired, or the email isn't the PM's Atlassian login. | Check the email in `.env`, then a new token ("Setting up the token", from step 2). |
    | `jira: unreachable …` | The site name is wrong, or the network is down. | Compare `JIRA_SITE` with the address the PM opens Jira at; otherwise try later. |
+
+### PyYAML
+
+`jira.py` needs nothing beyond Python's standard library, except PyYAML for ticket plans, `docs/people.yaml`, and the structure file. The `pyyaml:` line of `check` says whether the Python running it has PyYAML. When it doesn't and the Project Brain has its own virtualenv (`.venv/` or `venv/`), `jira.py` reruns itself with that Python, so the commands in this skill work as written.
+
+When `check` still says PyYAML is missing:
+
+1. Install it for the PM's user, in the shell on their computer: `python3 -m pip install --user pyyaml`. Tell the PM in a line what you installed and why.
+2. If pip refuses (an "externally managed" Python, as Homebrew's is), don't force it: no `--break-system-packages`, no `sudo`. Tell the PM that `jira.py` needs PyYAML and that this Python won't take packages, and ask whether to use another Python they have, or to make a virtualenv for the project in `.venv/` (add `.venv/` to the Project Brain's `.gitignore` first, and tell the PM to commit that change).
+3. Run `check` again.
 
 ### Setting up the token
 

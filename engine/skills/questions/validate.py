@@ -4,17 +4,20 @@
 Usage: python3 validate.py [path/to/questions.yaml]
 
 Checks each entry: ID (Q-###, unique, in order), required fields, scope,
-raised date, status (open | asked | partly-answered | answered), needed_by date, that answered questions have an answer,
-and about (project | product; project when left out).
+raised date, status (open | asked | partly-answered | answered), needed_by date,
+that answered questions have an answer, about (project | product | technical |
+housekeeping; project when left out), and priority (high | medium | low;
+medium when left out).
 Exit code 0 = valid (warnings may print), 1 = errors found.
 """
 DEFAULT_PATH = "docs/questions.yaml"
 EXAMPLE_ID = "Q-001"
 REQUIRED = ["question", "scope", "raised", "source", "status"]
-ALLOWED = set(REQUIRED) | {"answer", "about", "ask", "link", "needed_by"}
+ALLOWED = set(REQUIRED) | {"answer", "about", "ask", "link", "needed_by", "priority"}
 TEXT_FIELDS = ["question", "source", "answer", "ask", "link"]
 STATUSES = ("open", "asked", "partly-answered", "answered")
 ABOUT = ("project", "product", "technical", "housekeeping")
+PRIORITIES = ("high", "medium", "low")
 
 import datetime
 import re
@@ -135,6 +138,8 @@ def check_entry(key, q, errors, warnings):
         errors.append(f"{where} answered but the answer is empty")
     if "about" in q and q["about"] not in ABOUT:
         errors.append(f"{where} about must be one of: {', '.join(ABOUT)}")
+    if "priority" in q and q["priority"] not in PRIORITIES:
+        errors.append(f"{where} priority must be one of: {', '.join(PRIORITIES)}")
     if "needed_by" in q and not as_date(q["needed_by"]):
         errors.append(f"{where} needed_by must be a date (YYYY-MM-DD)")
     if q.get("status") == "answered" and "needed_by" in q:
@@ -149,7 +154,8 @@ def summary(data):
     open_q = [q for q in data.values() if isinstance(q, dict) and q.get("status") != "answered"]
     counts = {a: sum(1 for q in open_q if q.get("about", "project") == a) for a in ABOUT}
     kinds = ", ".join(f"{n} {a}" for a, n in counts.items() if n)
-    return f"{len(data)} questions, {len(open_q)} unanswered ({kinds or 'none'})"
+    high = sum(1 for q in open_q if q.get("priority") == "high")
+    return f"{len(data)} questions, {len(open_q)} unanswered ({kinds or 'none'}), {high} high priority"
 
 
 if __name__ == "__main__":

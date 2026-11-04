@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.34.0](https://github.com/Lullabot/lobot/compare/v0.33.2...v0.34.0) (2026-11-04)
+
+### Added
+
+* **engine:** a weekly board lays out the week's milestones, sprint, due questions and tasks, risks, and reporting on one page ([#42](https://github.com/Lullabot/lobot/issues/42)) ([ade3b2b](https://github.com/Lullabot/lobot/commit/ade3b2bce115897a73f5ac303a2a31b677f45d9b)), closes [#39](https://github.com/Lullabot/lobot/issues/39) [#40](https://github.com/Lullabot/lobot/issues/40)
+* **engine:** see how your project is set up and where everything lives on one page ([#41](https://github.com/Lullabot/lobot/issues/41)) ([df501b3](https://github.com/Lullabot/lobot/commit/df501b3dd8218283f7c02f63e3c2548323674c36)), closes [#38](https://github.com/Lullabot/lobot/issues/38)
+
+### Fixed
+
+* **engine:** Pepper writes tickets to match the code team's documented conventions when the repository keeps them ([#36](https://github.com/Lullabot/lobot/issues/36)) ([351a7b3](https://github.com/Lullabot/lobot/commit/351a7b32236ca185f7a7407ce4212fcf6fb0b941)), closes [#31](https://github.com/Lullabot/lobot/issues/31)
+* **engine:** when a Drive document changes, the check lists the dossier facts and records built from it, so they get rechecked ([#34](https://github.com/Lullabot/lobot/issues/34)) ([e5c1527](https://github.com/Lullabot/lobot/commit/e5c152721ef8e7696ec5191a3390e928eff8da71)), closes [#29](https://github.com/Lullabot/lobot/issues/29)
+* **engine:** when a new source contradicts a dossier fact, Lucy shows you both on the review desk instead of overwriting it ([#35](https://github.com/Lullabot/lobot/issues/35)) ([568d019](https://github.com/Lullabot/lobot/commit/568d019363910938e997b1bfaa15812d7d7b4aa6)), closes [#30](https://github.com/Lullabot/lobot/issues/30)
+
+## [0.33.2](https://github.com/Lullabot/lobot/compare/v0.33.1...v0.33.2) (2026-11-04)
+
+### Fixed
+
+* **engine:** Jira setup checks for the Python package its tools need, and uses the project's own Python when it has one ([#33](https://github.com/Lullabot/lobot/issues/33)) ([68565df](https://github.com/Lullabot/lobot/commit/68565dfd4e43c315c3edfef9692e0845b7b49d15)), closes [#17](https://github.com/Lullabot/lobot/issues/17)
+
+## [0.33.1](https://github.com/Lullabot/lobot/compare/v0.33.0...v0.33.1) (2026-11-04)
+
+### Fixed
+
+* **engine:** questions carry a priority, and the review desk lists the most important first, filterable by kind and priority ([#32](https://github.com/Lullabot/lobot/issues/32)) ([08571c6](https://github.com/Lullabot/lobot/commit/08571c6a38f5bd606902ca33b818494015eae5d2)), closes [#10](https://github.com/Lullabot/lobot/issues/10)
+
+### Wording and documentation
+
+* bring the Pages site in line with the questions, tasks, and Sheets changes ([7a51aab](https://github.com/Lullabot/lobot/commit/7a51aabc499630c989275768b2ac3627c0f7c5c4))
+* show the PM's core records in detail on the Pages site ([#19](https://github.com/Lullabot/lobot/issues/19)) ([25ac3ab](https://github.com/Lullabot/lobot/commit/25ac3ab56d01021eb8008b4fb708fedda7cf18f6))
+
 ## [0.33.0](https://github.com/Lullabot/lobot/compare/v0.32.0...v0.33.0) (2026-10-30)
 
 ### Added

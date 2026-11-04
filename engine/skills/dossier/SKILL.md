@@ -51,7 +51,7 @@ Write a topic when there is material for it; until then, list it under the site 
 - **Cite every fact.** Each bullet or table row ends with its source in parentheses, using a short label from the file's `sources` frontmatter plus a locator: `(walkthrough 00:28:54)`, `(SOW §3)`, `(Q-012)`. The `sources` map gives each label its path or URL. A fact with no source doesn't go in.
 - **Stated vs. inferred.** Write what a source says. Anything inferred is marked *(unverified)* until a person or authoritative source confirms it. Never guess to fill a gap; list it under known gaps or add it to the questions log.
 - **Point, don't copy.** People are linked by their `docs/people.yaml` key or named; terms come from the glossary; risks, questions, and decisions are cited by ID (`R-002`, `Q-036`, `D-004`); research notes and meeting notes are linked. Summarize them in a line where it helps the reader; never duplicate their content.
-- **Current, with history where it matters.** The dossier says what is true now. When a fact changes, edit it in place and keep the earlier value only when the change itself matters ("estimated 5,000 PDFs at kickoff; about 1,660 after the 5-year cut (walkthrough 00:28:54)").
+- **Current, with history where it matters.** The dossier says what is true now. When a fact changes (once approved, if it contradicts a cited fact: see "Contradictions"), edit it in place and keep the earlier value only when the change itself matters ("estimated 5,000 PDFs at kickoff; about 1,660 after the 5-year cut (walkthrough 00:28:54)").
 - **Summaries go up, detail goes down.** An index holds one line per topic. Don't repeat a topic file's detail in the index.
 - **No secrets, no personal data** beyond work contact details. Sample records, test results, or anything about members of the public stay out, even when a meeting showed them.
 
@@ -88,8 +88,22 @@ Facts reach the dossier from:
 - **Meeting notes.** When processing a meeting, record its facts in the dossier topics they belong to and list the files changed in the notes' "Context updates". (At junior autonomy, propose them in the review list instead.)
 - **Research notes** in `docs/research/` and documents in Drive: summarize the findings in the topic they affect and link the note.
 - **Answered questions.** When the PM answers a question that fills a gap, update the topic and remove the gap.
+- **Changed sources.** When a Drive file the dossier cites has changed, the drive-sources check lists the facts drawn from it (its `cited.py`). Recheck each against the new version when the file is processed again, and change the ones it no longer supports following the rules in this section, citing the new version.
 
 Each time, update `updated`, add the source to `sources`, and run the validator.
+
+#### Contradictions
+
+A new source sometimes says something different from a fact the dossier already states with its own citation: a meeting revises an earlier estimate, a document disagrees with a walkthrough, a newer version of a cited Drive document says something else. Don't replace the fact, even when the dossier is autonomous. Overwriting it loses which source said what, and the PM can't tell a change of plan from a transcription error.
+
+1. Leave the existing fact and its citation as they are.
+2. Propose the change on the review desk as a `Dossier` proposal (tracker-pages skill, "Review desk"), with the two claims side by side, each with its source and locator: `title` names the topic and what differs; `points` are "Now: <the fact> (<source> <locator>)" and "New: <the claim> (<source> <locator>)"; `source` is the material that raised it. In the meeting notes' review list it is one item like any other. When no meeting notes raised it (a document, a changed Drive file), record the PM's decision in the journal.
+3. Apply what the PM decides:
+   - **Approve:** replace the fact with the new claim and its citation. Keep the earlier value in the sentence when the change itself matters (see "Writing rules").
+   - **Approve with change:** do what the note says. When it says to ask someone, add a question to the questions log (questions skill) and mark the fact *(unverified, see Q-###)* until it is answered.
+   - **Drop:** keep the existing fact. The new claim isn't recorded in the dossier.
+
+A fact marked *(unverified)* isn't settled yet: a source that confirms or corrects it is recorded as usual. Two accounts that disagree within the same new material are still recorded as *(unverified)* and asked through the questions log (see "Who does what").
 
 ### Answer a question about the project
 
@@ -112,6 +126,6 @@ It checks frontmatter, that every local source path exists, that every file is l
 
 ## Who does what
 
-- **Lucy** owns the dossier and writes it without approval by default: she starts site folders, organizes and records facts as material arrives (meetings, research, answers, documents), and keeps sources and gaps current. When she is unsure how to interpret something (what a speaker meant, which of two accounts is right, whether a hedged remark is a fact), she records the fact as *(unverified)* or leaves it out and asks through the questions log. A PM can lower this to junior in `.ai/project/agents/lucy/config.md`.
+- **Lucy** owns the dossier and writes it without approval by default: she starts site folders, organizes and records facts as material arrives (meetings, research, answers, documents), and keeps sources and gaps current. When she is unsure how to interpret something (what a speaker meant, which of two accounts is right, whether a hedged remark is a fact), she records the fact as *(unverified)* or leaves it out and asks through the questions log. A new source that contradicts a cited fact is always proposed, never written over it (see "Contradictions"). A PM can lower this to junior in `.ai/project/agents/lucy/config.md`.
 - **The assistant** reads it to answer the PM's questions, and asks Lucy (or proposes to the PM) when a fact should be added.
 - **The PM** reviews it; a file's `status` records who reviewed it and when.
