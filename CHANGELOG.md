@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.35.0](https://github.com/Lullabot/lobot/compare/v0.34.0...v0.35.0) (2026-11-04)
+
+### Added
+
+* **engine:** PMs get a daily board that opens on the day's first session with what changed, what's waiting on them, today's tasks, urgent questions, the sprint, new risks, and today's meetings ([#43](https://github.com/Lullabot/lobot/issues/43)) ([0e7e532](https://github.com/Lullabot/lobot/commit/0e7e53225505fc54bb3ecb22df4e6898871e913b)), closes [#39](https://github.com/Lullabot/lobot/issues/39)
+
+### Fixed
+
+* **engine:** the weekly board also lists high-priority questions, most important first ([#45](https://github.com/Lullabot/lobot/issues/45)) ([4d63319](https://github.com/Lullabot/lobot/commit/4d6331981c4f2e84de2375098a6c0caef701c6bc))
+
 ## [0.34.0](https://github.com/Lullabot/lobot/compare/v0.33.2...v0.34.0) (2026-11-04)
 
 ### Added
