@@ -1,0 +1,159 @@
+<!-- Lobot page template: project overview. Fill the {{…}} placeholders (the project name, and the JSON from overview.py), then publish as an HTML page artifact. No capabilities: the page is read-only and republished when the setup changes. See .ai/general/skills/project-overview/SKILL.md. -->
+<title>{{PROJECT_NAME}} Project Overview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column of cards. What isn't set up comes first, then where everything lives. Tokens match the tracker pages. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6;
+  --todo:#6b7585; --todo-bg:#eef0f3; --prog:#9a5b00; --prog-bg:#fdf0db;
+  --done:#1d7a46; --done-bg:#e1f3e8; --na:#7b8290; --na-bg:#f0f1f3;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025; --na:#8a919c; --na-bg:#222830; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025; --na:#8a919c; --na-bg:#222830; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;display:grid;gap:18px}
+header{display:grid;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:15px;margin:0}
+.sub{color:var(--muted);margin:0;max-width:68ch}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.s-done{color:var(--done);background:var(--done-bg)} .s-prog{color:var(--prog);background:var(--prog-bg)}
+.s-na{color:var(--na);background:var(--na-bg)} .s-todo{color:var(--todo);background:var(--todo-bg)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.card.gaps{border-left:3px solid var(--prog)}
+.rows{display:grid}
+.row{display:grid;grid-template-columns:12rem minmax(0,1fr);gap:4px 16px;padding:8px 0;border-top:1px solid var(--line);align-items:baseline}
+.row:first-child{border-top:0;padding-top:0}
+.k{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.v{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;min-width:0;overflow-wrap:anywhere}
+.note{color:var(--muted);font-size:13px}
+.group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:16px 0 6px}
+.group:first-child{padding-top:0}
+.group+.row{border-top:0}
+ul.gaplist{margin:0;padding-left:1.1em;display:grid;gap:8px}
+.say{display:block;color:var(--muted);font-size:13.5px}
+.say q{color:var(--fg);font-style:italic}
+.foot{color:var(--muted);font-size:13px}
+@media (max-width:560px){.row{grid-template-columns:1fr}}
+</style>
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <h1 id="title">Project overview</h1>
+    <p class="sub">How this project is set up and where everything lives. To change anything here, ask Claude; this page updates after.</p>
+    <div class="mono" id="meta"></div>
+  </header>
+  <section class="card gaps" id="gaps" aria-labelledby="gh"><h2 id="gh">Not set up yet</h2><ul class="gaplist" id="gapList"></ul></section>
+  <section class="card" aria-labelledby="ph"><h2 id="ph">Project</h2><div class="rows" id="project"></div></section>
+  <section class="card" aria-labelledby="wh"><h2 id="wh">Code and tickets</h2><div class="rows" id="work"></div></section>
+  <section class="card" aria-labelledby="lh"><h2 id="lh">Library</h2><p class="note">Where the project's files and folders live: in the Project Brain, in Google Drive, or only on this computer.</p><div class="rows" id="library"></div></section>
+  <section class="card" aria-labelledby="pgh"><h2 id="pgh">Pages</h2><div class="rows" id="pages"></div></section>
+  <section class="card" aria-labelledby="ch"><h2 id="ch">Connections on this computer</h2><p class="note">Whether each tool is set up for the PM who gathered this page. Tokens are never shown.</p><div class="rows" id="conn"></div></section>
+  <section class="card" aria-labelledby="ah"><h2 id="ah">Agents</h2><div class="rows" id="agents"></div></section>
+  <p class="foot" id="foot"></p>
+</div>
+<script>
+const DATA = {{OVERVIEW_JSON}};
+const $ = id => document.getElementById(id);
+const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
+const pill = (cls, text) => el("span", {className: "pill " + cls, textContent: text});
+const link = (url, text) => url ? el("a", {href: url, target: "_blank", rel: "noopener", textContent: text || "Open"}) : null;
+const row = (k, ...v) => el("div", {className: "row"}, [el("span", {className: "k", textContent: k}), el("span", {className: "v"}, v.filter(x => x != null && x !== ""))]);
+const note = t => t ? el("span", {className: "note", textContent: t}) : null;
+const notSet = (t = "Not set") => pill("s-prog", t);
+const set = (t = "Set") => pill("s-done", t);
+const P = DATA.project || {};
+
+$("eyebrow").textContent = `${P.name || "Project"}${P.key ? " (" + P.key + ")" : ""} · Lobot`;
+$("title").textContent = `${P.name || "Project"} overview`;
+$("meta").textContent = [P.lobot_version ? "Lobot " + P.lobot_version : null, DATA.gathered ? "Gathered " + DATA.gathered : null].filter(Boolean).join(" · ");
+
+// Not set up yet
+const gaps = DATA.gaps || [];
+$("gaps").hidden = !gaps.length;
+$("gapList").replaceChildren(...gaps.map(g => el("li", {}, [g.what, el("span", {className: "say"}, ["Say: ", el("q", {textContent: g.say})])])));
+
+// Project
+const scopes = (DATA.drive || {}).scopes || {};
+$("project").replaceChildren(...[
+  row("Name", P.name || notSet()),
+  row("Short name", P.key ? el("span", {className: "mono", textContent: P.key}) : notSet()),
+  Object.keys(scopes).length ? row("Sites", Object.values(scopes).join(", ")) : null,
+  row("Lobot", P.lobot_version || "Unknown", note(P.lobot_updated ? "updated " + P.lobot_updated : "")),
+].filter(Boolean));
+
+// Code and tickets
+const R = DATA.repositories || {}, T = DATA.tickets || {};
+$("work").replaceChildren(
+  row("Project Brain repository", R.brain && R.brain.url ? link(R.brain.url, R.brain.name || "Open") : notSet("Not saved to GitHub"), R.brain && R.brain.pending ? pill("s-prog", "Pending: " + R.brain.pending) : null),
+  row("Code repository", R.code && R.code.url ? link(R.code.url, R.code.name || "Open") : notSet("Not recorded"), note(R.code && R.code.cloned ? "cloned in repo/" : "not cloned here")),
+  row("Tickets", T.set ? (T.url ? link(T.url, T.value) : T.value) : notSet("No tracker chosen"), T.board_url ? link(T.board_url, "Board") : null),
+  row("Your tasks", DATA.task_manager || "Lobot", note(DATA.task_manager && DATA.task_manager !== "Lobot" ? "kept in step with the project's task list" : "the project's task list and the review desk")),
+);
+
+// Library: the Project Brain's own files, then Google Drive (by site when the project has several), then this computer
+const L = DATA.library || {}, D = L.drive || {}, roots = D.roots || {};
+const driveRows = [];
+const group = t => el("div", {className: "group", textContent: t});
+const path = p => el("span", {className: "mono", textContent: p});
+driveRows.push(group("Project Brain"));
+(L.brain || []).forEach(i => {
+  const where = i.sheets && i.sheets.length ? i.sheets.map(x => link(x.url, "Open in Sheets"))
+    : [i.exists ? (i.url ? link(i.url, i.path.endsWith("/") ? "Open the folder" : "Open the file") : null) : pill("s-na", "None yet")];
+  driveRows.push(row(i.name, ...where, path(i.path)));
+});
+driveRows.push(group("Google Drive"));
+const rootKeys = Object.keys(roots);
+if (!rootKeys.length) driveRows.push(row("Shared drive", notSet("Not mapped")));
+rootKeys.forEach(k => driveRows.push(row(k === "all" ? "Shared drive" : "Shared drive · " + (scopes[k] || k), link(roots[k], "Open the drive"))));
+const scopeOrder = ["all", ...Object.keys(scopes)];
+scopeOrder.forEach(sc => {
+  const items = (D.items || []).filter(i => (i.scope || "all") === sc);
+  if (!items.length) return;
+  if (Object.keys(scopes).length) driveRows.push(group("Google Drive · " + (sc === "all" ? "every site" : (scopes[sc] || sc))));
+  items.forEach(i => {
+    const status = i.status === "mapped" ? link(i.url, i.kind === "file" ? "Open the file" : "Open the folder")
+      : i.status === "not used" ? pill("s-na", "Not used") : notSet("Not mapped");
+    const detail = i.status === "not used" ? i.reason : i.notes || (i.standard ? null : "Added for this project");
+    driveRows.push(row(String(i.name || i.key).replace("<KEY>", P.key || "").trim(), status, note(detail)));
+  });
+});
+driveRows.push(group("On this computer"));
+(L.local || []).forEach(i => driveRows.push(row(i.name, i.exists ? (i.url ? link(i.url, "Open on GitHub") : null) : pill("s-na", "Not here"), path(i.path), note(i.note))));
+$("library").replaceChildren(...driveRows);
+
+// Pages
+const pages = DATA.pages || [];
+$("pages").replaceChildren(...(pages.length ? pages.map(p => row(p.name, link(p.url, "Open"))) : [row("Review desk", notSet("Not published yet"))]));
+
+// Connections
+const C = DATA.connections || {};
+$("conn").replaceChildren(
+  row("GitHub", C.github && C.github.set ? set("Connected") : notSet("Not connected"), note(C.github && C.github.expires ? "token expires " + C.github.expires : "")),
+  row("Jira", C.jira && C.jira.set ? set("Connected") : (T.value || "").toLowerCase().startsWith("jira") ? notSet("Not connected") : pill("s-na", "Not used"),
+      note(C.jira && !C.jira.set && C.jira.missing && C.jira.missing.length < 3 ? "missing " + C.jira.missing.join(", ") : "")),
+  row("Google Drive", note("Read through Claude's Google Drive connector, when it's on in the chat.")),
+);
+
+// Agents
+$("agents").replaceChildren(...(DATA.agents || []).map(a => row(a.name, a.job || "", a.configured ? null : notSet("No project settings yet"))));
+
+$("foot").textContent = "Gathered from the Project Brain's own files. The links are what matter: open them rather than copying addresses.";
+</script>
