@@ -12,6 +12,8 @@
 
 - **Owner:** what we need, by Month D
 
+<!-- Never left out. Nothing needed now: "Nothing due from you right now." One report for several sites: one ### subsection per site, each with its asks or that line. -->
+
 ## Risks and issues
 
 - **High** | What it is. What we're doing about it, and who is on it.

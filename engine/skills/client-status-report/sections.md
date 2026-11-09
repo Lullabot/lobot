@@ -62,4 +62,4 @@ Pick one; the default is a single list.
 
 ## Rename or drop a default section
 
-Any default section can be renamed (for example "Accomplishments this week" for Progress) or dropped (for example Team availability, when the client tracks a shared calendar). Keep Summary, Risks and issues, and Needs your attention unless the PM insists: they are what a client acts on.
+Any default section can be renamed (for example "Accomplishments this week" for Progress) or dropped (for example Team availability, when the client tracks a shared calendar). Keep Summary and Risks and issues unless the PM insists: they are what a client acts on. Needs your attention can be renamed ("What we need from you") but never dropped: it says every week whether we're waiting on the client, and "Nothing due from you right now" when we aren't. Its subsections follow the report's sites; a project whose sites differ from its scopes (two sites sharing one scope, say) lists them in the project template.
