@@ -34,7 +34,12 @@ a{color:var(--accent)}
 a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mono{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .notice{background:var(--crit-bg);color:var(--crit);border-radius:8px;padding:10px 12px;font-size:14px}
-.gaps{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:14px;margin:0;display:grid;gap:4px}
+.warnbox{background:var(--prog-bg);color:var(--prog);border-left:3px solid var(--warn);border-radius:6px;padding:8px 12px;font-size:14px}
+details.more textarea{display:block;width:100%;font-family:var(--f-mono);font-size:13px;line-height:1.5;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;resize:vertical}
+.kick-bar{display:flex;gap:10px;align-items:center}
+.kick-bar button{font:inherit;font-size:14px;font-weight:600;color:var(--surface);background:var(--accent);border:0;border-radius:6px;padding:6px 14px;cursor:pointer}
+.kick-bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.kick-bar span{font-size:13px;color:var(--muted)}
 .pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .p-todo{color:var(--todo);background:var(--todo-bg)} .p-prog{color:var(--prog);background:var(--prog-bg)}
 .p-done{color:var(--done);background:var(--done-bg)} .p-crit{color:var(--crit);background:var(--crit-bg)}
@@ -57,39 +62,82 @@ li.row.t-crit{border-left-color:var(--crit)} li.row.t-warn{border-left-color:var
 .empty{color:var(--muted);font-size:14px;margin:0}
 .foot{color:var(--muted);font-size:13px}
 @media (max-width:520px){li.row{grid-template-columns:1fr}.when{grid-column:1;grid-row:auto;justify-self:start}}
+
+details.more{border-top:1px solid var(--line);padding-top:8px}
+details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);list-style:none;display:flex;align-items:center;gap:6px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .22s ease}
+details.more[open]:not(.shutting) summary::before{transform:rotate(45deg)}
+details.more .inner{padding-top:8px;display:grid;gap:8px}
+@media (prefers-reduced-motion:reduce){details.more summary::before{transition:none}}
+.tablewrap{overflow-x:auto}
+table.staff{width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+table.staff th{text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
+table.staff td{padding:7px 10px 7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.staff tr:last-child td{border-bottom:0}
+table.staff td.num,table.staff th.num{text-align:right;white-space:nowrap}
+table.staff .by{display:block;font-size:12px;color:var(--muted)}
+table.staff tr.total td{font-weight:600;border-top:1px solid var(--line)}
+table.staff td.off{color:var(--warn)} table.staff td.none{color:var(--muted)}
+.lv{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.lv svg{width:12px;height:12px;flex:none}
+.lv-high{color:var(--crit)} .lv-medium{color:var(--warn)} .lv-low{color:var(--calm)} .lv-unset{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+a.sum{display:grid;gap:6px;text-decoration:none;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;transition:border-color .15s ease}
+a.sum:hover{border-color:var(--accent)}
+a.sum:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a.sum .k{font-size:13px;font-weight:600;color:var(--muted)}
+a.sum .n{font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+a.sum .lvs{display:flex;flex-wrap:wrap;gap:4px 12px}
+a.sum .note{font-size:12.5px;color:var(--muted)}
+.pri{display:inline-flex;margin-right:6px;vertical-align:-1px}
+table.staff th.c-person{width:44%} table.staff th.c-hours{width:24%} table.staff th.c-off{width:32%}
+table.staff td.num,table.staff th.num{padding-right:24px}
+table.staff td.off,table.staff td.none,table.staff th.c-off{padding-left:16px;border-left:1px solid var(--line)}
+table.staff tr.disc td{padding:14px 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700;border-bottom:1px solid var(--line);border-left:0}
+table.staff tbody tr.disc:first-child td{padding-top:8px}
+table.staff tr.person td:first-child{padding-left:12px}
+.weekblock{display:grid;gap:8px}
+.weekblock + .weekblock, .weekblock + details.more{margin-top:14px;padding-top:14px;border-top:2px solid var(--line)}
+.sources{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.sources p{margin:0}
+.srcs{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px;display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.srcs h3{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.srcs ul{margin:0;padding-left:18px;display:grid;gap:2px}
+.srcs li{overflow-wrap:anywhere}
+.srcs .used{color:var(--muted)}
+table.staff td{overflow-wrap:anywhere}
+@media (max-width:520px){table.staff th.c-person{width:38%}table.staff th.c-hours{width:30%}table.staff th.c-off{width:32%}table.staff td.num,table.staff th.num{padding-right:12px}table.staff td.off,table.staff td.none,table.staff th.c-off{padding-left:10px}table.staff td.num{white-space:normal}table.staff{font-size:13.5px}}
 </style>
 
 <div class="wrap">
   <header>
     <div class="eyebrow" id="eyebrow">Lobot</div>
     <h1 id="title">This week</h1>
-    <p class="sub">The shape of the week: what's due, where the sprint stands, what you're waiting on, and what's owed to the client and to Lullabot. Each item links to where you act on it.</p>
+    <p class="sub">The week at a glance: the schedule, who's working, the sprint, your tasks, and what's owed. Each item links to where you act on it.</p>
     <div class="mono" id="refreshed"></div>
   </header>
   <div class="notice" id="notice" hidden></div>
-  <div class="gaps" id="gaps" hidden></div>
   <div id="board" style="display:grid;gap:14px"><p class="empty">Loading the week from Lobot. If nothing shows, ask Claude to refresh the weekly board.</p></div>
-  <p class="foot">A summary of Lobot's records, refreshed by Claude. Nothing here is edited: change things where each link goes, or on the review desk.</p>
+  <footer class="sources" id="sources"></footer>
 </div>
 
 <script>
 const CONFIG = {
   project: "{{PROJECT_NAME}}",          // eyebrow: "<project> · Lobot"
-  reviewDesk: "{{REVIEW_DESK_URL}}",    // the review desk's link, or "" when the project has none; record items without their own link go to it
-  scopes: {{SCOPES_JSON}},              // {} on a single-site project, else {"site-a": "Site A", ...}
+  reviewDesk: "{{REVIEW_DESK_URL}}",    // the review desk's link, or "" when the project has none
+  scopes: {{SCOPES_JSON}},              // {} on a single-site project, else {"site-a": "Site A", ...}; also the order task groups follow
 };
-const DESK_TABS = {review: "Lucy's proposals", questions: "Questions for you", product: "Questions for others", mine: "My tasks", risks: "Risks", decisions: "Decisions", checklist: "Checklists"};
-// Sections in order. key: the `section` field on an item document; tab: the review desk tab an item belongs on when it has no link of its own (named on the link; claude.ai drops a #tab in an artifact link, so the link opens the desk itself).
+// Sections in order. key: the `section` field on an item document (Staffing and the review summary read meta/info too).
 const SECTIONS = [
-  {key: "schedule", label: "Schedule goals", lead: "Milestones and deliverables due this week."},
+  {key: "schedule", label: "Schedule and milestones", lead: "Milestones and deliverables due this week."},
+  {key: "staffing", label: "Staffing", lead: "Who's on the project, their planned hours, and time off."},
   {key: "sprint", label: "Sprint"},
-  {key: "questions", label: "Questions", tab: "questions", lead: "High priority, or needed by the end of the week, or already late. Most important first."},
-  {key: "tasks", label: "Your tasks", tab: "mine", lead: "Due this week, or overdue."},
-  {key: "risks", label: "Risks and decisions", tab: "risks", lead: "Open risks by severity, and decisions still pending."},
+  {key: "tasks", label: "Your tasks", lead: "Open tasks from your task manager, soonest first."},
   {key: "reporting", label: "Reporting", lead: "What's owed this week, and where each stands."},
   {key: "recap", label: "Last week"},
+  {key: "overview", label: "On the review desk", lead: "Open items by priority. Work them on the review desk or where each card links."},
 ];
-const TONE = {High: "crit", Medium: "warn", Low: "calm"};
 const $ = id => document.getElementById(id);
 const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
 const pill = (cls, text) => el("span", {className: "pill " + cls, textContent: text});
@@ -97,19 +145,32 @@ const pad = n => String(n).padStart(2, "0");
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const today = iso(new Date());
 const dayName = s => { const d = new Date(s + "T12:00:00"); return isNaN(d) ? s : d.toLocaleDateString(undefined, {weekday: "short", month: "short", day: "numeric"}); };
+const shortDay = s => { const d = new Date(s + "T12:00:00"); return isNaN(d) ? s : d.toLocaleDateString(undefined, {month: "short", day: "numeric"}); };
+const addDays = (s, n) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + n); return iso(d); };
 const safeUrl = u => (typeof u === "string" && /^https?:\/\//i.test(u)) ? u : "";
 const SCOPES = {...(CONFIG.scopes || {}), all: ""};
+const multiSite = Object.keys(CONFIG.scopes || {}).length > 1;
 let items = [], info = null;
 
 $("eyebrow").textContent = `${CONFIG.project} · Lobot`;
 function notice(msg){ $("notice").textContent = msg || ""; $("notice").hidden = !msg; }
 
-function linkFor(it, sec){
+// Priority and severity share one scale and one set of marks, so High, Medium, and Low read the same everywhere.
+const LEVELS = ["high", "medium", "low", "unset"];
+const LEVEL_LABEL = {high: "High", medium: "Medium", low: "Low", unset: "Not set"};
+const svgNS = "http://www.w3.org/2000/svg";
+function mark(level){
+  const s = document.createElementNS(svgNS, "svg"); s.setAttribute("viewBox", "0 0 12 12"); s.setAttribute("aria-hidden", "true");
+  const p = document.createElementNS(svgNS, "path"); p.setAttribute("fill", "currentColor");
+  p.setAttribute("d", {high: "M6 1.5 11 10H1z", medium: "M1.5 3.5h9v2h-9zM1.5 7h9v2h-9z", low: "M6 10.5 1 2h10z", unset: "M2 5h8v2H2z"}[level] || "M2 5h8v2H2z");
+  s.append(p); return s;
+}
+const lvOf = v => { const k = String(v || "").toLowerCase(); return LEVELS.includes(k) ? k : "unset"; };
+const levelChip = (level, text) => el("span", {className: "lv lv-" + level, title: LEVEL_LABEL[level]}, [mark(level), el("span", {textContent: text})]);
+
+function linkFor(it){
   const own = safeUrl(it.link);
-  if (own) return {href: own, label: it.linkLabel || ""};
-  const desk = safeUrl(CONFIG.reviewDesk);
-  if (desk && sec.tab) return {href: desk.replace(/#.*$/, ""), label: "", tip: `Opens the review desk: look on the ${DESK_TABS[it.tab || sec.tab] || "matching"} tab`};
-  return null;
+  return own ? {href: own, label: it.linkLabel || ""} : null;
 }
 function due(it){
   if (!it.due) return null;
@@ -118,62 +179,189 @@ function due(it){
   if (it.due === today) return pill("p-prog", "Today");
   return pill("p-todo", dayName(it.due));
 }
-function row(it, sec){
-  const l = linkFor(it, sec);
-  const text = l ? el("a", {href: l.href, target: "_blank", rel: "noopener", title: l.tip || "", textContent: it.title || "(untitled)"}) : document.createTextNode(it.title || "(untitled)");
-  const what = el("div", {className: "what"}, [it.ref ? el("span", {className: "id", textContent: it.ref}) : null, text]);
-  const bits = [it.meta, it.scope && SCOPES[it.scope] ? SCOPES[it.scope] : "", l && l.label && safeUrl(it.link) ? l.label : ""].filter(Boolean);
-  const tone = it.tone || TONE[it.severity] || (it.due && !it.done && it.due < today ? "crit" : "");
-  return el("li", {className: "row" + (tone ? " t-" + tone : "")}, [what, el("div", {className: "when"}, [it.severity ? pill(TONE[it.severity] === "crit" ? "p-crit" : "p-todo", it.severity) : due(it)]), bits.length ? el("div", {className: "meta", textContent: bits.join(" · ")}) : null]);
+function row(it){
+  const l = linkFor(it);
+  const text = l ? el("a", {href: l.href, target: "_blank", rel: "noopener", textContent: it.title || "(untitled)"}) : document.createTextNode(it.title || "(untitled)");
+  const pri = it.priority ? el("span", {className: "pri lv lv-" + lvOf(it.priority), title: "Priority: " + LEVEL_LABEL[lvOf(it.priority)]}, [mark(lvOf(it.priority))]) : null;
+  const disc = it.discipline ? el("b", {textContent: it.discipline + ": "}) : null;
+  const what = el("div", {className: "what"}, [pri, it.ref ? el("span", {className: "id", textContent: it.ref}) : null, disc, text]);
+  const bits = [it.meta, it.scope && SCOPES[it.scope] && !it._grouped ? SCOPES[it.scope] : "", l && l.label ? l.label : ""].filter(Boolean);
+  const tone = it.tone || (it.due && !it.done && it.due < today ? "crit" : "");
+  return el("li", {className: "row" + (tone ? " t-" + tone : "")}, [what, el("div", {className: "when"}, [due(it)]), bits.length ? el("div", {className: "meta", textContent: bits.join(" · ")}) : null]);
 }
-function list(rows, sec){ return rows.length ? el("ol", {className: "rows"}, rows.map(it => row(it, sec))) : null; }
-const byDue = (a, b) => (a.due || "9999").localeCompare(b.due || "9999") || (a.ref || "").localeCompare(b.ref || "");
-const SEV = {High: 0, Medium: 1, Low: 2, TBD: 3};
+function list(rows){ return rows.length ? el("ol", {className: "rows"}, rows.map(row)) : null; }
+const byDue = (a, b) => (a.due || "9999").localeCompare(b.due || "9999") || (a.ref || "").localeCompare(b.ref || "") || (a.title || "").localeCompare(b.title || "");
+const PRI = {high: 0, medium: 1, low: 2, unset: 3};
+const byDuePri = (a, b) => (a.due || "9999").localeCompare(b.due || "9999") || PRI[lvOf(a.priority)] - PRI[lvOf(b.priority)] || (a.title || "").localeCompare(b.title || "");
 
+// A section whose source couldn't connect carries a warning in meta/info.warnings, keyed by section.
+const warnOf = k => ((info && info.warnings) || {})[k] || "";
+// Sources: every section that summarizes data lists where it came from at its foot. meta/info.sources holds {id, label, link, detail};
+// sectionSources maps a section key to the ids it used.
+function sectionSources(key){
+  const all = info.sources || [];
+  const list = ((info.sectionSources || {})[key] || []).map(id => all.find(x => x && x.id === id)).filter(Boolean);
+  if (!list.length) return null;
+  return el("div", {className: "srcs"}, [el("h3", {textContent: "Sources:"}), el("ul", {}, list.map(x => {
+    const url = safeUrl(x.link);
+    return el("li", {}, [url ? el("a", {href: url, target: "_blank", rel: "noopener", textContent: x.label || url}) : el("span", {textContent: x.label || x.id}), x.detail ? el("span", {className: "used", textContent: " · " + x.detail}) : null]);
+  }))]);
+}
+function renderSources(){
+  const when = info.refreshed ? ` as of ${info.refreshed.replace("T", " ").slice(0, 16)}` : "";
+  $("sources").replaceChildren(el("p", {}, [el("b", {textContent: "Not the source of truth. "}), document.createTextNode(`This board is a read-only snapshot of the sources listed in each section${when}, refreshed by Claude. When they disagree, the source is right: change things there (or on the review desk), not here.`)]));
+}
 function card(sec, kids, n){
   const h = el("h2", {}, [el("span", {textContent: sec.label}), n == null ? null : el("span", {className: "count", textContent: String(n)})]);
-  return el("section", {className: "card", id: "s-" + sec.key}, [h, sec.lead ? el("p", {className: "lead", textContent: sec.lead}) : null, ...kids]);
+  const w = warnOf(sec.key);
+  return el("section", {className: "card", id: "s-" + sec.key}, [h, sec.lead ? el("p", {className: "lead", textContent: sec.lead}) : null, w ? el("div", {className: "warnbox", role: "note", textContent: "⚠ " + w}) : null, ...kids, sectionSources(sec.key)]);
 }
 const empty = t => el("p", {className: "empty", textContent: t});
+
+// Collapsible boxes open and close with an animated height change, never a jump (skipped under reduced motion). Their open state survives refreshes.
+const openState = {};
+function collapsible(key, label, kids){
+  const d = el("details", {className: "more", open: !!openState[key]}, [el("summary", {textContent: label}), el("div", {className: "inner"}, kids)]);
+  d.addEventListener("toggle", () => { openState[key] = d.open; });
+  const sum = d.querySelector("summary");
+  let anim = null, closing = false;
+  const shut = () => { const cs = getComputedStyle(d); return sum.offsetHeight + ["paddingTop", "paddingBottom", "borderTopWidth", "borderBottomWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0); };
+  const run = (from, to) => {
+    d.style.overflow = "hidden";
+    anim = d.animate({height: [from + "px", to + "px"]}, {duration: 220, easing: "cubic-bezier(.2,.7,.3,1)"});
+    anim.onfinish = () => { if (closing) { closing = false; d.open = false; d.classList.remove("shutting"); } d.style.overflow = ""; anim = null; };
+    anim.oncancel = () => { d.style.overflow = ""; };
+  };
+  sum.addEventListener("click", e => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    e.preventDefault();
+    const from = d.offsetHeight;
+    if (anim) anim.cancel();
+    if (!d.open || closing) { closing = false; d.open = true; run(from, d.offsetHeight); }
+    else { closing = true; run(from, shut()); }
+    d.classList.toggle("shutting", closing);
+  });
+  return d;
+}
+
+// Slack kickoff: the week's schedule goals as one message, each line prefixed with its discipline.
+function kickoffText(rows){
+  const head = `*${CONFIG.project}: week of ${info.weekOf ? dayName(info.weekOf) : "this week"}*`;
+  const lines = rows.map(it => {
+    const site = it.scope && SCOPES[it.scope] ? ` (${SCOPES[it.scope]})` : "";
+    return `• *${it.discipline || "Team"}*${site}: ${it.title}${it.due ? `, due ${dayName(it.due)}` : ""}`;
+  });
+  return [head, ...lines].join("\n");
+}
+function kickoff(rows){
+  if (!rows.length) return null;
+  const text = kickoffText(rows);
+  const ta = el("textarea", {readOnly: true, rows: Math.min(rows.length + 2, 12), value: text, ariaLabel: "Slack kickoff message"});
+  const status = el("span", {role: "status"});
+  const btn = el("button", {type: "button", textContent: "Copy"});
+  btn.addEventListener("click", async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    if (!ok) { try { ta.focus(); ta.select(); ok = document.execCommand("copy"); } catch (e) {} }
+    status.textContent = ok ? "Copied" : "Select the text and copy it";
+  });
+  return collapsible("kickoff", "Slack kickoff message", [ta, el("div", {className: "kick-bar"}, [btn, status])]);
+}
+
+// Staffing: one table per week, a row per person, with a total.
+function staffTable(rows){
+  const tr = (cells, cls) => el("tr", {className: cls || ""}, cells);
+  const head = el("thead", {}, tr([el("th", {className: "c-person", textContent: "Person"}), el("th", {className: "num c-hours", textContent: "Hours"}), el("th", {className: "c-off", textContent: "Time off"})]));
+  const body = el("tbody");
+  let disc = null;
+  for (const r of rows) {
+    if ((r.discipline || "Team") !== disc) { disc = r.discipline || "Team"; body.append(tr([el("td", {colSpan: 3, textContent: disc})], "disc")); }
+    const by = r.hoursBy && Object.keys(r.hoursBy).length > 1 ? Object.entries(r.hoursBy).filter(([, h]) => h).map(([k, h]) => `${SCOPES[k] || k} ${h}`).join(" · ") : "";
+    body.append(tr([el("td", {textContent: r.person || ""}),
+      el("td", {className: "num"}, [document.createTextNode(r.hours == null ? "?" : `${r.hours} hrs`), by ? el("span", {className: "by", textContent: by}) : null]),
+      el("td", {className: r.timeOff ? "off" : "none", textContent: r.timeOff || "No PTO"})], "person"));
+  }
+  const total = rows.reduce((n, r) => n + (Number(r.hours) || 0), 0);
+  body.append(tr([el("td", {textContent: "Total"}), el("td", {className: "num", textContent: `${total} hrs`}), el("td", {className: "none"})], "total"));
+  return el("div", {className: "tablewrap"}, el("table", {className: "staff"}, [head, body]));
+}
+const DISC_ORDER = ["PM", "Strategy", "Design", "BE Dev", "FE Dev", "Dev", "QA"];
+const byDisc = (a, b) => ((DISC_ORDER.indexOf(a.discipline) + 1 || 99) - (DISC_ORDER.indexOf(b.discipline) + 1 || 99)) || (a.person || "").localeCompare(b.person || "");
+
+// Review summary: one card per record type, counted by level.
+function summaryCards(){
+  const cards = (info.cards || []).filter(c => c && c.label);
+  if (!cards.length) return null;
+  const desk = safeUrl(CONFIG.reviewDesk);
+  return el("div", {className: "cards"}, cards.map(c => {
+    const lv = c.levels || {};
+    const chips = LEVELS.filter(k => lv[k]).map(k => levelChip(k, `${lv[k]} ${LEVEL_LABEL[k]}`));
+    const href = safeUrl(c.link) || desk;
+    const kids = [el("span", {className: "k", textContent: c.label}), el("span", {className: "n", textContent: String(c.total ?? 0)}),
+      chips.length ? el("span", {className: "lvs"}, chips) : null, c.note ? el("span", {className: "note", textContent: c.note}) : null];
+    return href ? el("a", {className: "sum", href, target: "_blank", rel: "noopener", title: c.linkLabel ? `Opens ${c.linkLabel}` : "Opens the review desk"}, kids)
+                : el("div", {className: "sum"}, kids);
+  }));
+}
 
 function render(){
   if (!info) return;
   $("title").textContent = info.weekOf ? `Week of ${dayName(info.weekOf)}` : "This week";
   $("refreshed").textContent = info.refreshed ? `Refreshed ${info.refreshed.replace("T", " ").slice(0, 16)}` : "";
-  const gaps = (info.gaps || []).filter(Boolean);
-  $("gaps").replaceChildren(...gaps.map(g => el("div", {textContent: g}))); $("gaps").hidden = !gaps.length;
   const of = k => items.filter(it => it.section === k);
   const out = [];
   for (const sec of SECTIONS) {
-    if (sec.key === "sprint") {
+    if (sec.key === "schedule") {
+      const rows = of("schedule").sort(byDue), next = of("schedule-next").sort(byDue);
+      const nextLabel = `Next week's schedule and milestones${info.weekOf ? " · " + shortDay(addDays(info.weekOf, 7)) : ""} (${next.length})`;
+      out.push(card(sec, [list(rows) || empty(info.scheduleNote || "Nothing due this week."), kickoff(rows),
+        collapsible("next", nextLabel, [list(next) || empty(info.nextScheduleNote || "Nothing scheduled next week.")])], rows.length));
+    } else if (sec.key === "staffing") {
+      const staff = of("staffing").sort(byDisc);
+      const wk = w => staff.filter(r => (r.week || "this") === w);
+      const start = info.weekOf || "";
+      const kids = [];
+      const sum = rows => rows.reduce((n, r) => n + (Number(r.hours) || 0), 0);
+      const thisRows = wk("this"), nextRows = wk("next");
+      kids.push(el("div", {className: "weekblock"}, [el("div", {className: "group", textContent: `This week${start ? " · " + shortDay(start) : ""}`}), thisRows.length ? staffTable(thisRows) : empty("No one scheduled.")]));
+      const nextLabel = `Next week${start ? " · " + shortDay(addDays(start, 7)) : ""} (${nextRows.length} ${nextRows.length === 1 ? "person" : "people"}, ${sum(nextRows)} hrs)`;
+      kids.push(collapsible("staff-next", nextLabel, [nextRows.length ? staffTable(nextRows) : empty("No one scheduled.")]));
+      out.push(card(sec, staff.length ? kids : [warnOf("staffing") ? null : empty(info.staffingNote || "No staffing data.")]));
+    } else if (sec.key === "sprint") {
       const s = info.sprint;
-      if (!s) { out.push(card(sec, [empty(info.sprintNote || "No sprint data this week.")])); continue; }
+      if (!s) { out.push(card(sec, [warnOf("sprint") ? null : empty(info.sprintNote || "No sprint data this week.")])); continue; }
       const name = safeUrl(s.link) ? el("a", {href: s.link, target: "_blank", rel: "noopener", textContent: s.name || "Current sprint"}) : el("b", {textContent: s.name || "Current sprint"});
       const facts = el("div", {className: "facts"}, [name, s.start || s.end ? el("span", {textContent: `${s.start ? dayName(s.start) : "?"} – ${s.end ? dayName(s.end) : "?"}`}) : null, s.end ? pill(s.end < today ? "p-crit" : "p-acc", s.end < today ? "Ended" : `Ends ${dayName(s.end)}`) : null]);
       const rolled = of("rollover").sort(byDue);
       out.push(card(sec, [facts, s.goal ? el("p", {className: "recap", textContent: "Goal: " + s.goal}) : null,
         el("div", {className: "group", textContent: `Rolled over from the last sprint (${rolled.length})`}),
-        list(rolled, sec) || empty(s.rolloverNote || "Nothing rolled over.")]));
+        list(rolled) || empty(s.rolloverNote || "Nothing rolled over.")]));
+    } else if (sec.key === "tasks") {
+      const tasks = of("tasks").sort(byDuePri);
+      const kids = [];
+      if (multiSite) {
+        const keys = [...Object.keys(CONFIG.scopes), "all"];
+        for (const k of keys) {
+          const g = tasks.filter(t => (SCOPES[t.scope] !== undefined ? t.scope : "all") === k).map(t => ({...t, _grouped: true}));
+          if (!g.length) continue;
+          kids.push(el("div", {className: "group", textContent: `${k === "all" ? "All sites" : SCOPES[k]} (${g.length})`}), list(g));
+        }
+        if (!tasks.length) kids.push(empty(info.tasksNote || "No open tasks."));
+      } else kids.push(list(tasks) || empty(info.tasksNote || "No open tasks."));
+      out.push(card(sec, kids, tasks.length));
     } else if (sec.key === "recap") {
       const r = info.recap || {};
       const links = (r.links || []).filter(x => safeUrl(x.link)).map(x => el("a", {href: x.link, target: "_blank", rel: "noopener", textContent: x.title || x.link}));
       out.push(card(sec, [r.text ? el("p", {className: "recap", textContent: r.text}) : empty("No journal entries last week."), links.length ? el("div", {className: "facts"}, links) : null]));
-    } else if (sec.key === "risks") {
-      const risks = of("risks").sort((a, b) => (SEV[a.severity] ?? 4) - (SEV[b.severity] ?? 4) || (a.ref || "").localeCompare(b.ref || ""));
-      const decs = of("decisions").sort(byDue);
-      out.push(card(sec, [el("div", {className: "group", textContent: `Open risks (${risks.length})`}), list(risks, sec) || empty("No open risks."),
-        el("div", {className: "group", textContent: `Pending decisions (${decs.length})`}), list(decs, {...sec, tab: "decisions"}) || empty("No decisions pending.")], risks.length + decs.length));
-    } else if (sec.key === "questions") {
-      const PRI = {high: 0, medium: 1, low: 2}, byPri = (a, b) => (PRI[a.priority] ?? 1) - (PRI[b.priority] ?? 1) || byDue(a, b);
-      const you = of("questions").filter(q => q.forPm).sort(byPri), others = of("questions").filter(q => !q.forPm).sort(byPri);
-      out.push(card(sec, [el("div", {className: "group", textContent: `For you (${you.length})`}), list(you, sec) || empty("Nothing due from you."),
-        el("div", {className: "group", textContent: `For others (${others.length})`}), list(others, {...sec, tab: "product"}) || empty("Nothing due from others.")], you.length + others.length));
+    } else if (sec.key === "overview") {
+      out.push(card(sec, [summaryCards() || empty("Nothing open on the review desk.")]));
     } else {
       const rows = of(sec.key).sort(byDue);
-      out.push(card(sec, [list(rows, sec) || empty(sec.key === "schedule" ? (info.scheduleNote || "Nothing due this week.") : "Nothing this week.")], rows.length));
+      out.push(card(sec, [list(rows) || empty("Nothing this week.")], rows.length));
     }
   }
   $("board").replaceChildren(...out);
+  renderSources();
 }
 
 (async () => {
