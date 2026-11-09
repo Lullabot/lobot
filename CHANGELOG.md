@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.37.0](https://github.com/Lullabot/lobot/compare/v0.36.0...v0.37.0) (2026-11-09)
+
+### Added
+
+* **engine:** preview a ticket plan on a clean page, with epics and their tickets nested and the tracker's own icons, before you approve it ([#49](https://github.com/Lullabot/lobot/issues/49)) ([15a5ae9](https://github.com/Lullabot/lobot/commit/15a5ae98ee660eee4a1bcc458bd6bfee7bdad911))
+
+### Fixed
+
+* **engine:** every client status report says what each site needs to provide, or that nothing is due, and the assistant asks about any meeting this week that has no notes before drafting ([#50](https://github.com/Lullabot/lobot/issues/50)) ([09fae5f](https://github.com/Lullabot/lobot/commit/09fae5f2d92b5790d557b8bd610d6c4986b33f7a))
+* **engine:** weekly board adds next week's schedule, staffing and time off, your tasks by site, and review desk summary cards ([#48](https://github.com/Lullabot/lobot/issues/48)) ([43e1c70](https://github.com/Lullabot/lobot/commit/43e1c705176077efe4937f9d9d8545c7aa3bc5e5))
+
 ## [0.36.0](https://github.com/Lullabot/lobot/compare/v0.35.0...v0.36.0) (2026-11-04)
 
 ### Added
