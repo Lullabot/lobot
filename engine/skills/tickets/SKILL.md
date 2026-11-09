@@ -166,7 +166,7 @@ Tracker: Jira, space ABC
 
 ## Ticket plans
 
-Tickets that come in a batch, such as the `ready` items of the work breakdown, are drafted as one **ticket plan**: a YAML file with the same shape whichever tracker the project uses. Pepper drafts it, the PM reviews and approves it, and the tracker's skill checks it against the tracker and sends it.
+Tickets that come in a batch, such as the `ready` items of the work breakdown, are drafted as one **ticket plan**: a YAML file with the same shape whichever tracker the project uses. Pepper drafts it, the PM reviews it on the ticket preview page (ticket-preview skill) and approves it, and the tracker's skill checks it against the tracker and sends it. Show the plan on that page before asking for approval, and again after every change.
 
 - **Where:** `docs/work/tickets/YYYY-MM-DD-<slug>.yaml`. After sending, `PLAN.created.json` beside it records the ticket each `ref` became.
 - **The tracker's own names.** Work types, labels, statuses, and extra fields use the names the tracker uses, from its project file: the structure file `.ai/project/jira/<SPACE>.yaml` for Jira (jira skill), `.ai/project/github.md` for GitHub (github skill). If that file is missing or doesn't have what a ticket needs, say so rather than guessing.

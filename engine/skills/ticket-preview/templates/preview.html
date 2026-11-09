@@ -1,0 +1,353 @@
+<!-- Lobot page template: ticket preview. Fill {{PROJECT_NAME}}, then publish with capabilities {"db": {}}. Read-only: the page shows the ticket plans the database holds and writes nothing. See .ai/general/skills/ticket-preview/SKILL.md. -->
+<title>{{PROJECT_NAME}} Ticket Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a header naming the plan and where it goes, then one collapsible box per epic with its children nested inside, then tickets outside any epic, then the plan's sources. Tokens match the tracker pages and boards. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6;
+  --todo:#6b7585; --todo-bg:#eef0f3; --prog:#9a5b00; --prog-bg:#fdf0db;
+  --done:#1d7a46; --done-bg:#e1f3e8; --crit:#b3261e; --crit-bg:#fbe4e2; --warn:#9a5b00;
+  --code-bg:#eef0f3;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --code-bg:#242b35; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
+  --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
+  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --code-bg:#242b35; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:28px 48px;display:grid;gap:16px}
+header{display:grid;gap:8px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:0;max-width:72ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.notice{background:var(--crit-bg);color:var(--crit);border-radius:8px;padding:10px 12px;font-size:14px}
+.pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.p-draft{color:var(--prog);background:var(--prog-bg)} .p-ok{color:var(--done);background:var(--done-bg)} .p-todo{color:var(--todo);background:var(--todo-bg)}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;align-items:center}
+.facts b{font-weight:600}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.bar .btns{display:flex;gap:8px}
+button.ghost{font:inherit;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 12px;cursor:pointer}
+button.ghost:hover{border-color:var(--accent)}
+select{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 8px;max-width:100%}
+.tree{display:grid;gap:10px}
+.group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 -2px}
+/* One ticket: a collapsible box whose summary line reads like the tracker's list row. */
+details.tk{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.tk.child{background:var(--bg);border-radius:8px}
+details.tk > summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:11px 14px}
+details.tk > summary::-webkit-details-marker{display:none}
+details.tk > summary .chev{width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .22s ease;margin-right:2px}
+details.tk[open]:not(.shutting) > summary .chev{transform:rotate(45deg)}
+details.tk > summary .ttl{font-weight:600;overflow-wrap:anywhere}
+details.tk.child > summary .ttl{font-weight:500}
+details.tk > summary .side{display:flex;gap:8px;align-items:center;justify-self:end}
+details.tk > summary .ref{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+details.tk:target,details.tk.flash{box-shadow:0 0 0 2px var(--accent)}
+.tk-body{padding:0 14px 14px;display:grid;gap:12px}
+.kids{display:grid;gap:8px}
+.ico{display:inline-flex;width:18px;height:18px;flex:none}
+.ico svg{width:18px;height:18px}
+dl.flds{display:grid;grid-template-columns:minmax(110px,max-content) minmax(0,1fr);gap:6px 16px;margin:0;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+details.tk.child dl.flds{background:var(--surface)}
+dl.flds dt{color:var(--muted);font-weight:600;font-size:13px}
+dl.flds dd{margin:0;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--todo-bg);color:var(--fg)}
+a.chip{text-decoration:none;color:var(--accent);background:var(--accent-soft)}
+a.chip:hover{text-decoration:underline}
+.mention{font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 4px}
+.block h4{margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.md{font-size:14.5px;overflow-wrap:anywhere}
+.md > :first-child{margin-top:0} .md > :last-child{margin-bottom:0}
+.md h3,.md h5,.md h6{font-size:15px;margin:14px 0 4px}
+.md p{margin:6px 0}
+.md ul,.md ol{margin:6px 0;padding-left:22px}
+.md li{margin:2px 0}
+.md li.task{list-style:none;margin-left:-20px;display:flex;gap:8px;align-items:baseline}
+.md li.task .box{flex:none;width:13px;height:13px;border:1.5px solid var(--muted);border-radius:3px;transform:translateY(2px)}
+.md li.task.done .box{background:var(--done);border-color:var(--done)}
+.md code{font-family:var(--f-mono);font-size:12.5px;background:var(--code-bg);border-radius:4px;padding:1px 4px}
+.md pre{background:var(--code-bg);border-radius:6px;padding:8px 10px;overflow-x:auto;margin:6px 0}
+.md pre code{background:none;padding:0}
+.md hr{border:0;border-top:1px solid var(--line);margin:10px 0}
+.md em{font-style:italic}
+.srcs{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.srcs h2{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.srcs ul{margin:0;padding-left:18px;display:grid;gap:2px}
+.srcs li{overflow-wrap:anywhere}
+.foot{color:var(--muted);font-size:13px;margin:0}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.warnbox{background:var(--prog-bg);color:var(--prog);border-left:3px solid var(--warn);border-radius:6px;padding:8px 12px;font-size:14px}
+.warnbox ul{margin:4px 0 0;padding-left:20px}
+@media (max-width:560px){
+  details.tk > summary{grid-template-columns:auto auto minmax(0,1fr);padding:10px 12px}
+  details.tk > summary .side{grid-column:3;justify-self:start}
+  dl.flds{grid-template-columns:1fr;gap:2px}
+  dl.flds dd{margin-bottom:6px}
+  .tk-body{padding:0 12px 12px}
+}
+@media (prefers-reduced-motion:reduce){details.tk > summary .chev{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <h1 id="title">Ticket preview</h1>
+    <p class="sub" id="dest"></p>
+    <div class="facts" id="facts"></div>
+  </header>
+  <div class="notice" id="notice" hidden></div>
+  <div class="bar">
+    <label class="facts" id="pickWrap" hidden><b>Plan</b> <select id="pick" aria-label="Ticket plan"></select></label>
+    <div class="btns"><button class="ghost" type="button" id="openAll">Expand all</button><button class="ghost" type="button" id="closeAll">Collapse all</button></div>
+  </div>
+  <div class="tree" id="tree"><p class="empty">Loading the ticket plan from Lobot. If nothing shows, ask Claude to preview the plan.</p></div>
+  <section class="srcs" id="sources" hidden></section>
+  <p class="foot">A read-only preview. The plan file in the Project Brain is the record: ask Claude for any change, and approve the plan in chat before anything is sent to the tracker.</p>
+</div>
+
+<script>
+const CONFIG = {project: "{{PROJECT_NAME}}"};
+const $ = id => document.getElementById(id);
+const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null && k !== false) n.append(k); return n; };
+const safeUrl = u => (typeof u === "string" && /^https?:\/\//i.test(u)) ? u : "";
+const svgNS = "http://www.w3.org/2000/svg";
+let plans = [], current = "", wanted = "";
+$("eyebrow").textContent = `${CONFIG.project} · Lobot`;
+function notice(msg){ $("notice").textContent = msg || ""; $("notice").hidden = !msg; }
+
+// Work type icons, drawn to look like the tracker's own: Jira's colored squares, GitHub's issue mark. Unknown types get a lettered square.
+const JIRA = {
+  epic: ["#904EE2", "M9.6 3.5 5.5 9.8h3l-.9 4.7 4.2-6.6H8.7z"],
+  story: ["#63BA3C", "M5.5 4h7v10l-3.5-2.6L5.5 14z"],
+  task: ["#4BADE8", "M5 9.2l2.6 2.6L13 6.4", "stroke"],
+  bug: ["#E5493A", "circle"],
+  "sub-task": ["#4BADE8", "M5 5h5v5H5zM8 8h5v5H8z", "stroke"],
+  subtask: ["#4BADE8", "M5 5h5v5H5zM8 8h5v5H8z", "stroke"],
+  improvement: ["#63BA3C", "M9 4.5l4 4.5h-2.5v4.5h-3V9H5z"],
+  "new feature": ["#63BA3C", "M9 4.5v9M4.5 9h9", "stroke"],
+};
+const LETTER_COLORS = {design: "#E2559F", content: "#2D9C8F", strategy: "#D6820B", "feature request": "#63BA3C"};
+function icon(tracker, type){
+  const t = String(type || "").toLowerCase();
+  const s = document.createElementNS(svgNS, "svg"); s.setAttribute("viewBox", "0 0 18 18"); s.setAttribute("aria-hidden", "true");
+  const add = (tag, attrs) => { const n = document.createElementNS(svgNS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); s.append(n); return n; };
+  if (tracker === "github") {
+    const red = /bug/.test(t);
+    add("circle", {cx: 9, cy: 9, r: 6.5, fill: "none", stroke: red ? "#cf222e" : "#1a7f37", "stroke-width": 1.6});
+    add("circle", {cx: 9, cy: 9, r: 1.6, fill: red ? "#cf222e" : "#1a7f37"});
+    return el("span", {className: "ico", title: type || "Issue"}, s);
+  }
+  const j = JIRA[t];
+  const color = j ? j[0] : (LETTER_COLORS[t] || "#6B778C");
+  add("rect", {x: 1, y: 1, width: 16, height: 16, rx: 3, fill: color});
+  if (j && j[1] === "circle") add("circle", {cx: 9, cy: 9, r: 3.6, fill: "#fff"});
+  else if (j && j[2] === "stroke") add("path", {d: j[1], fill: "none", stroke: "#fff", "stroke-width": 1.8, "stroke-linecap": "round", "stroke-linejoin": "round"});
+  else if (j) add("path", {d: j[1], fill: "#fff"});
+  else { const tx = add("text", {x: 9, y: 12.6, "text-anchor": "middle", "font-size": 10, "font-weight": 700, fill: "#fff", "font-family": "system-ui,sans-serif"}); tx.textContent = (type || "?").trim().charAt(0).toUpperCase(); }
+  return el("span", {className: "ico", title: type || "Ticket"}, s);
+}
+
+// A small, safe Markdown renderer for ticket text: headings, paragraphs, lists, task boxes, code, rules, bold, italics, links, and @mentions. Builds nodes; never parses HTML.
+function inline(text){
+  const out = []; const re = /(`[^`]+`)|(\*\*[^*]+\*\*)|(\*[^*\s][^*]*\*|_[^_\s][^_]*_)|(\[[^\]]+\]\([^)\s]+\))|(@[a-z0-9][a-z0-9._-]*)/gi;
+  let last = 0, m;
+  while ((m = re.exec(text))) {
+    if (m.index > last) out.push(document.createTextNode(text.slice(last, m.index)));
+    const s = m[0];
+    if (m[1]) out.push(el("code", {textContent: s.slice(1, -1)}));
+    else if (m[2]) out.push(el("strong", {}, inline(s.slice(2, -2))));
+    else if (m[3]) out.push(el("em", {}, inline(s.slice(1, -1))));
+    else if (m[4]) { const mm = s.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/); const u = safeUrl(mm[2]); out.push(u ? el("a", {href: u, target: "_blank", rel: "noopener", textContent: mm[1]}) : document.createTextNode(mm[1])); }
+    else if (m[5]) out.push(el("span", {className: "mention", textContent: s}));
+    last = m.index + s.length;
+  }
+  if (last < text.length) out.push(document.createTextNode(text.slice(last)));
+  return out;
+}
+function markdown(src){
+  const root = el("div", {className: "md"});
+  const lines = String(src || "").replace(/\r/g, "").split("\n");
+  let i = 0, para = [];
+  const flush = () => { if (para.length) { root.append(el("p", {}, inline(para.join(" ")))); para = []; } };
+  while (i < lines.length) {
+    const line = lines[i];
+    if (/^```/.test(line)) { flush(); const buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++; root.append(el("pre", {}, el("code", {textContent: buf.join("\n")}))); continue; }
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) { flush(); root.append(el(h[1].length <= 2 ? "h3" : "h5", {}, inline(h[2]))); i++; continue; }
+    if (/^\s*(---|\*\*\*)\s*$/.test(line)) { flush(); root.append(el("hr")); i++; continue; }
+    if (/^\s*([-*+]|\d+[.)])\s+/.test(line)) {
+      flush(); const ordered = /^\s*\d/.test(line); const listEl = el(ordered ? "ol" : "ul");
+      while (i < lines.length && /^\s*([-*+]|\d+[.)])\s+/.test(lines[i])) {
+        let body = lines[i].replace(/^\s*([-*+]|\d+[.)])\s+/, ""); i++;
+        while (i < lines.length && /^\s{2,}\S/.test(lines[i]) && !/^\s*([-*+]|\d+[.)])\s+/.test(lines[i])) body += " " + lines[i++].trim();
+        const task = body.match(/^\[( |x|X)\]\s+(.*)$/);
+        listEl.append(task ? el("li", {className: "task" + (task[1].trim() ? " done" : "")}, [el("span", {className: "box", ariaHidden: "true"}), el("span", {}, inline(task[2]))]) : el("li", {}, inline(body)));
+      }
+      root.append(listEl); continue;
+    }
+    if (!line.trim()) { flush(); i++; continue; }
+    para.push(line.trim()); i++;
+  }
+  flush();
+  return root;
+}
+
+// Collapsible boxes open and close with an animated height change, never a jump (skipped under reduced motion).
+function animate(d){
+  const sum = d.querySelector(":scope > summary");
+  let anim = null, closing = false;
+  const shut = () => { const cs = getComputedStyle(d); return sum.offsetHeight + ["borderTopWidth", "borderBottomWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0); };
+  const run = (from, to) => {
+    d.style.overflow = "hidden";
+    anim = d.animate({height: [from + "px", to + "px"]}, {duration: 220, easing: "cubic-bezier(.2,.7,.3,1)"});
+    anim.onfinish = () => { if (closing) { closing = false; d.open = false; d.classList.remove("shutting"); } d.style.overflow = ""; anim = null; };
+    anim.oncancel = () => { d.style.overflow = ""; };
+  };
+  sum.addEventListener("click", e => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    e.preventDefault();
+    const from = d.offsetHeight;
+    if (anim) anim.cancel();
+    if (!d.open || closing) { closing = false; d.open = true; run(from, d.offsetHeight); }
+    else { closing = true; run(from, shut()); }
+    d.classList.toggle("shutting", closing);
+  });
+}
+
+const idOf = it => it.ref || it.key || "";
+const anchor = id => "t-" + String(id).replace(/[^A-Za-z0-9_-]/g, "_");
+function refChip(id, plan){
+  const inPlan = plan.items.some(x => idOf(x) === id);
+  if (!inPlan) { const u = ticketUrl(plan, id); return u ? el("a", {className: "chip", href: u, target: "_blank", rel: "noopener", textContent: id}) : el("span", {className: "chip", textContent: id}); }
+  const target = plan.items.find(x => idOf(x) === id);
+  const a = el("a", {className: "chip", href: "#" + anchor(id), textContent: target && target.title ? target.title : id, title: id});
+  a.addEventListener("click", e => { e.preventDefault(); reveal(id); });
+  return a;
+}
+function ticketUrl(plan, key){
+  const base = safeUrl(plan.trackerUrl);
+  if (!base) return "";
+  if (plan.tracker === "jira" && /^[A-Z][A-Z0-9]+-\d+$/.test(key)) return base.replace(/\/$/, "") + "/browse/" + key;
+  if (plan.tracker === "github" && /^#\d+$/.test(key)) return base.replace(/\/$/, "") + "/issues/" + key.slice(1);
+  return "";
+}
+function reveal(id){
+  const d = document.getElementById(anchor(id));
+  if (!d) return;
+  let p = d; while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; }
+  d.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
+  d.classList.add("flash"); setTimeout(() => d.classList.remove("flash"), 1400);
+}
+const asList = v => v == null ? [] : Array.isArray(v) ? v : [v];
+const isMultiline = v => typeof v === "string" && /\n|^\s*([-*]|#)/.test(v);
+function valueNode(v, plan){
+  if (Array.isArray(v)) return el("div", {className: "chips"}, v.map(x => el("span", {className: "chip", textContent: typeof x === "object" ? JSON.stringify(x) : String(x)})));
+  if (v && typeof v === "object") return el("span", {textContent: Object.entries(v).map(([k, x]) => `${k}: ${x}`).join(" · ")});
+  return el("span", {textContent: String(v)});
+}
+
+function ticket(it, plan, kids, isChild){
+  const id = idOf(it);
+  const existing = !it.ref && !!it.key;
+  const right = el("span", {className: "side"}, [
+    existing ? el("span", {className: "pill p-todo", textContent: "Update"}) : null,
+    kids && kids.length ? el("span", {className: "pill p-todo", textContent: `${kids.length} ${kids.length === 1 ? "child" : "children"}`}) : null,
+    el("span", {className: "ref", textContent: id})]);
+  const title = existing ? (it.title || `Update ${it.key}`) : (it.title || "(untitled)");
+  const sum = el("summary", {}, [el("span", {className: "chev", ariaHidden: "true"}), icon(plan.tracker, it.type || (existing ? "" : "Task")), el("span", {className: "ttl", textContent: title}), right]);
+  // Fields: the ticket's own keys first, then the tracker's extra fields; long text fields render as blocks below.
+  const rows = [], blocks = [];
+  const row = (k, node) => { rows.push(el("dt", {textContent: k}), el("dd", {}, node)); };
+  if (it.type) row("Type", el("span", {className: "chips"}, [icon(plan.tracker, it.type), document.createTextNode(" " + it.type)]));
+  if (existing) row("Ticket", refChip(it.key, plan));
+  if (it.parent) row("Parent", refChip(it.parent, plan));
+  if (it.blocked_by) row("Blocked by", el("div", {className: "chips"}, asList(it.blocked_by).map(x => refChip(String(x), plan))));
+  if (it.blocks) row("Blocks", el("div", {className: "chips"}, asList(it.blocks).map(x => refChip(String(x), plan))));
+  for (const l of asList(it.links)) for (const [rel, target] of Object.entries(l || {})) row(rel.charAt(0).toUpperCase() + rel.slice(1), el("div", {className: "chips"}, asList(target).map(x => refChip(String(x), plan))));
+  if (it.labels) row("Labels", valueNode(asList(it.labels), plan));
+  if (it.assignee) row("Assignee", el("span", {className: "mention", textContent: "@" + it.assignee}));
+  if (it.status) row(existing ? "Move to" : "Status", el("span", {className: "pill p-todo", textContent: it.status}));
+  for (const [k, v] of Object.entries(it.fields || {})) {
+    if (isMultiline(v)) blocks.push([k, v]); else row(k, valueNode(v, plan));
+  }
+  const body = el("div", {className: "tk-body"}, [
+    rows.length ? el("dl", {className: "flds"}, rows) : null,
+    it.description ? el("div", {className: "block"}, [/^\s*#/.test(it.description) ? null : el("h4", {textContent: "Description"}), markdown(it.description)]) : null,
+    ...blocks.map(([k, v]) => el("div", {className: "block"}, [el("h4", {textContent: k}), markdown(v)])),
+    it.comment ? el("div", {className: "block"}, [el("h4", {textContent: "Comment to post"}), markdown(it.comment)]) : null,
+    kids && kids.length ? el("div", {className: "kids"}, [el("div", {className: "group", textContent: "Children"}), ...kids]) : null]);
+  const d = el("details", {className: "tk" + (isChild ? " child" : ""), id: anchor(id)}, [sum, body]);
+  animate(d);
+  return d;
+}
+
+function render(){
+  const plan = plans.find(p => p.id === current) || plans[0];
+  $("pickWrap").hidden = plans.length < 2;
+  $("pick").replaceChildren(...plans.map(p => el("option", {value: p.id, textContent: `${p.name || p.id} (${p.status || "draft"})`, selected: p === plan})));
+  if (!plan) { $("tree").replaceChildren(el("p", {className: "empty", textContent: "No ticket plan to preview yet. Ask Claude to preview one."})); $("sources").hidden = true; return; }
+  current = plan.id;
+  const items = Array.isArray(plan.items) ? plan.items : [];
+  $("title").textContent = plan.name || plan.id;
+  document.title = `${CONFIG.project} Ticket Preview: ${plan.name || plan.id}`;
+  $("dest").textContent = plan.destination ? "Goes to " + plan.destination : "";
+  const approved = plan.status === "approved" && plan.approved_by;
+  const n = t => items.filter(t).length;
+  const newCount = n(x => x.ref), upd = n(x => !x.ref && x.key), links = items.reduce((c, x) => c + asList(x.blocked_by).length + asList(x.blocks).length + asList(x.links).length, 0);
+  const typeCounts = {}; for (const x of items) if (x.ref) typeCounts[x.type || "Task"] = (typeCounts[x.type || "Task"] || 0) + 1;
+  $("facts").replaceChildren(...[
+    el("span", {className: "pill " + (approved ? "p-ok" : "p-draft"), textContent: approved ? `Approved by ${plan.approved_by_name || plan.approved_by}${plan.approved_at ? " · " + plan.approved_at : ""}` : "Draft: not approved"}),
+    el("span", {}, [el("b", {textContent: String(newCount)}), document.createTextNode(` new`)]),
+    upd ? el("span", {}, [el("b", {textContent: String(upd)}), document.createTextNode(" updates")]) : null,
+    ...Object.entries(typeCounts).map(([t, c]) => el("span", {className: "chips"}, [icon(plan.tracker, t), document.createTextNode(` ${c} ${t}`)])),
+    links ? el("span", {}, [el("b", {textContent: String(links)}), document.createTextNode(" links")]) : null,
+    plan.project ? el("span", {className: "mono", textContent: `${plan.tracker === "github" ? "Repo" : "Space"} ${plan.project}`}) : null].filter(Boolean));
+  // Nest every ticket under its parent when the parent is in this plan; the rest are top-level, epics first, in plan order.
+  const ids = new Set(items.map(idOf));
+  const childrenOf = {}; for (const it of items) if (it.parent && ids.has(it.parent)) (childrenOf[it.parent] = childrenOf[it.parent] || []).push(it);
+  const build = (it, isChild) => ticket(it, plan, (childrenOf[idOf(it)] || []).map(c => build(c, true)), isChild);
+  const top = items.filter(it => !(it.parent && ids.has(it.parent)));
+  const parents = top.filter(it => childrenOf[idOf(it)] || /epic/i.test(it.type || "")), loose = top.filter(it => !parents.includes(it));
+  const out = [];
+  if (parents.length) out.push(...parents.map(it => build(it, false)));
+  if (loose.length) out.push(el("div", {className: "group", textContent: parents.length ? "Not under an epic in this plan" : "Tickets"}), ...loose.map(it => build(it, false)));
+  const probs = asList(plan.problems).filter(Boolean);
+  const warn = probs.length ? el("div", {className: "warnbox", role: "note"}, [el("b", {textContent: "⚠ The plan has problems to fix before it can be sent:"}), el("ul", {}, probs.map(p => el("li", {textContent: p})))]) : null;
+  $("tree").replaceChildren(...[warn, ...(out.length ? out : [el("p", {className: "empty", textContent: "This plan has no items."})])].filter(Boolean));
+  // Sources: the plan file itself, then what it was drafted from.
+  const repo = safeUrl(plan.repoUrl) ? plan.repoUrl.replace(/\/?$/, "/") : "";
+  const fileLink = f => repo && /^[\w.\/-]+$/.test(f) && !/\.\./.test(f) ? repo + f.replace(/\s*\(.*$/, "") : "";
+  const src = [plan.file ? {label: plan.file, link: fileLink(plan.file), detail: "the ticket plan (the record)"} : null,
+    ...asList(plan.sources).map(s => typeof s === "string" ? {label: s, link: fileLink(s)} : s)].filter(Boolean);
+  $("sources").hidden = !src.length;
+  $("sources").replaceChildren(el("h2", {textContent: "Sources:"}), el("ul", {}, src.map(s => { const u = safeUrl(s.link); return el("li", {}, [u ? el("a", {href: u, target: "_blank", rel: "noopener", textContent: s.label}) : el("span", {textContent: s.label}), s.detail ? document.createTextNode(" · " + s.detail) : null]); })));
+}
+
+$("pick").addEventListener("change", e => { current = e.target.value; render(); });
+const setAll = open => document.querySelectorAll("#tree details.tk").forEach(d => { d.open = open; d.classList.remove("shutting"); });
+$("openAll").addEventListener("click", () => setAll(true));
+$("closeAll").addEventListener("click", () => setAll(false));
+
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) { notice("This view can't load the ticket plans. Sign in to claude.ai to see them."); return; }
+  let gotPlans = false, gotMeta = false;
+  db.collection("plans").onSnapshot(snap => { plans = snap.docs.map(x => ({...x.data(), id: x.id})).sort((a, b) => String(b.id).localeCompare(String(a.id))); gotPlans = true; if (!current && wanted) current = wanted; if (gotMeta || plans.length) render(); }, () => notice("The ticket plans couldn't load. Reload the page to try again."));
+  db.collection("meta").onSnapshot(snap => { const d = snap.docs.find(x => x.id === "current"); wanted = d ? d.data().plan || "" : ""; if (wanted) current = wanted; gotMeta = true; if (gotPlans) render(); }, () => {});
+})();
+</script>
