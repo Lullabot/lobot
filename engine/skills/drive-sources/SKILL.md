@@ -27,7 +27,7 @@ If `docs/sources.yaml` doesn't exist (projects installed before this skill), cre
 ## Who does what
 
 - **Lucy** owns `docs/sources.yaml` and does the Drive work: mapping the shared drive, checking sources, reading files, saving snapshots, and filing them. She uses the Drive connector whenever the assistant has one.
-- **The assistant** may run the start-of-session check (report only) and relays Lucy's questions to the PM. If Lucy can't reach Drive in this assistant, the assistant reads the files, saves the snapshots, and briefs her with the local paths, Drive IDs, and `modified` values.
+- **The assistant** briefs Lucy for the start-of-session check (report only; `.ai/general/lobot.md`, "Start-of-session routine"), runs it itself when agents can't run or Lucy can't reach Drive, and relays Lucy's questions to the PM. If Lucy can't reach Drive in this assistant, the assistant reads the files, saves the snapshots, and briefs her with the local paths, Drive IDs, and `modified` values.
 - **The PM** says where things live, approves changes to the map, and chooses what gets processed.
 
 When Lucy runs as a subagent she can't talk to the PM mid-run. "Lucy asks" means she returns the question in her report, and the assistant puts it to the PM and briefs her again with the answer.

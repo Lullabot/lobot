@@ -22,8 +22,9 @@ from itertools import combinations
 CHARS_PER_TOKEN = 3.8
 BUDGET = {
     # Root CLAUDE.md plus everything it @-imports loads in every session,
-    # and again in every agent that reads CLAUDE.md.
-    "always_loaded_tokens": 3000,
+    # and again in every agent that reads CLAUDE.md. Includes lobot.md's
+    # skill table, which is how assistants without a skill listing find skills.
+    "always_loaded_tokens": 3500,
     # A top-level rule file in .ai/general/ or .ai/project/.
     "rule_file_tokens": 2500,
     # An agent definition (its whole system prompt).

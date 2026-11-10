@@ -25,5 +25,5 @@ When an agent reports that it can't reach a tool because access is missing (Pepp
 4. **Dependencies run in order.** If one agent's output feeds another's input, run them one after the other. Parallel is only for tasks with no overlap.
 5. **One writer per shared file.** The agent that owns a file is the only one that edits it. Others ask through the assistant.
 6. **Hard limits apply to agents.** No sending email, no merging or deleting, no permission changes, no financial credentials.
-7. **Default is one task at a time.** Subagents cost more and add coordination. Use them for large, independent tasks, not small ones.
+7. **Default is one task at a time.** Subagents cost more and add coordination. Use them for large, independent tasks, not small ones. The exception is the start-of-session catch-up brief (`lobot.md`), which keeps the journal and Drive check out of the main conversation.
 8. **Corrections feed the agent.** When the PM corrects an agent's work, the correction goes in the agent's corrections log (project or general, PM confirms which). A general correction is also a candidate for Lobot itself: the assistant offers to report it with the lobot-feedback skill.
