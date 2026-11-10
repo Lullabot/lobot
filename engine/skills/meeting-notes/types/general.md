@@ -20,6 +20,7 @@ type: <PM's label, e.g. onboarding>
 template: general
 speakers: [Full Name, Full Name]   # who spoke in the transcript; attendance unknown
 source: docs/transcripts/<file> (cleaned; <format>, ~N min)
+series: <recurring meeting's name, from .ai/project/meeting-notes.md; leave out for a one-off>
 status: draft
 ---
 # <Meeting title> (YYYY-MM-DD)
