@@ -1,6 +1,6 @@
 ---
 name: meeting-notes
-description: Turn a meeting transcript into derived meeting notes (docs/meetings/), after cleaning it with the transcript-cleanup skill, propose tasks, decision log entries, and context-doc updates, and flag risks and ADR candidates for follow-up. Use when the PM drops a transcript, asks to process/summarize a meeting, or asks what happened in a call.
+description: Turn a meeting transcript into derived meeting notes (docs/meetings/), after cleaning it with the transcript-cleanup skill, propose tasks, decision log entries, and context-doc updates, flag risks and ADR candidates for follow-up, and keep a running notes doc for recurring meetings. Use when the PM drops a transcript, asks to process/summarize a meeting, or asks what happened in a call.
 ---
 
 # Meeting notes
@@ -19,6 +19,8 @@ Transcripts are long and noisy. The notes file is what the team and the assistan
 | Meeting type templates | `types/` in this skill's folder |
 | Project task routing (where tasks go, labels) | `.ai/project/task-management.md` |
 | Shareable copy for the team, one Google Doc per meeting | The `meeting-notes` folder in `docs/sources.yaml` (Project Management > Meeting Notes, next to Meeting Transcripts; one per scope) |
+| Recurring meetings and how each one's notes are shared | `.ai/project/meeting-notes.md` (see "Recurring meetings") |
+| Running notes doc for recurring meetings, a dated entry per meeting | A Google Doc mapped in `docs/sources.yaml`; by default `<KEY> Recurring Meeting Notes` in the Meeting Notes folder, one tab per kind of recurring meeting |
 
 ## Meeting types
 
@@ -43,7 +45,7 @@ Ask the PM for the meeting type if it isn't stated. Record the PM's label (e.g. 
 7. **Write the notes file** from the type file's template, `status: draft`.
 8. **Present one review list** to the PM (see Review below): write it into the notes file's `## Review` section, one numbered line per item, then add the items to the review desk and open it (tracker-pages skill, "Review desk"). Without tracker pages, show the list in chat. Change nothing outside the notes file until the PM approves, except adding the PM's own actions to the task list (tasks skill) and the open questions to the questions log, each marked with its kind and who answers it (questions skill, "Kinds of question"), which are autonomous.
 9. **Apply what was approved** in one pass: write the cleaned transcript to `docs/transcripts/` with the approved cuts (transcript-cleanup skill) and point the notes' `source` at it, file the PM's approved tasks per `.ai/project/task-management.md` and put each link in its task-list row, add decision log entries with the decision-log skill, edit context docs with their own skills (run validators), including the dossier topics the meeting adds facts to (dossier skill), and record task links, entry IDs, and doc changes back in the notes file. Mark each review line approved, changed, or dropped. Set `status: reviewed by <PM name>`.
-10. **File the shareable copy** in Drive (see below), add its link to the notes' frontmatter as `drive_copy:`, and record the copy in `docs/sources.yaml` `processed` (source: the meeting-notes folder, result: the notes file).
+10. **File the shareable copy** in Drive (see below), add its link to the notes' frontmatter as `drive_copy:`, and record the copy in `docs/sources.yaml` `processed` (source: the meeting-notes folder, result: the notes file). For a recurring meeting, share it the way its row in `.ai/project/meeting-notes.md` says: a copy, an entry in its running doc, or both (see "Recurring meetings").
 11. **Journal** one Log entry linking the notes file, plus `#people`, `#risk`, `#decision` tags as applicable.
 
 ## Gemini notes
@@ -52,7 +54,7 @@ Google Meet's Gemini notes are one Doc with the summary, decisions, and next ste
 
 - **Snapshot the whole Doc** (both tabs) to `docs/transcripts/raw/` as usual, and clean only the transcript tab (transcript-cleanup skill, `--from`). The transcript tab is the source; Gemini's summary is a hint that is often wrong (misattributed speakers, proposals reported as agreed, mistranscribed names).
 - **Write a short record** in `docs/meetings/` instead of the full notes: the usual frontmatter plus `gemini_notes: <link>`, one line saying the summary and action items are Gemini's, then only **Corrections to Gemini's notes** (each with a transcript quote), the **Flags** table, and **Context updates**. No TL;DR, overview, or action-items table.
-- **Review and apply** as usual (steps 7 and 8). The Gemini Doc is already in Drive, so file no shareable copy.
+- **Review and apply** as usual (steps 7 and 8). The Gemini Doc is already in Drive, so file no shareable copy. A recurring meeting whose notes go in a running doc still gets its entry there, written from Gemini's summary as corrected in the short record, with the Gemini Doc as its source.
 
 ## Shareable copy in Drive
 
@@ -64,6 +66,68 @@ Reviewed notes also go to the project's shared drive, so the team can read them 
 - **Who reads it.** Anyone with access to the folder. The source's `shared_with_client` says whether the client can: when it is `false`, file the notes as they are; when it is `true` or not set, check the copy for anything meant only for Lullabot (internal risk commentary, account or pricing notes) and ask the PM before filing it.
 - **Once Docs can be edited.** When the assistant has a connector that edits Google Docs, switch to one Doc per meeting with two tabs, the way Gemini's meeting notes are laid out: **Summary** (the copy described above) and **Transcript** (the full transcript). Confirm the switch with the PM first, and leave copies filed earlier as they are unless the PM asks to convert them.
 - **Changes.** If the notes change after filing, file the change in the same Doc when the connector can edit it; otherwise tell the PM the copy is out of date. Never delete or move an old copy.
+
+## Recurring meetings
+
+Teams used to one running doc for a weekly meeting want to scroll back to last time, not open a new Doc each week. For a recurring meeting the PM chooses how its notes are shared: one Doc per meeting (the shareable copy above), a running doc with a dated entry for each meeting, or both. Either way the Project Brain keeps one notes file per meeting in `docs/meetings/`; that file stays the record, and the running doc is a copy of it, like the shareable copy.
+
+### The project's recurring meetings
+
+`.ai/project/meeting-notes.md` lists them. Create it the first time one comes up:
+
+```markdown
+# Meeting notes: <KEY>
+
+## Recurring meetings
+
+| Meeting | Matches | Audience | Share as | Running doc | Tab |
+|---|---|---|---|---|---|
+| Team Huddle | Titles starting "Team huddle" | Internal | running | recurring-meeting-notes | Team Huddle |
+| Schedule Review | "Schedule review" | Internal | both | recurring-meeting-notes | Schedule Review |
+| Design and Strategy Sync | "Design sync", "Strategy sync" | Client | running | recurring-meeting-notes-client | Design and Strategy Sync |
+```
+
+- **Meeting:** its name. The notes file names it in `series:`.
+- **Matches:** how to recognize it: titles, or other signs the PM gives.
+- **Audience:** `Internal` (Lullabot only) or who else attends (`Client`, a vendor).
+- **Share as:** `copies` (one Doc per meeting, as for any meeting), `running` (an entry in the running doc), or `both`.
+- **Running doc:** the key of the doc's entry in `docs/sources.yaml`; `—` for `copies`.
+- **Tab:** the doc's tab for this meeting, or `—` when entries go straight in the doc.
+
+### Spotting a recurring meeting
+
+A meeting is recurring when its title matches a row. With no row yet, it may be one when it shares its title with an earlier notes file, its invite repeats, or the PM says so. Then ask the PM once, as a review item ("Questions for the PM"): share its notes as one Doc per meeting, in a running doc with a new dated entry each time, or both? For a running doc, settle where it goes (below), then add the row. A meeting with no row is shared as a copy, as before.
+
+### Where the running doc goes
+
+The PM can point to a Doc or a folder they already use. Otherwise say Lobot's default and ask about an override, as for any deliverable (drive-sources skill, "Where a deliverable lives"):
+
+- **Internal meetings:** one `<KEY> Recurring Meeting Notes` Doc in the Meeting Notes folder, with a tab for each kind of recurring meeting, named for it ("Team Huddle", "Schedule Review"). Within a tab, each meeting is a heading with its date, and each part of the entry a subheading under it (see below). Its key is `recurring-meeting-notes`.
+- **Meetings with outside people:** a separate running doc, never the internal one, because the audience decides who may read it. Ask the PM which folder those people can open (usually one shared with the client) and whether meetings with the same audience share the doc, one tab each. Key it `recurring-meeting-notes-<short name>`. Who can open the doc is the PM's to set: Lucy never shares it or changes its permissions.
+- **How it's organized** depends on the tool, and the PM can override the default. In Google Docs, ask whether the PM wants a tab per kind of meeting (the default), sub-tabs (one per meeting under an audience, or one per year in a long-running meeting), or a doc per meeting with no tabs. In another tool, ask how it groups pages or sections, and note the answer in the row.
+
+Map the doc in `docs/sources.yaml` as a `deliverable` file with `record: docs/meetings/`, `shared_with_client` for its audience, and `edit: ok` when it's internal or `edit: ask` when outside people can read it (drive-sources skill). Creating it, and adding a tab, follow Lucy's autonomy for Drive changes. If the Docs connector can't add a tab, ask the PM to add one with the meeting's name, then fill it in.
+
+### Adding an entry
+
+After the PM has reviewed the notes (step 10), and only with a connector that edits Google Docs. Without one, file a copy for this meeting and tell the PM the running doc needs that connector.
+
+1. **Read the doc** (the meeting's tab). Look for a heading with the meeting's date: someone may have added it ahead of time with an agenda. If there's none, add the date heading above the latest entry, so the newest meeting comes first. A tab may start with header content the PM keeps there for every meeting (a short schedule, links to docs the meeting refers to), separated from the entries by a divider: new entries go just below the divider, and the header is the PM's, never changed. The PM defines it; when setting up a new tab, ask whether it needs one.
+2. **Write the entry under that heading**, in the layout below. Never change earlier entries or text someone else wrote: an agenda already there stays as written and is the entry's Agenda. Write against the revision you just read, so someone else's edit in the meantime stops the write instead of being overwritten; then read again and retry.
+3. **Read it back,** check it, add the doc's link (to the tab) to the notes' frontmatter as `running_doc:`, and record it in `docs/sources.yaml` `processed` (source: the running doc's key, result: the notes file).
+
+The entry, with the date as a heading and each part as a subheading:
+
+1. **Attendees:** who spoke, plus anyone the PM or the invite confirms was there. When only the speakers are known, say so in one line ("Speakers; attendance not confirmed").
+2. **Agenda** (only when there was one): the agenda written ahead of time, or the one stated at the start of the meeting.
+3. **Notes:** short bullets of what was discussed, one per topic, like minutes but quick to scan for the gist.
+4. **Decisions:** a numbered list, each with what was decided, who made it, what it changes, and its decision log ID.
+5. **Action items:** only the key follow-ups that sit outside the regular workflow and people's usual jobs, each with its owner and any deadline or key detail. Not every "I'll look into it", and not ticket work. The full list stays in the notes file.
+6. A last line: **Source:** a link to the transcript or recording in Drive (they stay their own files in the Meeting transcripts folder), or to the Gemini notes Doc, and "Notes reviewed by <PM name>".
+
+The shareable copy's content rules apply: no frontmatter, Context updates, or links to Project Brain files (write record IDs instead), and when outside people can read the doc, check the entry for anything meant only for Lullabot and ask the PM before filing it.
+
+**Changes.** If the notes change after their entry was filed, correct that entry in place, at the doc's edit level, and nothing else in the doc. Someone else's edits to the doc (usually the next meeting's agenda) are expected: a check reports the doc as changed, and the agenda is picked up when that meeting is processed.
 
 ## Rules
 
