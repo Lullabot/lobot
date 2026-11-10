@@ -1,0 +1,20 @@
+name: Health check
+
+# Measures what Lobot's instruction files cost in context and flags rules
+# likely to slip (engine/skills/lobot-health). Errors fail the check;
+# warnings are listed in the log. Add --strict once the warnings are cleared.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 engine/skills/lobot-health/health.py
