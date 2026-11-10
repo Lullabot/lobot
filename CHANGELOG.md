@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.38.0](https://github.com/Lullabot/lobot/compare/v0.37.0...v0.38.0) (2026-11-10)
+
+### Added
+
+* **engine:** keep a running notes doc for recurring meetings, with a dated entry for each meeting, alongside or instead of one Doc per meeting ([#55](https://github.com/Lullabot/lobot/issues/55)) ([079301b](https://github.com/Lullabot/lobot/commit/079301bafa78ef53f5e46c849c489b1b6bf4af84)), closes [#54](https://github.com/Lullabot/lobot/issues/54)
+
 ## [0.37.0](https://github.com/Lullabot/lobot/compare/v0.36.0...v0.37.0) (2026-11-09)
 
 ### Added
