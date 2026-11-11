@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.39.2](https://github.com/Lullabot/lobot/compare/v0.39.1...v0.39.2) (2026-11-11)
+
+### Fixed
+
+* **engine:** Lobot picks the right skill more reliably: every skill's description is shorter, and seven that the assistant couldn't read now load properly ([#59](https://github.com/Lullabot/lobot/issues/59)) ([79a2812](https://github.com/Lullabot/lobot/commit/79a28126be62a7de6604a787372f9b01ef56e123))
+
 ## [0.39.1](https://github.com/Lullabot/lobot/compare/v0.39.0...v0.39.1) (2026-11-11)
 
 ### Fixed
