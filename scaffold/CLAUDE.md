@@ -2,7 +2,7 @@
 
 This directory is the **Project Brain** for Lullabot's {{PROJECT_NAME}} ({{PROJECT_KEY}}) engagement, built on Lobot. It holds everything a PM (and their AI assistant) needs to run the project: instructions, context, history, and working artifacts.
 
-**Before any task:** read `.ai/general/lobot.md` and follow its start-of-session routine. It holds the directory map, the routine, and the working rules shared by every Project Brain. This file only adds what is specific to {{PROJECT_KEY}}.
+**Before any task:** read `.ai/general/lobot.md` and follow its start-of-session routine. It holds the hard rules, the routine, which skill to use when, and the working rules shared by every Project Brain. This file only adds what is specific to {{PROJECT_KEY}}.
 
 @.ai/general/lobot.md
 

@@ -9,7 +9,7 @@ Everything important lives in files here. Chat history, Claude memory, and accou
 | Path | Purpose |
 |---|---|
 | `README.md` | This file. Human-facing overview and setup. |
-| `CLAUDE.md` | Entry point for the AI assistant. Points to `.ai/general/lobot.md` (directory map, start-of-session routine, working rules) and lists what is specific to this project. |
+| `CLAUDE.md` | Entry point for the AI assistant. Points to `.ai/general/lobot.md` (hard rules, start-of-session routine, which skill to use when, working rules) and lists what is specific to this project. |
 | `.ai/general/` | Lobot: assistant rules and skills that apply to **any** project. A copy of the Lobot engine; its version is in `.ai/general/.lobot-version`. |
 | `.ai/project/` | Assistant rules and skills that apply to **this** project only. |
 | `docs/` | Context artifacts the assistant reads and maintains (people, glossary, notes, journal). |
