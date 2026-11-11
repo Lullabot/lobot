@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.38.1](https://github.com/Lullabot/lobot/compare/v0.38.0...v0.38.1) (2026-11-11)
+
+### Fixed
+
+* **engine:** the ticket preview's examples no longer name a real project ([#62](https://github.com/Lullabot/lobot/issues/62)) ([5d29489](https://github.com/Lullabot/lobot/commit/5d294896e2f5600717124853c2c7f90e53abfb60))
+
 ## [0.38.0](https://github.com/Lullabot/lobot/compare/v0.37.0...v0.38.0) (2026-11-10)
 
 ### Added
