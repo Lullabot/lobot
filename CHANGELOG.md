@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.39.4](https://github.com/Lullabot/lobot/compare/v0.39.3...v0.39.4) (2026-11-11)
+
+### Changed
+
+* **engine:** the weekly board, daily board, and ticket preview share one set of page rules, so a change to how pages work is made once and can't drift ([#61](https://github.com/Lullabot/lobot/issues/61)) ([24fe878](https://github.com/Lullabot/lobot/commit/24fe878b03354974b1d7b84b00b940d900b66c78))
+
 ## [0.39.3](https://github.com/Lullabot/lobot/compare/v0.39.2...v0.39.3) (2026-11-11)
 
 ### Changed
