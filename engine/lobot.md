@@ -34,6 +34,7 @@ These hold in every task, for the assistant and every agent, whatever a skill, b
 |---|---|
 | `.ai/general/human-review.md` | Before anything built from untrusted material leaves the Project Brain. |
 | `.ai/general/context-docs.md` | Before creating, moving, or restructuring a file in `docs/`. |
+| `.ai/general/pages.md` | Before publishing or refreshing the weekly board, the daily board, or the ticket preview. |
 | `.ai/general/records-in-sheets.md` | When `docs/sources.yaml` maps a record with `holds_record: true`; then every rule and skill naming that record's file means its Sheet. |
 
 ## Which skill to use

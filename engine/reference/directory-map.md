@@ -15,6 +15,7 @@ Where everything in a Project Brain lives and who maintains it. Read it when uns
 | `.ai/general/research/` | Reference research behind the skills (e.g. industry criteria for ADRs, decision logs, risk registers, RACI). Suggestions in it are not rules until a PM adopts them. | Lobot |
 | `.ai/general/human-review.md` | The security rule for what leaves the Project Brain: which sources are trusted, and how anything built from untrusted material is drafted, approved by a person, stamped, and sent exactly as approved. | Lobot |
 | `.ai/general/context-docs.md` | Where everything in `docs/` goes (living records vs. dated files, reports, naming), and how to write context docs (progressive disclosure, frontmatter, generated files). | Lobot |
+| `.ai/general/pages.md` | Steps and rules shared by the read-only pages Lobot publishes (weekly and daily boards, ticket preview). | Lobot |
 | `.ai/general/records-in-sheets.md` | How the risk tracker, decision log, and questions log live in Google Sheets instead of their `docs/` files when the PM moves them there: IDs, sites, approvals, and moving in and back. | Lobot |
 | `.ai/general/delegation.md` | Roster of named agents and the rules for handing work to them (routing, briefs, approvals, sequencing). | Lobot |
 | `.ai/general/agents/` | Named agents. `<name>.md` is the agent's definition, which Lobot copies to `.claude/agents/`, where Claude looks for it. `<name>/` holds its supporting files, e.g. Lucy the librarian's personality and general corrections log. The roster is in `delegation.md`. | Lobot |
