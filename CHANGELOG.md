@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.39.0](https://github.com/Lullabot/lobot/compare/v0.38.1...v0.39.0) (2026-11-11)
+
+### Added
+
+* **engine:** ask Lobot for a health check to see how much context its instructions use and where rules are likely to be missed ([#56](https://github.com/Lullabot/lobot/issues/56)) ([782f1b2](https://github.com/Lullabot/lobot/commit/782f1b2419e41ab135782b392995c4abeaf508e4))
+
 ## [0.38.1](https://github.com/Lullabot/lobot/compare/v0.38.0...v0.38.1) (2026-11-11)
 
 ### Fixed
