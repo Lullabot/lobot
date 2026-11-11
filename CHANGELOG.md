@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.39.3](https://github.com/Lullabot/lobot/compare/v0.39.2...v0.39.3) (2026-11-11)
+
+### Changed
+
+* **engine:** the Jira, Drive, and ticket skills load only the part a task needs, leaving more room for your work ([#60](https://github.com/Lullabot/lobot/issues/60)) ([65a951f](https://github.com/Lullabot/lobot/commit/65a951feb9a6f741c841370eef5d049e3f748f72))
+
 ## [0.39.2](https://github.com/Lullabot/lobot/compare/v0.39.1...v0.39.2) (2026-11-11)
 
 ### Fixed
