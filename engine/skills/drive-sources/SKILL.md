@@ -12,6 +12,17 @@ Every Lullabot client project has its own shared drive, and most project materia
 - **Where things are.** The shared drive, and each folder or file the project uses, under the same key on every project (from the standard layout). A new PM, or a PM moving between projects, finds the same things in the same places.
 - **What has been handled.** Every file already processed, so "what's new?" has a reliable answer and nothing is filed twice.
 
+## Rules
+
+- **Ask before scanning.** Mapping the shared drive starts with the PM's go-ahead, every time. Checking already-mapped sources doesn't need one.
+- **Changes in Drive follow Lucy's autonomy.** Creating a folder or blank file is a change in the client's drive, so it is its own autonomy area in Lucy's project config (junior by default). At junior, she names exactly what she'll create and where, and waits for the PM's yes on each item.
+- **Never delete, move, rename, or share in Drive,** and never change permissions. Ask the PM to do it.
+- **Records stay local; Drive gets only `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the Docs a skill files in a mapped `output` folder: copies of a record (reviewed meeting notes) or deliverables whose home is that folder (client status reports), until the Docs and Sheets connectors are available; then existing files are changed only at their edit level ("Edit levels"), such as a running notes doc that gets a new entry after each reviewed meeting.
+- **Nothing is processed without the PM.** A check reports; the PM chooses what to process or skip.
+- **Ledger, not timestamps.** "New" means not in `processed`. Never infer that a file was handled from its date.
+- **No secrets in snapshots.** If a file contains credentials or keys, don't save a snapshot of it. Tell the PM and work from Drive directly.
+- **Say when you can't see something.** If a mapped source can't be opened, report it by key and link. Don't drop it from the map.
+
 ## Where
 
 | What | Path |
@@ -22,7 +33,7 @@ Every Lullabot client project has its own shared drive, and most project materia
 | What was built from a file | `cited.py` in this skill's folder (see "Check for new and changed files") |
 | Snapshots of transcripts read from Drive (raw; git-ignored by default) | `docs/transcripts/raw/` (the source's `copy_to`) |
 
-If `docs/sources.yaml` doesn't exist (projects installed before this skill), create it with the header comment from the format below, `sources: {}`, `not_used: {}`, and `processed: []`.
+If `docs/sources.yaml` doesn't exist (projects installed before this skill), create it with the header comment from `format.md`, `sources: {}`, `not_used: {}`, and `processed: []`.
 
 ## Who does what
 
@@ -40,72 +51,11 @@ When Lucy runs as a subagent she can't talk to the PM mid-run. "Lucy asks" means
 
 ## Format
 
-```yaml
-# Drive sources: the project's shared drive, the folders and files it uses, and what has been processed.
-# Managed by the drive-sources skill: .ai/general/skills/drive-sources/SKILL.md
-# Validate after every edit: python3 .ai/general/skills/drive-sources/validate.py docs/sources.yaml
-shared_drive:
-  url: https://drive.google.com/drive/folders/0AbC...
-  added: 2026-10-09
-sources:
-  contracts:
-    kind: folder                       # folder | file
-    url: https://drive.google.com/drive/folders/1DeF...
-    purpose: reference                 # transcripts | reference | deliverable | output
-    edit: locked                       # locked | ask | ok; none = read-only (see "Edit levels")
-    added: 2026-10-09
-    notes: "Signed SOW and change orders. Read before scope questions."
-  meeting-transcripts:
-    kind: folder
-    url: https://drive.google.com/drive/folders/1AbC...
-    purpose: transcripts
-    handler: meeting-notes             # skill that processes new files
-    copy_to: docs/transcripts/raw/     # save a snapshot here before handing it on
-    edit: locked
-    since: 2026-10-01                  # ignore files created before this date
-    subfolders: false                  # also check folders inside it
-    added: 2026-10-09
-  status-reports:
-    kind: folder
-    url: https://drive.google.com/drive/folders/1GhI...
-    purpose: output
-    filed_by: client-status-report     # the skill that files its deliverables here; no copy in docs/
-    added: 2026-10-16
-  maintenance-logs:
-    kind: file
-    url: https://docs.google.com/spreadsheets/d/1QrS.../edit
-    purpose: deliverable
-    record: [docs/risks.yaml, docs/decisions.yaml, docs/questions.yaml]   # the Project Brain records it corresponds to
-    tabs: ["Risks", "Decisions", "Questions"]                            # one tab per record, same order
-    holds_record: true                 # optional: the Sheet is the record, the files are empty (.ai/general/records-in-sheets.md)
-    edit: ask
-    shared_with_client: false
-    added: 2026-10-09
-not_used:
-  contracts: "Contracts stay in Lullabot's own Drive."   # standard items this project doesn't have, and why
-processed:
-  - id: 1MnO...                        # Drive file ID
-    title: "Weekly sync - 2026-10-08 - Transcript"
-    source: meeting-transcripts
-    modified: "2026-10-08T21:14:49Z"   # Drive modifiedTime when it was handled
-    processed: 2026-10-09
-    result: docs/meetings/2026-10-08-weekly-sync.md
+The full format of `docs/sources.yaml`, with every field, is in `format.md` in this skill's folder. Read it before editing the file, and validate after every edit:
+
+```sh
+python3 .ai/general/skills/drive-sources/validate.py docs/sources.yaml
 ```
-
-Field rules:
-
-- **`shared_drive`** is the project's shared drive (or top-level project folder). Set it once; the map and the drive survey start from it. A project with several sites or programs, each with its own root folder, gives one per scope (see "Sites and programs").
-- **Keys** for anything in the standard layout use the layout's key (`meeting-transcripts`, not `transcripts-folder`), so every project names the same thing the same way. Other keys are short, lowercase, and hyphenated, named for what the source is, not where it lives.
-- **`url`** is the link from Drive's address bar or Share button. The ID is read from it; don't store it separately.
-- **`purpose`**:
-  - `transcripts`: a folder of meeting transcripts. Needs `handler: meeting-notes`.
-  - `reference`: material to read and cite (SOW, specs, client docs). Changes are reported, not processed. Not edited unless its `edit` level allows.
-  - `deliverable`: a Doc or Sheet the team or client works from that corresponds to a Project Brain record (`record`; a workbook holding several records lists them, with the tab for each in `tabs`): the RACI matrix, schedule, team directory, risk tracker, decision log, kickoff checklist, a running notes doc for recurring meetings (`record: docs/meetings/`; meeting-notes skill, "Recurring meetings"), or another tracker the PM designates. Mapped trackers default to `edit: ask`. The Project Brain file stays the record of truth, and the Doc or Sheet is checked for client edits so the PM can reconcile them, unless the source has `holds_record: true`: then the Sheet is the record for every record it lists and those files are empty (`.ai/general/records-in-sheets.md`). Once the Docs and Sheets connectors are available, an approved change is filed in the record first, then copied into the Doc or Sheet.
-  - `output`: a folder Lucy files new Docs in. Either shareable copies of Project Brain records, one Doc per record (`record` is the `docs/` folder they come from, e.g. `docs/meetings/` for the meeting-notes folder), or deliverables that live only in Drive (`filed_by` names the skill that writes them, e.g. `client-status-report` for the status-reports folder; no `record`, because nothing is kept in `docs/`). The skill that owns the record says when to file a copy, and the record file notes its copy's link. Every copy of a record Lucy files is recorded in `processed` (its `result` is the record it was copied from), so her own copies never come up as new. Checks skip an output folder unless it also has a `handler`: some PMs drop Google Meet's Gemini notes straight into the Meeting Notes folder, so that folder then also takes `handler: meeting-notes`, `copy_to`, and `since`, like a transcripts folder.
-- **`edit`** is how far the assistant may change the file or, for a folder, everything in it: `locked`, `ask`, or `ok` (see "Edit levels"). Leave it off and the source is read-only until the PM sets one. Standard items take the layout's default; the PM can change `ask` and `ok` either way, but the validator refuses to loosen a layout item that is `locked`.
-- **`since`** keeps the first check from turning up years of old transcripts. Set it to the date the PM wants to start from.
-- **`not_used`** lists standard layout items the PM said this project doesn't have, with the reason, so they stop coming up.
-- **`processed`** holds one entry per file handled, in the order handled. `result` is the file it became (`docs/meetings/...`), or `skipped: <reason>` when the PM chose not to process it. A file edited after it was handled gets a new entry with the new `modified` when it is handled again.
 
 ## Edit levels
 
@@ -159,25 +109,7 @@ not_used:
 
 ## Map the shared drive
 
-Run this when a project is set up, when `docs/sources.yaml` has no `shared_drive`, when the PM asks to map or tidy the drive, or when the standard layout has items the project hasn't accounted for (not in `sources` and not in `not_used`). The goal is a complete map that matches the standard layout.
-
-1. **Ask before scanning.** Never scan the drive without the PM's go-ahead. Lucy offers once, briefly: what she'll look at (the top level of the shared drive, names and types only, nothing inside the files) and what she'll come back with. If the PM hasn't given the shared drive's link, ask for it.
-2. **If the PM says yes, scan the top level** of the shared drive, or of each scope's root. Search for files whose parent is the root's ID, metadata only (no content snippets), following page tokens until the list is complete. Shared drives are usually small; if the top level has more than about 50 items, report the count and ask which folders to look in. Look one level deeper only into a folder the PM points to, or one that matches a layout folder other items name as their `parent` (e.g. Project Management), or whose name matches a layout item's `look_for`.
-3. **Match it against `layout.yaml`.** For each standard item not yet in `sources` or `not_used`, compare names, case-insensitively, against its `name` and `look_for`, and check that the kind matches (folder or file). An item with a `parent` is expected there (`root` is the top level); a match somewhere else is still a match, but say where it is. Then report back in three short lists:
-   - **Likely matches to confirm:** "Is *Meet Recordings* the meeting-transcripts folder?"
-   - **Missing:** standard items with no match. The contracts folder is never created; it is the paired sales folder (see below). For each other item, offer to create it with the layout's `name`, with `<KEY>` replaced by the project key from the root `CLAUDE.md` (a folder, or a blank Doc or Sheet per `file_type`) in its `parent` (at the root for `root`, inside the parent folder otherwise, creating that first if it's missing too; at the root when there is no `parent`), to record where it actually lives if it's elsewhere, or to mark it not used.
-   - **Unrecognized:** top-level items that match nothing. Ask whether any should be mapped, and what each is for.
-4. **If the PM says no to the scan, ask instead.** List the standard items not yet accounted for, with each one's `why`, and ask where each lives (a link), whether it should be created, or whether the project doesn't use it. Record what the PM answers; ask about the rest another time rather than repeating the whole list.
-5. **Record the answers.** Lucy writes the entries (keys and fields from `layout.yaml`, plus `added`, with `@<scope>` when the project has scopes), the `shared_drive` link (or each scope's) if it's new, and any `not_used` reasons, then runs the validator. For a transcript folder, ask which date to start from (`since`).
-
-## The paired sales folder
-
-Most projects have two folders in Drive: the **sales folder**, where the Sales team keeps the SOWs, change orders, estimates, and pricing, and the **project folder** (the shared drive or project root mapped here), where the production team works. The sales folder usually lives elsewhere (often a Clients folder for the client) and is linked into the project folder's top level with a shortcut. It is the project's `contracts` source.
-
-- **Finding it.** When mapping the drive, check the top level for shortcuts and read each one's target. A shortcut to a folder holding SOWs or change orders, or one named like the `contracts` item, is the sales folder: map the target folder (not the shortcut) as `contracts`, and note where it lives.
-- **When there's no shortcut,** ask the PM for the sales folder's link rather than creating a Contracts folder. Once it's mapped, ask the PM to add a shortcut to it from the project folder's top level (in Drive: right-click the sales folder, Organize, Add shortcut), since the Drive connector can't create shortcuts.
-- **Everything in it is locked** (`.ai/general/lobot.md`, "Never edit sales documents"), including estimates and pricing models. Those are internal to Lullabot: read them for hours and budget, and never quote them in anything the client sees.
-- A project with no separate sales folder (contracts kept in the project folder, or not shared with the PM) maps whatever holds the SOWs, or records why in `not_used`.
+Run this when a project is set up, when `docs/sources.yaml` has no `shared_drive`, when the PM asks to map or tidy the drive, or when the standard layout has items the project hasn't accounted for. Ask before scanning, then follow `mapping.md` in this skill's folder, including its paired sales folder section (always `locked`).
 
 ## Check for new and changed files
 
@@ -219,24 +151,7 @@ For `reference` and `deliverable` sources, read the file when a task needs it an
 
 ## Mirror a Sheet locally
 
-Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the kickoff checklist) gets a local mirror at its `record` path. The assistant keeps the mirror current as work happens; the PM copies the changes into the Sheet. With scopes, each scope gets its own mirror: add `-<scope>` before the extension (`docs/kickoff-checklist-site-a.md`).
-
-1. **Create the mirror.** Read the Sheet and copy the tracking tab into a Markdown table, with this frontmatter:
-   ```yaml
-   ---
-   drive_url: https://docs.google.com/spreadsheets/d/1QrS.../edit
-   title: "EXU Kickoff tasks"
-   tab: "New Project Checklist"
-   modified: "2026-10-09T19:43:26Z"   # Sheet modifiedTime when last synced
-   synced: 2026-10-09
-   ---
-   ```
-   Columns: `Row | Task | Status | Notes`. `Row` is the Sheet's row number, so the PM can find it. Copy each task word for word, using the Sheet's own status values. Copy only the tracking tab; read reference tabs (agendas, examples) in Drive when needed.
-   **A tracker page, where the assistant can publish one.** Offer the tracker-pages skill's `checklist.html` page per mirror: the rows with a status picker and a note field, plus a "to copy into the Sheet" queue of rows whose status differs from the Sheet's, with a "Copied" button. Seed it from the Sheet; it stores per row `row`, `task`, `status`, `sheetStatus` (what the Sheet says), and `note`. The PM works in the page; the assistant reads it back and rewrites the mirror file from it whenever it touches the checklist and at session close, because the page lives in one person's account and the mirror keeps the Project Brain portable. Put the page's link in the mirror's frontmatter as `tracker:`.
-2. **Update it as work happens.** Change a row's Status and add a short note with the evidence (a file, a meeting, a link). Never reword, add, or remove tasks; those are the PM's edits in the Sheet. A task the PM rules out gets the status `Not applicable` until the PM deletes it from the Sheet.
-3. **Hand changes back.** When asked, or when rows have changed since `synced`, list each change as `Row 9: Not started → Done (note)` for the PM to apply.
-4. **Resync.** When the PM says the Sheet is updated, or the check shows it changed, read it again and rewrite the mirror from it. The Sheet wins; a row the mirror changed that the Sheet doesn't reflect yet is listed as a question, not overwritten silently. Update `modified` and `synced`, and record a `processed` entry for the Sheet.
-5. **Retire it** once the assistant can edit Sheets: from then on, changes go straight into the Sheet with the PM's approval, and the mirror is deleted.
+When a Google Sheet needs a local copy in `docs/` (the kickoff checklist, until the assistant can edit Sheets), follow `mirror-sheet.md` in this skill's folder.
 
 ## Add or change a source
 
@@ -252,20 +167,4 @@ Until the assistant can edit Sheets, a deliverable Sheet that tracks work (the k
 
 ## Where a deliverable lives
 
-Everything the assistant produces has one home, and the PM chooses it. Lobot has a default home for each kind of deliverable (a folder in the standard layout, or a path in `docs/` from "Where things go" in `.ai/general/context-docs.md`), and the PM can choose another. Lucy settles it the first time a skill produces that kind of deliverable on the project (for example, the first client status report), and whenever the PM asks to move one.
-
-1. **Say the default.** Name the deliverable, Lobot's default home for it, and why, in one or two lines: "Status reports go in a *Status reports* folder inside Project Management in the shared drive, one Doc per week. That folder is their only copy; last week's report is read from there."
-2. **Ask about an override.** "Use that, or put them somewhere else?" The PM can point to an existing folder, have Lucy create the default (at her autonomy level for Drive changes), or say the project doesn't produce it (`not_used`, with the reason).
-3. **Record it** in `docs/sources.yaml` under the layout key, with the scope when the project has scopes, and run the validator. A home in Drive for a deliverable kept only there is an `output` folder with `filed_by`. If the item was mapped before with an older purpose (the validator warns), update it now with the PM's approval.
-4. **Keep to it.** From then on the skill files that deliverable there and nowhere else: no second copy in `docs/`, and no copy in Drive of something whose home is `docs/` unless the PM asked for one (as with meeting notes). If the PM moves the home later, Lucy updates the entry; files already filed stay where they are unless the PM moves them.
-
-## Rules
-
-- **Ask before scanning.** Mapping the shared drive starts with the PM's go-ahead, every time. Checking already-mapped sources doesn't need one.
-- **Changes in Drive follow Lucy's autonomy.** Creating a folder or blank file is a change in the client's drive, so it is its own autonomy area in Lucy's project config (junior by default). At junior, she names exactly what she'll create and where, and waits for the PM's yes on each item.
-- **Never delete, move, rename, or share in Drive,** and never change permissions. Ask the PM to do it.
-- **Records stay local; Drive gets only `output` folders.** Notes, logs, and records are written to `docs/`. The only things written into Drive are the Docs a skill files in a mapped `output` folder: copies of a record (reviewed meeting notes) or deliverables whose home is that folder (client status reports), until the Docs and Sheets connectors are available; then existing files are changed only at their edit level ("Edit levels"), such as a running notes doc that gets a new entry after each reviewed meeting.
-- **Nothing is processed without the PM.** A check reports; the PM chooses what to process or skip.
-- **Ledger, not timestamps.** "New" means not in `processed`. Never infer that a file was handled from its date.
-- **No secrets in snapshots.** If a file contains credentials or keys, don't save a snapshot of it. Tell the PM and work from Drive directly.
-- **Say when you can't see something.** If a mapped source can't be opened, report it by key and link. Don't drop it from the map.
+Every deliverable has one home, chosen by the PM. The first time a skill produces a new kind of deliverable on the project, Lucy names Lobot's default home for it and asks whether to override it, following `deliverables.md` in this skill's folder. It is filed there and nowhere else.
