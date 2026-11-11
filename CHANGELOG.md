@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.39.3](https://github.com/Lullabot/lobot/compare/v0.39.2...v0.39.3) (2026-11-11)
+
+### Changed
+
+* **engine:** the Jira, Drive, and ticket skills load only the part a task needs, leaving more room for your work ([#60](https://github.com/Lullabot/lobot/issues/60)) ([65a951f](https://github.com/Lullabot/lobot/commit/65a951feb9a6f741c841370eef5d049e3f748f72))
+
+## [0.39.2](https://github.com/Lullabot/lobot/compare/v0.39.1...v0.39.2) (2026-11-11)
+
+### Fixed
+
+* **engine:** Lobot picks the right skill more reliably: every skill's description is shorter, and seven that the assistant couldn't read now load properly ([#59](https://github.com/Lullabot/lobot/issues/59)) ([79a2812](https://github.com/Lullabot/lobot/commit/79a28126be62a7de6604a787372f9b01ef56e123))
+
+## [0.39.1](https://github.com/Lullabot/lobot/compare/v0.39.0...v0.39.1) (2026-11-11)
+
+### Fixed
+
+* **engine:** Lobot starts each session with far less to read, so it has more room for your work and its key rules are harder to miss ([#57](https://github.com/Lullabot/lobot/issues/57)) ([d97cefe](https://github.com/Lullabot/lobot/commit/d97cefe71d26c3ae06ea22633cf89448b12751cf))
+
+## [0.39.0](https://github.com/Lullabot/lobot/compare/v0.38.1...v0.39.0) (2026-11-11)
+
+### Added
+
+* **engine:** ask Lobot for a health check to see how much context its instructions use and where rules are likely to be missed ([#56](https://github.com/Lullabot/lobot/issues/56)) ([782f1b2](https://github.com/Lullabot/lobot/commit/782f1b2419e41ab135782b392995c4abeaf508e4))
+
+## [0.38.1](https://github.com/Lullabot/lobot/compare/v0.38.0...v0.38.1) (2026-11-11)
+
+### Fixed
+
+* **engine:** the ticket preview's examples no longer name a real project ([#62](https://github.com/Lullabot/lobot/issues/62)) ([5d29489](https://github.com/Lullabot/lobot/commit/5d294896e2f5600717124853c2c7f90e53abfb60))
+
 ## [0.38.0](https://github.com/Lullabot/lobot/compare/v0.37.0...v0.38.0) (2026-11-10)
 
 ### Added
