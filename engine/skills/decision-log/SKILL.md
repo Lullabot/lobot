@@ -1,6 +1,6 @@
 ---
 name: decision-log
-description: Record and look up project decisions in the decision log (docs/decisions.yaml) — what was decided, why, who drove it, who approved it, and what is still waiting on approval. Use when a decision is made, proposed, approved, denied, or reversed in a meeting, transcript, ticket, or conversation; when the PM asks what was decided or what is pending; and before reopening a question that may already be settled.
+description: 'Record and look up project decisions in docs/decisions.yaml: what, why, who drove and approved it, what''s pending. Use when a decision is made, proposed, approved, or reversed, when the PM asks what was decided, and before reopening a settled question.'
 ---
 
 # Decision log

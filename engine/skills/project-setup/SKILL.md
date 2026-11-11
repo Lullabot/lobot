@@ -1,6 +1,6 @@
 ---
 name: project-setup
-description: Put the Project Brain under version control on GitHub and keep the PM connected to it. Creates the private repository for a new project, attaches one to a folder that has none, helps a PM join a project that already has one, and works out what to do when GitHub access is blocked. Use when the PM starts a project, says "set up the repo", "put this on GitHub", "back up the Project Brain", "join" or "take over" a project, when the Project Brain has no git repository or no remote, or when creating, pulling, or pushing the repository fails with a permission, token, or approval error.
+description: Put the Project Brain in a private GitHub repository, join an existing one, and find a way through when GitHub refuses. Use to start or join a project, for "put this on GitHub", when there's no repo or remote, or a push fails on permissions.
 ---
 
 # Project setup

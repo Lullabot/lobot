@@ -1,6 +1,6 @@
 ---
 name: pm-voice
-description: Write drafts in the PM's own voice, and learn that voice. Use whenever the assistant drafts something the PM will send or publish as themselves (status updates, client email, Slack posts, tickets, agendas, proposals), when the PM says "learn my voice" or points to writing samples, when the PM edits or rewrites a draft, and when a new PM joins the project.
+description: Draft in the PM's own voice and learn it. Use for anything the PM will send or publish as themselves (status updates, client email, Slack posts, tickets), for "learn my voice", and when the PM edits a draft.
 ---
 
 # PM voice

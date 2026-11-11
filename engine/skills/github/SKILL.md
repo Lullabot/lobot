@@ -1,6 +1,6 @@
 ---
 name: github
-description: Work with the project's GitHub repo and GitHub Projects through the gh CLI — read and update issues, PRs, and project boards — and save the Project Brain itself with git. Use whenever a task involves GitHub issues, pull requests, project status, sprint/board reporting, or GitHub usernames, and when the PM asks to save, commit, sync, or back up the Project Brain.
+description: Read and update GitHub issues, PRs, and project boards with gh, and save the Project Brain with git. Use for GitHub issues, pull requests, board or sprint status, GitHub usernames, and when the PM asks to save, commit, or back up the Project Brain.
 ---
 
 # GitHub

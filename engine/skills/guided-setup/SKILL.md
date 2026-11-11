@@ -1,6 +1,6 @@
 ---
 name: guided-setup
-description: Walk a PM who isn't technical through setup they have to do themselves, one step at a time - a GitHub or Jira token, finding and editing the hidden .env file, and connecting the project folder or their ~/.lobot profile folder to the session - on a Mac or Windows. Use when a task can't go ahead because access is missing (no GitHub login or token, Jira token missing or refused, an agent reports it can't reach the tracker, ~/.lobot can't be read), when the project overview lists something to set up, and when the PM asks how to set one of these up.
+description: 'Walk a non-technical PM step by step through setup only they can do: a GitHub or Jira token, the .env file, connecting a folder. Use when a task is blocked by missing access, when the overview lists something to set up, or the PM asks how.'
 ---
 
 # Guided setup

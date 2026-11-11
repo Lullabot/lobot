@@ -1,6 +1,6 @@
 ---
 name: journal
-description: Keep the Project Brain's daily journal in docs/journals/. Log work as tasks and decisions complete, close out the day at the end of every session, and recap recent entries at the start of a session. Use when a task or decision finishes, when the PM says "wrap up", "end of day", or "log this", and during the start-of-session routine.
+description: 'Keep the daily journal in docs/journals/: log work and decisions as they finish, close out each session, and recap the latest entry at session start. Use when work finishes, for "wrap up", "end of day", or "log this", and at session start.'
 ---
 
 # Journal

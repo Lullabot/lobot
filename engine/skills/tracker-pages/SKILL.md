@@ -1,6 +1,6 @@
 ---
 name: tracker-pages
-description: Publish and keep in sync the PM's tracker pages: hosted pages (Claude artifacts with a shared database) for the risk tracker, decision log, RACI matrix, questions log, and kickoff checklist, and the review desk that gathers everything needing the PM's attention in tabs, where the PM reviews and edits records outside the chat. Use when the PM asks to see, pull up, list, or review a record that has a page or a page template (open questions, risks, decisions, RACI, a kickoff checklist, tasks), when the PM asks for the dashboard or what needs their attention (the review desk is the dashboard), when the PM asks for a page, tracker, or dashboard for a Project Brain record, after processing a new file or transcript (to open the review desk), during the start-of-session routine (to file what the PM changed on a page) and session close, and whenever a record with a page changes.
+description: Publish and sync the tracker pages (risks, decisions, RACI, questions, checklists) and the review desk, which is the dashboard. Use for "show me the risks", "the dashboard", "what needs me?", after processing a file, at session start and close.
 ---
 
 # Tracker pages

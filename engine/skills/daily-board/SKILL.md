@@ -1,6 +1,6 @@
 ---
 name: daily-board
-description: Publish, refresh, and open the PM's daily board, a read-only hosted page (a Claude artifact with a shared database) that answers "what do I need to know today?" on one screen: a recap of the last session, transcripts still to process, Drive files that changed (and whether someone else changed them), what's waiting on the review desk, today's tasks, urgent questions, the sprint, new risks, and today's meetings, each linked to where the PM acts on it. Use during the start-of-session routine on the PM's first session of the day (except when the weekly board opened that day), and when the PM asks about today ("start the day", "what do I need to know today?", "show me today", "show me the daily board").
+description: Publish, refresh, and open the daily board, a read-only page of what the PM needs to know today. Use on the PM's first session of the day and for "start the day", "what do I need to know today?", or "show me the daily board".
 ---
 
 # Daily board

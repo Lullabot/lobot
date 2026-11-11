@@ -1,6 +1,6 @@
 ---
 name: lobot-feedback
-description: Notice ways Lobot itself could be better (a bug, a missing rule, a correction that applies to any project) and offer to report them as an issue on Lobot's repository. Use when the PM corrects an agent in a way that would help every project, a skill, template, script, or rule misbehaves or is missing something, a workaround for Lobot's own behavior comes up twice, or the PM says "report that to Lobot" or "file an issue for Lobot".
+description: Offer to report ways Lobot itself could be better (a bug, a missing rule, a correction that helps every project) as an issue on Lobot's repository. Use when one comes up, or the PM says "report that to Lobot".
 ---
 
 # Lobot feedback

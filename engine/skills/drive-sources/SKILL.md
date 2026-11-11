@@ -1,6 +1,6 @@
 ---
 name: drive-sources
-description: Map the project's shared Google Drive against Lullabot's standard layout, record where its folders and files live (transcript folders, contracts, client-facing Sheets) in docs/sources.yaml, check them for new or changed files, and read them straight from Drive instead of exporting copies by hand. Use when setting up a project's Drive, when the PM adds or asks about a Drive folder or file, asks "anything new in Drive?" or "process the latest transcripts", during the start-of-session routine, and before working from a mapped Google Doc or Sheet.
+description: Map the project's shared Google Drive in docs/sources.yaml, check it for new or changed files, and read files in place. Use to set up Drive, for "anything new in Drive?" or "process the latest transcripts", at session start, and before using a Drive file.
 ---
 
 # Drive sources

@@ -1,6 +1,6 @@
 ---
 name: project-journal-entry
-description: Draft the PM's weekly Project Journal Entry (PJE) for Lullabot leadership from the daily journals and the last entry in the project's journal doc. Use when the PM asks for their PJE, journal entry, weekly entry, or weekly status for leadership, and when they paste or point to a past entry.
+description: Draft the PM's weekly Project Journal Entry (PJE) for Lullabot leadership from the daily journals and last week's entry. Use when the PM asks for their PJE, journal entry, or weekly status for leadership.
 ---
 
 # Project journal entry

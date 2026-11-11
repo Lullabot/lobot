@@ -1,6 +1,6 @@
 ---
 name: people
-description: Look up and maintain the project's people directory (docs/people.yaml). Use whenever a person is named or people are involved in a conversation, task, decision, or API call (to get their usernames/IDs), and whenever new people or new facts about existing people surface.
+description: 'Look up and maintain the people directory (docs/people.yaml): roles, time zones, usernames and IDs. Use whenever a person is named or involved, an API call needs a username or ID, or new facts about someone come up.'
 ---
 
 # People

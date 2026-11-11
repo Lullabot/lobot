@@ -1,6 +1,6 @@
 ---
 name: meeting-notes
-description: Turn a meeting transcript into derived meeting notes (docs/meetings/), after cleaning it with the transcript-cleanup skill, propose tasks, decision log entries, and context-doc updates, flag risks and ADR candidates for follow-up, and keep a running notes doc for recurring meetings. Use when the PM drops a transcript, asks to process/summarize a meeting, or asks what happened in a call.
+description: Turn a cleaned meeting transcript into notes in docs/meetings/, propose the tasks, decisions, and facts it yields, flag risks and ADRs, and keep running docs for recurring meetings. Use when the PM drops a transcript or asks what happened in a meeting.
 ---
 
 # Meeting notes

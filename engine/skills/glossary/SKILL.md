@@ -1,6 +1,6 @@
 ---
 name: glossary
-description: Look up and maintain the project glossary (docs/glossary.yaml) of terms that mean something specific here — acronyms, jargon, product/service names, and common words with a special meaning. Use when reading or writing anything with such a term (transcripts, tickets, docs, conversation), when a term seems ambiguous or mistranscribed, and when a new qualifying term surfaces.
+description: 'Look up and maintain the project glossary (docs/glossary.yaml): acronyms, jargon, product names, and words with a project-specific meaning. Use when a term seems ambiguous or mistranscribed, and when a new one comes up.'
 ---
 
 # Glossary
