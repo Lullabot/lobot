@@ -1,6 +1,6 @@
 ---
 name: project-overview
-description: Publish and keep current the project overview page, the PM's one place to see how the project is set up and where everything lives - project name and short name, the Project Brain and code repositories, the ticket tracker, the project's library (its records and folders in the Project Brain, in Google Drive, and on this computer), tracker pages, connections, the agents, and what isn't set up yet - each with a link to where it lives. Use when the PM asks whether something is set up or where something is ("is the Jira space set?", "where are the transcripts?", "what's our repo?"), asks for the project's setup or overview, at the end of project setup, and whenever something the page shows changes.
+description: 'Publish and keep current the project overview page: how the project is set up and where everything lives, with links and what isn''t set up yet. Use for "is that set up?", "where is X?", "what''s our repo?", and when the setup changes.'
 ---
 
 # Project overview

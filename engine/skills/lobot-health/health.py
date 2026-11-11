@@ -81,8 +81,25 @@ def frontmatter(text):
             fields[key] += " " + line.strip()
     for k, v in fields.items():
         if len(v) > 1 and v[0] == v[-1] and v[0] in "\"'":
-            fields[k] = v[1:-1]
+            fields[k] = v[1:-1].replace("''", "'") if v[0] == "'" else v[1:-1]
     return fields, text[m.end():]
+
+
+def unparsable(text):
+    """Frontmatter values YAML would reject. An unquoted value with ': ' or ' #'
+    in it breaks the whole block, and the assistant then sees no description."""
+    m = re.match(r"---\n(.*?)\n---", text, re.S)
+    bad = []
+    for line in (m.group(1).split("\n") if m else []):
+        km = re.match(r"([A-Za-z_-]+):\s+(.*)", line)
+        if not km:
+            continue
+        v = km.group(2)
+        if v[:1] in "'\"" or v in (">", ">-", "|", "|-"):
+            continue
+        if ": " in v or " #" in v or v[:1] in "[{&*!%@`":
+            bad.append(km.group(1))
+    return bad
 
 
 class Check:
@@ -182,7 +199,11 @@ class Check:
         listing = {}
         for name, d in self.skill_dirs().items():
             path = os.path.join(d, "SKILL.md")
-            fm, body = frontmatter(read(path))
+            text = read(path)
+            fm, body = frontmatter(text)
+            for key in unparsable(text):
+                self.add("error", "skills", path, f"frontmatter '{key}' needs quotes (it holds ': ' or ' #'), "
+                         "or the skill loads with no description")
             if fm.get("name") != name:
                 self.add("error", "skills", path, f"frontmatter name is '{fm.get('name')}', folder is '{name}'")
             desc = fm.get("description", "")
@@ -226,6 +247,8 @@ class Check:
             if not f.endswith(".md") or not os.path.isfile(p):
                 continue
             fm, _ = frontmatter(read(p))
+            for key in unparsable(read(p)):
+                self.add("error", "agents", p, f"frontmatter '{key}' needs quotes (it holds ': ' or ' #')")
             if fm.get("name") != f[:-3]:
                 self.add("error", "agents", p, f"frontmatter name is '{fm.get('name')}', file is '{f[:-3]}'")
             if not fm.get("description"):

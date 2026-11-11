@@ -1,6 +1,6 @@
 ---
 name: pm-profile
-description: Read and update the PM's personal profile in ~/.lobot/, which follows them from project to project. Use at the start of every session, when the PM sets a preference they want kept ("always", "from now on", "I prefer"), when they turn a Lobot setting and want it as their default, and when a voice or preference change is approved and needs a place to be saved.
+description: Read and update the PM's personal profile in ~/.lobot/ (voice and preferences that follow them across projects). Use at session start, when the PM states a lasting preference ("always", "from now on"), and when an approved change needs saving.
 ---
 
 # PM profile

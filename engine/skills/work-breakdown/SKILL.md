@@ -1,6 +1,6 @@
 ---
 name: work-breakdown
-description: Lay out the work a project will build, by site and feature area, before any of it becomes tickets. Lucy keeps the breakdown in structured Markdown in docs/work/, from the dossier, meetings, and email, and proposes changes as new material arrives. Use when the PM asks to define, break down, scope, or plan the work, asks what's planned or ready for a site, or when a transcript, email, or document describes something the team will build or changes something already planned.
+description: Lay out what the team will build, by site and feature area, in docs/work/ before it becomes tickets. Use to define, scope, or plan the work, for what's planned or ready, and when new material describes or changes planned work.
 ---
 
 # Work breakdown

@@ -1,6 +1,6 @@
 ---
 name: client-status-report
-description: Draft the weekly status report Lullabot sends the client, from the project's records, journals, and last week's report, using the project's own template when it has one, and file the approved report as a Google Doc in the project's status reports folder. Use when the PM asks for the client status report, weekly report, weekly update, or progress report for the client, or wants to set up or change the report's template. Not the internal Project Journal Entry for Lullabot leadership (project-journal-entry skill).
+description: Draft the weekly client status report from the records, journals, and last week's report, and file the approved report in Drive. Use for the client status report or weekly update, or to set up its template. Not the PJE for leadership.
 ---
 
 # Client status report

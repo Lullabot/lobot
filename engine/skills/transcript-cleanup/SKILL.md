@@ -1,6 +1,6 @@
 ---
 name: transcript-cleanup
-description: Clean a raw meeting transcript into the copy the Project Brain commits. Small talk and sensitive passages (personal, health, HR, other clients, credentials, internal matters) are removed and marked, fillers are dropped, and each speaker turn becomes one timestamped paragraph. Raw transcripts stay local in docs/transcripts/raw/. Use before writing meeting notes from a transcript (the meeting-notes skill runs it first), when the PM drops a transcript or asks to clean one, and before committing anything in docs/transcripts/.
+description: 'Clean a raw meeting transcript into the copy that''s committed: small talk and sensitive passages cut and marked, one timestamped paragraph per speaker turn. Use before meeting notes, when the PM drops a transcript, and before committing docs/transcripts/.'
 ---
 
 # Transcript cleanup

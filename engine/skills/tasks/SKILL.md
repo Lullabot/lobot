@@ -1,6 +1,6 @@
 ---
 name: tasks
-description: Keep the PM's own to-do list (docs/tasks.yaml): one-off actions only the PM will do, with due date and status. Not development work (tickets), routine team work, information the work is waiting on (questions), or risk next steps. Use when a meeting or document gives the PM an action, when the PM asks what's on their plate, and when the PM finishes or drops an item.
+description: Keep the PM's own to-do list (docs/tasks.yaml) of one-off actions with due dates; not tickets, team work, questions, or risk next steps. Use when a meeting or document gives the PM an action, for "what's on my plate?", and when an item is done.
 ---
 
 # Tasks

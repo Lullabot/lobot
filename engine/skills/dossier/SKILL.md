@@ -1,6 +1,6 @@
 ---
 name: dossier
-description: Build and keep the project dossier in docs/overview/, a set of linked files (project index, one folder per site, topic files, reference detail) that holds everything known about the project and each site, including the background of a site being migrated or rebuilt. Use when the PM asks a question about the project or a site ("how does X get onto the site?", "what do we know about Y?"), when processed meetings, research, or answered questions add facts, when a site or program starts, and when the PM asks to write, update, or review the overview.
+description: Build and keep the project dossier in docs/overview/, everything known about the project and each site. Use for questions about the project or a site ("what do we know about X?"), when meetings or research add facts, and to write or review the overview.
 ---
 
 # Project dossier

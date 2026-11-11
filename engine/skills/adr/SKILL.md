@@ -1,6 +1,6 @@
 ---
 name: adr
-description: Write Architecture Decision Records for hard architectural choices and get them into the code repo through a draft pull request that the technical lead answers, reviews, and merges. Use when an architecture choice is made or surfaces in a meeting, ticket, or code review; when the PM asks to record or look up an architecture decision; and when an existing ADR needs to be deprecated or replaced.
+description: Write Architecture Decision Records and get them merged in the code repo through a draft pull request for the technical lead. Use when an architecture choice is made or comes up, or the PM asks to record, look up, or replace one.
 ---
 
 # ADRs

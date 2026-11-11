@@ -199,8 +199,11 @@ function describe(file) {
   }
   const match = text.match(/^---\n[\s\S]*?^description:\s*(.+)$/m);
   if (!match) return '';
-  const sentence = match[1].trim().match(/^.*?[.!?](?=\s|$)/);
-  return sentence ? sentence[0] : match[1].trim();
+  let value = match[1].trim();
+  if (value.length > 1 && value[0] === "'" && value.endsWith("'")) value = value.slice(1, -1).replace(/''/g, "'");
+  else if (value.length > 1 && value[0] === '"' && value.endsWith('"')) value = value.slice(1, -1).replace(/\\"/g, '"');
+  const sentence = value.match(/^.*?[.!?](?=\s|$)/);
+  return sentence ? sentence[0] : value;
 }
 
 /** Which part of Lobot an engine file belongs to: a skill, an agent, a rule file, or something else. */

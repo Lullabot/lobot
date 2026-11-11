@@ -1,6 +1,6 @@
 ---
 name: jira
-description: Guide the PM through setting up and running Jira Cloud — spaces, boards, workflows, work types, sprints, permissions, and who is billed for access — using current Atlassian terminology and docs, and read and write work items through Jira's API (search, view, create in bulk, edit, link, move, comment). Use whenever a task involves Jira configuration, auditing or cleaning up a Jira site, creating or copying a space or board, choosing between Jira options, explaining what a Jira screen is asking for, adding or offboarding people and what their licenses cost, connecting Jira, or reading, creating, updating, or linking Jira work items.
+description: Guide Jira Cloud setup (spaces, boards, workflows, work types, sprints, permissions, licenses) from current Atlassian docs, and read and write work items through Jira's API. Use for any Jira question, audit, setup, connection, or work item change.
 ---
 
 # Jira

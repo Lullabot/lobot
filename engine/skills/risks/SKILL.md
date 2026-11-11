@@ -1,6 +1,6 @@
 ---
 name: risks
-description: Keep the risk tracker (docs/risks.yaml), the project's risks with a short summary, severity, status, the people who confirmed them, a next step, and dated updates. Use when a meeting or document raises a risk, when something changes an existing risk, when the PM sets a severity or closes a risk, and when the PM asks what could go wrong or what the open risks are.
+description: 'Keep the risk tracker (docs/risks.yaml): severity, status, who confirmed, next step, dated updates. Use when a meeting or document raises a risk or changes one, when the PM sets severity or closes one, and for "what could go wrong?".'
 ---
 
 # Risk tracker

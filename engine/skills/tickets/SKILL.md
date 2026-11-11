@@ -1,6 +1,6 @@
 ---
 name: tickets
-description: Standards for writing and organizing tickets in GitHub and Jira, covering titles, descriptions, acceptance criteria, types and labels, links, workflow states, comments, and board hygiene, plus the ticket plan, one tracker-neutral file for drafting a batch of tickets. Use whenever drafting, rewriting, triaging, or auditing tickets, turning planned work into tickets, drafting a comment or pull request description for the PM, or reporting on a board.
+description: Standards for writing and organizing tickets in GitHub and Jira (titles, acceptance criteria, labels, links, comments, board hygiene) and the tracker-neutral ticket plan. Use when drafting, rewriting, triaging, or auditing tickets, or reporting on a board.
 ---
 
 # Tickets

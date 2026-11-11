@@ -1,6 +1,6 @@
 ---
 name: todoist
-description: File and keep track of the PM's own tasks in Todoist, when the PM has chosen Todoist as their task manager. Use when setting Todoist up as the task manager, when the PM's approved tasks need filing ("remind me to…", "add a task…", a meeting's approved tasks), when checking which filed tasks were finished or changed in Todoist, and when the PM asks what's due.
+description: File and track the PM's own tasks in Todoist when it's their task manager. Use to set Todoist up, to file approved tasks ("remind me to…"), to check what changed in Todoist, and for "what's due?".
 ---
 
 # Todoist

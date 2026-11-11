@@ -1,6 +1,6 @@
 ---
 name: weekly-board
-description: Publish, refresh, and open the PM's weekly board, a hosted page (a Claude artifact with a shared database) that lays out the week at a glance: this week's and next week's schedule and milestones (with a Slack kickoff message), staffing and time off for both weeks, the sprint, the PM's tasks from their task manager, the week's reporting, a recap of last week, and summary cards of what's open on the review desk, each linked to where the PM acts on it. Use during the start-of-session routine on the first workday of a week, and when the PM asks about the week ahead ("start the week", "what's this week look like?", "what's due this week?", "show me the weekly board").
+description: 'Publish, refresh, and open the weekly board: the week''s schedule, milestones, staffing, sprint, tasks, reporting, and last week''s recap. Use on the first workday of a week and for "start the week" or "what''s this week look like?".'
 ---
 
 # Weekly board

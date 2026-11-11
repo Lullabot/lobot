@@ -1,6 +1,6 @@
 ---
 name: raci
-description: Look up and maintain the project's RACI matrix (docs/raci.yaml): who is Responsible, Accountable, Consulted, and Informed for each area of work, on the agency and client sides, per site or program. Use when someone is named as owner, point person, approver, or decision-maker for an area; when the PM or client asks who to go to for something; when a meeting shows someone acting outside their recorded role; and when preparing the matrix to share with the client.
+description: 'Look up and maintain the RACI matrix (docs/raci.yaml): who is Responsible, Accountable, Consulted, and Informed per area, agency and client. Use when someone is named owner or approver, for "who do I go to for X?", and to share the matrix.'
 ---
 
 # RACI

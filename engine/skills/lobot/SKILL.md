@@ -1,6 +1,6 @@
 ---
 name: lobot
-description: Check, update, and contribute to Lobot, the shared system in .ai/general/ that this Project Brain is built on. Use when the PM says "update Lobot", asks which Lobot version this project has or whether it is current, adds a project skill that should become discoverable, or wants to send a general improvement back to Lobot (use the lobot-feedback skill to report a bug or suggestion); and when a session has changed anything in .ai/general/.
+description: Check, update, and contribute to Lobot (.ai/general/). Use for "update Lobot", which version is installed, linking a new project skill, sending an improvement back, and when a session changed .ai/general/.
 ---
 
 # Lobot

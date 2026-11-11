@@ -1,6 +1,6 @@
 ---
 name: questions
-description: Keep the questions log (docs/questions.yaml), the list of outstanding questions, in four kinds kept apart: project questions only the PM can answer (unclear owners, scope, schedule, process, and contract questions, values to set), product questions the team needs a stakeholder to answer (content, copy, design, features), technical questions for developers or client IT (data feeds, integrations, hosting), and housekeeping checks for the Project Brain (who someone is, a mistranscribed term), each with who answers it, its priority, its status, and when it's needed by. Use when a meeting, document, or task turns up a question the records can't answer, when the PM answers one, and when the PM asks "what do you need from me?" or "what's still open?".
+description: 'Keep the questions log (docs/questions.yaml): the PM''s questions, product, technical, and housekeeping questions, with who answers, priority, and due date. Use when the records can''t answer something, when an answer comes in, and for "what do you need from me?".'
 ---
 
 # Questions log
