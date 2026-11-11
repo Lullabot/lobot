@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.39.1](https://github.com/Lullabot/lobot/compare/v0.39.0...v0.39.1) (2026-11-11)
+
+### Fixed
+
+* **engine:** Lobot starts each session with far less to read, so it has more room for your work and its key rules are harder to miss ([#57](https://github.com/Lullabot/lobot/issues/57)) ([d97cefe](https://github.com/Lullabot/lobot/commit/d97cefe71d26c3ae06ea22633cf89448b12751cf))
+
 ## [0.39.0](https://github.com/Lullabot/lobot/compare/v0.38.1...v0.39.0) (2026-11-11)
 
 ### Added
