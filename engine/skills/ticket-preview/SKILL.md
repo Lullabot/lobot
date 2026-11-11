@@ -1,6 +1,6 @@
 ---
 name: ticket-preview
-description: Show a ticket plan to the PM as a clean, read-only page before anything is created in the tracker: a hosted page (a Claude artifact with a shared database) with each epic as a collapsible box, its children nested inside, the tracker's work type icons, and every field, description, and acceptance criterion laid out to read. Use whenever a ticket plan is drafted or changed and before asking the PM to approve it, and when the PM asks to preview, see, or review tickets or a ticket plan ("show me the tickets", "preview the SASI tickets").
+description: Show a ticket plan as a read-only page (epics, nested tickets, every field) before anything is created. Use whenever a ticket plan is drafted or changed, before asking the PM to approve it, and for "show me the tickets".
 ---
 
 # Ticket preview
@@ -41,7 +41,7 @@ Once per project, the first time a plan is previewed:
    ```
    `--tracker-url` is the Jira site (`https://<site>.atlassian.net`, from `.ai/project/jira.md`) or the GitHub repository's URL, so existing tickets link to themselves. `--repo-url` is the Project Brain repository's file base (`https://github.com/OWNER/REPO/blob/main/`, from `.ai/project/github.md`) when it has one, so the plan and its sources link to their files; leave it out otherwise. `--name` is how the PM refers to the batch ("Safe and Sound", "Listing pages"); it defaults to the file name without its date. The script lists problems it finds (a ref used twice, a parent or link naming a ref the plan doesn't have); the page shows them too. Fix what's the assistant's to fix before showing the plan.
 2. **Write it:** set `plans/<plan file name without .yaml>` from the JSON file (`file_path`), and set `meta/current` to `{"plan": "<that id>"}` so the page opens on it. Other plans stay; the PM can switch between them on the page.
-3. **Open the page** (in Claude: the Artifact tool's `open` action) and say in one line what it holds ("16 new tickets for SASI: 4 epics, 12 work items, 14 links"). Then ask for approval in chat, listing what to check: open questions in the tickets, names, dates, and anything drawn from a client document. Don't reprint the plan.
+3. **Open the page** (in Claude: the Artifact tool's `open` action) and say in one line what it holds ("16 new tickets: 4 epics, 12 work items, 14 links"). Then ask for approval in chat, listing what to check: open questions in the tickets, names, dates, and anything drawn from a client document. Don't reprint the plan.
 4. **Changes:** edit the plan file as the PM asks, then run steps 1 and 2 again so the page shows the new version. The page always shows the file as it stands.
 5. **Approval:** when the PM approves the exact plan, the tickets skill stamps the file (`approved_by`, `approved_at`); run steps 1 and 2 once more so the page shows it approved. Sending follows the tracker's skill.
 6. **After sending:** the plan's document can stay as a record of what was sent, or be deleted from `plans` once the tickets exist; ask the PM the first time, and do the same afterwards.
