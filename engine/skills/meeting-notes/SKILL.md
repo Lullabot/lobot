@@ -102,7 +102,7 @@ A meeting is recurring when its title matches a row. With no row yet, it may be 
 
 The PM can point to a Doc or a folder they already use. Otherwise say Lobot's default and ask about an override, as for any deliverable (drive-sources skill, "Where a deliverable lives"):
 
-- **Internal meetings:** one `<KEY> Recurring Meeting Notes` Doc in the Meeting Notes folder, with a tab for each kind of recurring meeting, named for it ("Team Huddle", "Schedule Review"). Within a tab, each meeting is a heading with its date, and each part of the entry a subheading under it (see below). Its key is `recurring-meeting-notes`.
+- **Internal meetings:** one `<KEY> Recurring Meeting Notes` Doc in the Meeting Notes folder, with a tab for each kind of recurring meeting, named for it ("Team Huddle", "Schedule Review"). Each tab is laid out as in "The tab" below. Its key is `recurring-meeting-notes`.
 - **Meetings with outside people:** a separate running doc, never the internal one, because the audience decides who may read it. Ask the PM which folder those people can open (usually one shared with the client) and whether meetings with the same audience share the doc, one tab each. Key it `recurring-meeting-notes-<short name>`. Who can open the doc is the PM's to set: Lucy never shares it or changes its permissions.
 - **How it's organized** depends on the tool, and the PM can override the default. In Google Docs, ask whether the PM wants a tab per kind of meeting (the default), sub-tabs (one per meeting under an audience, or one per year in a long-running meeting), or a doc per meeting with no tabs. In another tool, ask how it groups pages or sections, and note the answer in the row.
 
@@ -112,17 +112,26 @@ Map the doc in `docs/sources.yaml` as a `deliverable` file with `record: docs/me
 
 After the PM has reviewed the notes (step 10), and only with a connector that edits Google Docs. Without one, file a copy for this meeting and tell the PM the running doc needs that connector.
 
-1. **Read the doc** (the meeting's tab). Look for a heading with the meeting's date: someone may have added it ahead of time with an agenda. If there's none, add the date heading above the latest entry, so the newest meeting comes first. A tab may start with header content the PM keeps there for every meeting (a short schedule, links to docs the meeting refers to), separated from the entries by a divider: new entries go just below the divider, and the header is the PM's, never changed. The PM defines it; when setting up a new tab, ask whether it needs one.
+1. **Read the doc** (the meeting's tab). Look for a heading with the meeting's date: someone may have added it ahead of time with an agenda. If there's none, add the date heading just below the divider (see "The tab"), above the latest entry, so the newest meeting comes first. The header above the divider is the PM's: never change it.
 2. **Write the entry under that heading**, in the layout below. Never change earlier entries or text someone else wrote: an agenda already there stays as written and is the entry's Agenda. Write against the revision you just read, so someone else's edit in the meantime stops the write instead of being overwritten; then read again and retry.
 3. **Read it back,** check it, add the doc's link (to the tab) to the notes' frontmatter as `running_doc:`, and record it in `docs/sources.yaml` `processed` (source: the running doc's key, result: the notes file).
 
-The entry, with the date as a heading and each part as a subheading:
+#### The tab
 
-1. **Attendees:** who spoke, plus anyone the PM or the invite confirms was there. When only the speakers are known, say so in one line ("Speakers; attendance not confirmed").
+Top to bottom:
+
+1. **Title,** Heading 1: the meeting's name and "Running Notes" ("Team Huddle Running Notes", "Breath Alcohol Running Notes"). No intro paragraph: the title says what the tab is.
+2. **Header** (optional): content the PM keeps there for every meeting, such as a short schedule table or links to docs the meeting refers to, under Heading 2s ("Schedule"). The PM defines it; when setting up a new tab, ask whether it needs one.
+3. **Divider:** a horizontal line, with no label, between the header (or the title) and the entries. The Docs API can't insert a horizontal line, so set a bottom border on the empty paragraph after the header instead, or ask the PM to add one with Insert > Horizontal line. Either one is the divider.
+4. **Entries,** newest first: the date as a Heading 2 ("October 29, 2026"), and each part of the entry as a Heading 3 under it, in the order below.
+
+#### The entry
+
+1. **Attendees:** a bulleted list, one person per bullet: who spoke, plus anyone the PM or the invite confirms was there. Under the list, one plain line says where the list comes from ("Speakers; attendance not confirmed", "From the invite and transcript").
 2. **Agenda** (only when there was one): the agenda written ahead of time, or the one stated at the start of the meeting.
 3. **Notes:** short bullets of what was discussed, one per topic, like minutes but quick to scan for the gist.
 4. **Decisions:** a numbered list, each with what was decided, who made it, what it changes, and its decision log ID.
-5. **Action items:** only the key follow-ups that sit outside the regular workflow and people's usual jobs, each with its owner and any deadline or key detail. Not every "I'll look into it", and not ticket work. The full list stays in the notes file.
+5. **Action items:** a checklist (Docs' checkbox list, so people can tick items off), only the key follow-ups that sit outside the regular workflow and people's usual jobs, each starting with its owner, then the action and any deadline or key detail. Not every "I'll look into it", and not ticket work. The full list stays in the notes file. Write the owner as a person mention (smart chip; the Docs API's `insertPerson` with their email from the people directory) when they are on the project team or have an account that can open the doc, so the chip links to them; otherwise write their name as plain text. Check who can open it with the doc's (or its shared drive's) permissions; never share the doc to make a mention work.
 6. A last line: **Source:** a link to the transcript or recording in Drive (they stay their own files in the Meeting transcripts folder), or to the Gemini notes Doc, and "Notes reviewed by <PM name>".
 
 The shareable copy's content rules apply: no frontmatter, Context updates, or links to Project Brain files (write record IDs instead), and when outside people can read the doc, check the entry for anything meant only for Lullabot and ask the PM before filing it.
