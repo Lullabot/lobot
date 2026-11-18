@@ -4,8 +4,9 @@ Part of the tickets skill (`SKILL.md`). The format of a ticket plan, the one tra
 
 ## Ticket plans
 
-Tickets that come in a batch, such as the `ready` items of the work breakdown, are drafted as one **ticket plan**: a YAML file with the same shape whichever tracker the project uses. Pepper drafts it, the PM reviews it on the ticket preview page (ticket-preview skill) and approves it, and the tracker's skill checks it against the tracker and sends it. Show the plan on that page before asking for approval, and again after every change.
+Tickets that come in a batch, such as the `ready` items of the work breakdown, are drafted as one **ticket plan**: a YAML file with the same shape whichever tracker the project uses. Pepper drafts it, the PM reviews it on the Issue Review Board (ticket-preview skill) and approves it, and the tracker's skill checks it against the tracker and sends it. Show the plan on that page before asking for approval, and again after every change.
 
+- **Status:** `draft` until the PM approves the exact plan (`approved`, stamped with `approved_by` and `approved_at`), or `cancelled` when the PM drops it; a cancelled plan is kept, never deleted, and never sent. `archived: true` only hides a plan on the board.
 - **Where:** `docs/work/tickets/YYYY-MM-DD-<slug>.yaml`. After sending, `PLAN.created.json` beside it records the ticket each `ref` became.
 - **The tracker's own names.** Work types, labels, statuses, and extra fields use the names the tracker uses, from its project file: the structure file `.ai/project/jira/<SPACE>.yaml` for Jira (jira skill), `.ai/project/github.md` for GitHub (github skill). If that file is missing or doesn't have what a ticket needs, say so rather than guessing.
 - **Everything else is neutral:** titles and descriptions follow this skill, and people are people-directory keys, turned into usernames or account IDs only when the plan is sent.
@@ -13,7 +14,8 @@ Tickets that come in a batch, such as the `ready` items of the work breakdown, a
 ```yaml
 destination: Jira, space ABC          # the human-review stamp (.ai/general/human-review.md); never sent
 sources: [docs/work/site/search.md]
-status: draft                         # approved_by: and approved_at: are added on the PM's approval
+status: draft                         # draft, approved (approved_by: and approved_at: are added), or cancelled
+archived: false                       # optional; true hides the plan on the Issue Review Board unless "Include archived" is on
 tracker: jira                         # jira or github, as recorded in .ai/project/tickets.md
 project: ABC                          # a Jira space key, or a GitHub OWNER/REPO
 items:

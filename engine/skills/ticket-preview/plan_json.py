@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Turn a ticket plan (tickets skill, "Ticket plans") into the JSON document the ticket preview page shows.
+"""Turn a ticket plan (tickets skill, "Ticket plans") into the JSON document the Issue Review Board shows.
 
 Usage:
   python3 plan_json.py PLAN.yaml [--tracker-url URL] [--repo-url URL] [--name NAME] [-o OUT.json]
 
 Prints a short check of the plan to stderr (duplicate refs, a parent or link that names a ref not in the plan,
-an item with neither ref nor key) and writes the document to OUT.json, or stdout. Needs PyYAML.
+an item with neither ref nor key, a status other than draft, approved, or cancelled) and writes the document to OUT.json, or stdout. Needs PyYAML.
 """
 import argparse, json, re, sys
 from pathlib import Path
@@ -15,6 +15,7 @@ try:
 except ImportError:
     sys.exit("plan_json.py needs PyYAML (pip install pyyaml), the same as jira.py.")
 
+STATUSES = ("draft", "approved", "cancelled")
 KEY = re.compile(r"^([A-Z][A-Z0-9]+-\d+|#\d+)$")
 
 
@@ -82,12 +83,17 @@ def main():
     plan = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     items = plain(plan.get("items") or [])
     problems = check(items)
+    status = str(plan.get("status", "draft") or "draft").lower()
+    status = "cancelled" if status == "canceled" else status
+    if status not in STATUSES:
+        problems.append(f"status: {status} isn't one of {', '.join(STATUSES)}")
     doc = {
         "file": ("docs/" + posix.split("docs/", 1)[1]) if "docs/" in posix else path.name,
         "repoUrl": a.repo_url,
         "name": a.name or name_from(path),
         "destination": plan.get("destination", ""),
-        "status": plan.get("status", "draft"),
+        "status": status,
+        "archived": bool(plan.get("archived", False)),
         "approved_by": plan.get("approved_by", ""),
         "approved_at": str(plan.get("approved_at", "") or ""),
         "tracker": str(plan.get("tracker", "")).lower(),

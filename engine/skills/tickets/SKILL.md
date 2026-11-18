@@ -166,7 +166,7 @@ Tracker: Jira, space ABC
 
 ## Ticket plans
 
-A batch of tickets is drafted as one ticket plan in `docs/work/tickets/YYYY-MM-DD-<slug>.yaml`, shown on the ticket preview page, approved by the PM, and sent with the tracker's skill. Its format is in `ticket-plans.md` in this skill's folder: read it before drafting or changing a plan.
+A batch of tickets is drafted as one ticket plan in `docs/work/tickets/YYYY-MM-DD-<slug>.yaml`, shown on the Issue Review Board (ticket-preview skill), approved by the PM, and sent with the tracker's skill. Its format is in `ticket-plans.md` in this skill's folder: read it before drafting or changing a plan.
 
 ## Approvals
 

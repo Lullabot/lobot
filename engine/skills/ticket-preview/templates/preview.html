@@ -1,15 +1,16 @@
-<!-- Lobot page template: ticket preview. Fill {{PROJECT_NAME}}, then publish with capabilities {"db": {}}. Read-only: the page shows the ticket plans the database holds and writes nothing. See .ai/general/skills/ticket-preview/SKILL.md. -->
-<title>{{PROJECT_NAME}} Ticket Preview</title>
+<!-- Lobot page template: the Issue Review Board (ticket-preview skill). Fill {{PROJECT_NAME}}, then publish with capabilities {"db": {"rules": [...]}} as the skill's "Publish the page" gives. The page shows the ticket plans the database holds. It writes only two things: notes (collection `notes`) and each plan's archived flag (collection `state`). It never edits a plan. See .ai/general/skills/ticket-preview/SKILL.md. -->
+<title>{{PROJECT_NAME}} Issue Review Board</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: a header naming the plan and where it goes, then one collapsible box per epic with its children nested inside, then tickets outside any epic, then the plan's sources. Tokens match the tracker pages and boards. */
+/* Layout: the board's heading with a count of plans by status, then the plan filters and picker, then the chosen plan's status bar and notes, then one collapsible box per epic with its children nested inside, then tickets outside any epic, then the plan's sources. Tokens match the tracker pages and boards. */
 :root{
   --bg:#f6f7f9; --surface:#ffffff; --fg:#1d2430; --muted:#5d6878; --line:#dde1e8;
   --accent:#1f5f8b; --accent-soft:#e3eef6;
   --todo:#6b7585; --todo-bg:#eef0f3; --prog:#9a5b00; --prog-bg:#fdf0db;
   --done:#1d7a46; --done-bg:#e1f3e8; --crit:#b3261e; --crit-bg:#fbe4e2; --warn:#9a5b00;
+  --note:#6a4bb3; --note-bg:#efe9fb;
   --code-bg:#eef0f3;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -17,11 +18,11 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
   --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
-  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --code-bg:#242b35; color-scheme:dark}}
+  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --note:#b9a3f0; --note-bg:#2a2340; --code-bg:#242b35; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa4b2; --line:#2c3440;
   --accent:#7cb4dc; --accent-soft:#1c2c3a; --todo:#a3acb9; --todo-bg:#242b35; --prog:#f0b45a; --prog-bg:#33281a;
-  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --code-bg:#242b35; color-scheme:dark}
+  --done:#6fcf97; --done-bg:#183025; --crit:#f2867c; --crit-bg:#3b1f1d; --warn:#f0b45a; --note:#b9a3f0; --note-bg:#2a2340; --code-bg:#242b35; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -29,20 +30,41 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
 header{display:grid;gap:8px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+h2.plan{font-size:19px;line-height:1.25;margin:0;text-wrap:balance}
 .sub{color:var(--muted);margin:0;max-width:72ch}
 a{color:var(--accent)}
-a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mono{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
 .notice{background:var(--crit-bg);color:var(--crit);border-radius:8px;padding:10px 12px;font-size:14px}
-.pill{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
-.p-draft{color:var(--prog);background:var(--prog-bg)} .p-ok{color:var(--done);background:var(--done-bg)} .p-todo{color:var(--todo);background:var(--todo-bg)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.p-draft{color:var(--prog);background:var(--prog-bg)} .p-ok{color:var(--done);background:var(--done-bg)} .p-todo{color:var(--todo);background:var(--todo-bg)} .p-cancel{color:var(--crit);background:var(--crit-bg)} .p-note{color:var(--note);background:var(--note-bg)}
 .facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;align-items:center}
 .facts b{font-weight:600}
+/* The summary of plans by status, with the Include archived switch. */
+.counts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.count{display:inline-flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-size:13.5px}
+.count b{font-size:18px;font-weight:700}
+.count.c-draft b{color:var(--prog)} .count.c-ok b{color:var(--done)} .count.c-cancel b{color:var(--crit)} .count.c-arch b{color:var(--todo)}
+label.check{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer;user-select:none}
+label.check input{accent-color:var(--accent);width:15px;height:15px;margin:0}
+/* Filters and picker. */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:10px}
+.filters{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.filters .lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-.bar .btns{display:flex;gap:8px}
+.bar .btns{display:flex;gap:8px;flex-wrap:wrap}
 button.ghost{font:inherit;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 12px;cursor:pointer}
 button.ghost:hover{border-color:var(--accent)}
+button.ghost:disabled{opacity:.55;cursor:default}
+button.link{font:inherit;font-size:12.5px;font-weight:600;color:var(--note);background:none;border:0;padding:0 2px;cursor:pointer}
+button.link:hover{text-decoration:underline}
 select{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 8px;max-width:100%}
+.pickrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pickrow select{flex:1 1 320px;min-width:0}
+/* The chosen plan's status bar. */
+.status{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--todo);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.status.s-draft{border-left-color:var(--prog)} .status.s-ok{border-left-color:var(--done)} .status.s-cancel{border-left-color:var(--crit)}
+.status .top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
 .tree{display:grid;gap:10px}
 .group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 -2px}
 /* One ticket: a collapsible box whose summary line reads like the tracker's list row. */
@@ -62,15 +84,19 @@ details.tk:target,details.tk.flash{box-shadow:0 0 0 2px var(--accent)}
 .ico{display:inline-flex;width:18px;height:18px;flex:none}
 .ico svg{width:18px;height:18px}
 dl.flds{display:grid;grid-template-columns:minmax(110px,max-content) minmax(0,1fr);gap:6px 16px;margin:0;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
-details.tk.child dl.flds{background:var(--surface)}
-dl.flds dt{color:var(--muted);font-weight:600;font-size:13px}
+dl.flds dt{color:var(--muted);font-weight:600;font-size:13px;display:flex;gap:4px;align-items:baseline}
 dl.flds dd{margin:0;overflow-wrap:anywhere}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--todo-bg);color:var(--fg)}
 a.chip{text-decoration:none;color:var(--accent);background:var(--accent-soft)}
 a.chip:hover{text-decoration:underline}
 .mention{font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 4px}
-.block h4{margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.block h4{margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;gap:6px;align-items:baseline}
+/* Note buttons sit beside each field name; a dot marks a field with an open note. */
+.nb{font:inherit;font-size:11.5px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--note);background:none;border:0;border-radius:4px;padding:0 4px;cursor:pointer;opacity:.0;transition:opacity .15s}
+dl.flds dt:hover .nb,.block h4:hover .nb,.nb:focus-visible,.nb.has{opacity:1}
+@media (hover:none){.nb{opacity:.8}}
+.nb.has::before{content:"●";margin-right:3px}
 .md{font-size:14.5px;overflow-wrap:anywhere}
 .md > :first-child{margin-top:0} .md > :last-child{margin-bottom:0}
 .md h3,.md h5,.md h6{font-size:15px;margin:14px 0 4px}
@@ -85,6 +111,19 @@ a.chip:hover{text-decoration:underline}
 .md pre code{background:none;padding:0}
 .md hr{border:0;border-top:1px solid var(--line);margin:10px 0}
 .md em{font-style:italic}
+/* Notes: a list and a composer, for the plan and for each ticket. */
+.notes{display:grid;gap:8px;border:1px dashed var(--note);border-radius:8px;padding:10px 12px;background:var(--note-bg)}
+.notes h4{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--note);font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:grid;gap:4px;font-size:14px}
+.note .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--muted)}
+.note .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.note.resolved{opacity:.75}
+.note .reply{border-left:3px solid var(--done);padding-left:8px;color:var(--fg);font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.compose{display:grid;gap:6px}
+.compose .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-height:64px;resize:vertical}
+button.primary{font:inherit;font-size:13.5px;font-weight:600;color:#fff;background:var(--note);border:0;border-radius:6px;padding:6px 14px;cursor:pointer}
+button.primary:disabled{opacity:.55;cursor:default}
 .srcs{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:4px;font-size:13px;color:var(--muted)}
 .srcs h2{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted)}
 .srcs ul{margin:0;padding-left:18px;display:grid;gap:2px}
@@ -100,24 +139,41 @@ a.chip:hover{text-decoration:underline}
   dl.flds dd{margin-bottom:6px}
   .tk-body{padding:0 12px 12px}
 }
-@media (prefers-reduced-motion:reduce){details.tk > summary .chev{transition:none}}
+@media (prefers-reduced-motion:reduce){details.tk > summary .chev{transition:none}.nb{transition:none}}
 </style>
 
 <div class="wrap">
   <header>
     <div class="eyebrow" id="eyebrow">Lobot</div>
-    <h1 id="title">Ticket preview</h1>
-    <p class="sub" id="dest"></p>
-    <div class="facts" id="facts"></div>
+    <h1>Issue Review Board</h1>
+    <p class="sub">Every batch of tickets Claude drafts is reviewed here before it goes to the tracker. Read each plan as the tracker will show it, and leave notes on a plan, a ticket, or a single field; Claude updates the plan from your notes and learns from them. Approve a plan in chat.</p>
+    <div class="counts" id="counts"></div>
   </header>
   <div class="notice" id="notice" hidden></div>
-  <div class="bar">
-    <label class="facts" id="pickWrap" hidden><b>Plan</b> <select id="pick" aria-label="Ticket plan"></select></label>
+
+  <section class="panel" aria-label="Choose a plan">
+    <div class="filters" id="filters">
+      <span class="lbl">Show</span>
+      <label class="check"><input type="checkbox" data-status="draft"> Draft</label>
+      <label class="check"><input type="checkbox" data-status="approved"> Approved</label>
+      <label class="check"><input type="checkbox" data-status="cancelled"> Cancelled</label>
+      <label class="check"><input type="checkbox" id="incArchived"> Include archived</label>
+    </div>
+    <div class="pickrow">
+      <label for="pick" class="lbl" style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600">Plan</label>
+      <select id="pick" aria-label="Ticket plan"></select>
+    </div>
+  </section>
+
+  <section class="status" id="status" hidden aria-live="polite"></section>
+
+  <div class="bar" id="treeBar" hidden>
+    <span class="group" style="margin:0">Tickets</span>
     <div class="btns"><button class="ghost" type="button" id="openAll">Expand all</button><button class="ghost" type="button" id="closeAll">Collapse all</button></div>
   </div>
-  <div class="tree" id="tree"><p class="empty">Loading the ticket plan from Lobot. If nothing shows, ask Claude to preview the plan.</p></div>
+  <div class="tree" id="tree"><p class="empty">Loading the ticket plans from Lobot. If nothing shows, ask Claude to preview a plan.</p></div>
   <section class="srcs" id="sources" hidden></section>
-  <p class="foot">A read-only preview. The plan file in the Project Brain is the record: ask Claude for any change, and approve the plan in chat before anything is sent to the tracker.</p>
+  <p class="foot">The plan file in the Project Brain is the record: this board never changes a plan or sends anything. Notes and the archived flag are the only things it saves. Ask Claude to act on your notes, and approve a plan in chat before anything goes to the tracker.</p>
 </div>
 
 <script>
@@ -126,9 +182,26 @@ const $ = id => document.getElementById(id);
 const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null && k !== false) n.append(k); return n; };
 const safeUrl = u => (typeof u === "string" && /^https?:\/\//i.test(u)) ? u : "";
 const svgNS = "http://www.w3.org/2000/svg";
-let plans = [], current = "", wanted = "";
+const STATUSES = [["draft", "Draft", "c-draft", "p-draft"], ["approved", "Approved", "c-ok", "p-ok"], ["cancelled", "Cancelled", "c-cancel", "p-cancel"]];
+let db = null, plans = [], notes = [], archivedState = {}, current = "", wanted = "", showResolved = false;
+const composing = new Map(); // "plan|item|field" -> draft text kept across re-renders
 $("eyebrow").textContent = `${CONFIG.project} · Lobot`;
 function notice(msg){ $("notice").textContent = msg || ""; $("notice").hidden = !msg; }
+
+// Filter settings are remembered per browser; storage can be missing or throw, so it's optional.
+const prefs = (() => { try { return JSON.parse(localStorage.getItem("irb-prefs") || "{}"); } catch { return {}; } })();
+const filters = {statuses: new Set(prefs.statuses || ["draft", "approved"]), archived: !!prefs.archived};
+const savePrefs = () => { try { localStorage.setItem("irb-prefs", JSON.stringify({statuses: [...filters.statuses], archived: filters.archived})); } catch {} };
+for (const cb of document.querySelectorAll("#filters input[data-status]")) {
+  cb.checked = filters.statuses.has(cb.dataset.status);
+  cb.addEventListener("change", () => { cb.checked ? filters.statuses.add(cb.dataset.status) : filters.statuses.delete(cb.dataset.status); savePrefs(); render(); });
+}
+$("incArchived").checked = filters.archived;
+$("incArchived").addEventListener("change", e => { filters.archived = e.target.checked; savePrefs(); render(); });
+
+const statusOf = p => { const s = String(p.status || "draft").toLowerCase(); return s === "canceled" ? "cancelled" : (STATUSES.some(x => x[0] === s) ? s : "draft"); };
+const isArchived = p => (p.id in archivedState) ? !!archivedState[p.id].archived : !!p.archived;
+const statusInfo = s => STATUSES.find(x => x[0] === s) || STATUSES[0];
 
 // Work type icons, drawn to look like the tracker's own: Jira's colored squares, GitHub's issue mark. Unknown types get a lettered square.
 const JIRA = {
@@ -219,6 +292,7 @@ function animate(d){
     anim.oncancel = () => { d.style.overflow = ""; };
   };
   sum.addEventListener("click", e => {
+    if (e.target.closest("button")) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     e.preventDefault();
     const from = d.offsetHeight;
@@ -255,68 +329,172 @@ function reveal(id){
 }
 const asList = v => v == null ? [] : Array.isArray(v) ? v : [v];
 const isMultiline = v => typeof v === "string" && /\n|^\s*([-*]|#)/.test(v);
-function valueNode(v, plan){
+function valueNode(v){
   if (Array.isArray(v)) return el("div", {className: "chips"}, v.map(x => el("span", {className: "chip", textContent: typeof x === "object" ? JSON.stringify(x) : String(x)})));
   if (v && typeof v === "object") return el("span", {textContent: Object.entries(v).map(([k, x]) => `${k}: ${x}`).join(" · ")});
   return el("span", {textContent: String(v)});
+}
+const plural = (n, one, many) => `${n} ${n === 1 ? one : (many || one + "s")}`;
+const when = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString([], {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}); };
+
+// ---- Notes. One document per note in `notes`: {plan, item ("" for the whole plan), field ("" for the whole ticket or plan), text, createdAt, status: "open" | "resolved", reply, resolvedAt}. The page adds and removes open notes; Claude resolves them with a reply.
+const notesFor = (planId, item, field) => notes.filter(n => n.plan === planId && (item === undefined || (n.item || "") === item) && (field === undefined || (n.field || "") === field));
+const openNotes = list => list.filter(n => n.status !== "resolved");
+async function addNote(planId, item, field, text){
+  if (!db) throw new Error("no db");
+  const id = "n-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+  await db.doc("notes/" + id).set({plan: planId, item: item || "", field: field || "", text, createdAt: new Date().toISOString(), status: "open", reply: "", resolvedAt: ""});
+}
+async function removeNote(id){ if (db) await db.doc("notes/" + id).delete(); }
+function noteNode(n){
+  const about = [n.item ? n.item : "", n.field || ""].filter(Boolean).join(" · ") || "Whole plan";
+  const del = n.status !== "resolved" ? el("button", {className: "link", type: "button", textContent: "Remove"}) : null;
+  if (del) del.addEventListener("click", async () => { del.disabled = true; try { await removeNote(n.id); } catch { del.disabled = false; notice("That note couldn't be removed. Try again."); } });
+  return el("div", {className: "note" + (n.status === "resolved" ? " resolved" : "")}, [
+    el("div", {className: "meta"}, [el("span", {className: "pill " + (n.status === "resolved" ? "p-ok" : "p-note"), textContent: n.status === "resolved" ? "Resolved" : "Open"}), el("span", {textContent: about}), el("span", {textContent: when(n.createdAt)}), del]),
+    el("div", {className: "txt", textContent: n.text || ""}),
+    n.reply ? el("div", {className: "reply", textContent: "Claude: " + n.reply + (n.resolvedAt ? ` (${when(n.resolvedAt)})` : "")}) : null]);
+}
+// A notes box: the notes on a plan or a ticket, a field picker, and a text box. fieldOptions is [[value, label], ...].
+function notesBox(planId, item, fieldOptions, heading){
+  const all = notesFor(planId, item);
+  const visible = showResolved ? all : openNotes(all);
+  const key = f => `${planId}|${item}|${f}`;
+  const sel = el("select", {ariaLabel: "What the note is about"}, fieldOptions.map(([v, l]) => el("option", {value: v, textContent: l})));
+  const pending = [...composing.keys()].find(k => k.startsWith(`${planId}|${item}|`));
+  if (pending) sel.value = pending.split("|").slice(2).join("|");
+  const ta = el("textarea", {placeholder: item ? "What should change in this ticket?" : "What should change in this plan, or in how plans like it are written?", value: pending ? composing.get(pending) : ""});
+  ta.setAttribute("aria-label", "Note");
+  const save = el("button", {className: "primary", type: "button", textContent: "Add note"});
+  const sync = () => { const t = ta.value; for (const k of [...composing.keys()]) if (k.startsWith(`${planId}|${item}|`)) composing.delete(k); if (t.trim()) composing.set(key(sel.value), t); save.disabled = !t.trim(); };
+  ta.addEventListener("input", sync); sel.addEventListener("change", sync); save.disabled = !ta.value.trim();
+  save.addEventListener("click", async () => {
+    const text = ta.value.trim(); if (!text) return;
+    save.disabled = true;
+    try { await addNote(planId, item, sel.value, text); for (const k of [...composing.keys()]) if (k.startsWith(`${planId}|${item}|`)) composing.delete(k); ta.value = ""; }
+    catch { save.disabled = false; notice("That note couldn't be saved. Check your connection and try again."); }
+  });
+  const box = el("div", {className: "notes"}, [
+    el("h4", {}, [el("span", {textContent: heading + (openNotes(all).length ? ` (${openNotes(all).length} open)` : "")}),
+      all.some(n => n.status === "resolved") ? (() => { const b = el("button", {className: "link", type: "button", textContent: showResolved ? "Hide resolved" : "Show resolved"}); b.addEventListener("click", () => { showResolved = !showResolved; render(); }); return b; })() : null]),
+    ...visible.sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt))).map(noteNode),
+    el("div", {className: "compose"}, [ta, el("div", {className: "row"}, [el("span", {className: "mono", textContent: "About"}), sel, save])])]);
+  box.focusField = f => { sel.value = f; sync(); ta.focus(); };
+  return box;
 }
 
 function ticket(it, plan, kids, isChild){
   const id = idOf(it);
   const existing = !it.ref && !!it.key;
+  const tNotes = openNotes(notesFor(plan.id, id));
   const right = el("span", {className: "side"}, [
+    tNotes.length ? el("span", {className: "pill p-note", textContent: plural(tNotes.length, "note")}) : null,
     existing ? el("span", {className: "pill p-todo", textContent: "Update"}) : null,
     kids && kids.length ? el("span", {className: "pill p-todo", textContent: `${kids.length} ${kids.length === 1 ? "child" : "children"}`}) : null,
     el("span", {className: "ref", textContent: id})]);
   const title = existing ? (it.title || `Update ${it.key}`) : (it.title || "(untitled)");
   const sum = el("summary", {}, [el("span", {className: "chev", ariaHidden: "true"}), icon(plan.tracker, it.type || (existing ? "" : "Task")), el("span", {className: "ttl", textContent: title}), right]);
-  // Fields: the ticket's own keys first, then the tracker's extra fields; long text fields render as blocks below.
+  // Every field gets a note button that opens this ticket's notes box set to that field.
+  const fieldNames = [];
+  let box = null;
+  const nb = field => { const has = openNotes(notesFor(plan.id, id, field)).length; const b = el("button", {className: "nb" + (has ? " has" : ""), type: "button", textContent: has ? plural(has, "note") : "+ note", title: `Leave a note on ${field}`}); b.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); box && box.focusField(field); }); return b; };
   const rows = [], blocks = [];
-  const row = (k, node) => { rows.push(el("dt", {textContent: k}), el("dd", {}, node)); };
+  const row = (k, node) => { fieldNames.push(k); rows.push(el("dt", {}, [el("span", {textContent: k}), nb(k)]), el("dd", {}, node)); };
+  row("Title", el("span", {textContent: title}));
   if (it.type) row("Type", el("span", {className: "chips"}, [icon(plan.tracker, it.type), document.createTextNode(" " + it.type)]));
   if (existing) row("Ticket", refChip(it.key, plan));
+  if (it.project && it.project !== plan.project) row(plan.tracker === "github" ? "Repo" : "Space", el("span", {className: "mono", textContent: it.project}));
   if (it.parent) row("Parent", refChip(it.parent, plan));
   if (it.blocked_by) row("Blocked by", el("div", {className: "chips"}, asList(it.blocked_by).map(x => refChip(String(x), plan))));
   if (it.blocks) row("Blocks", el("div", {className: "chips"}, asList(it.blocks).map(x => refChip(String(x), plan))));
   for (const l of asList(it.links)) for (const [rel, target] of Object.entries(l || {})) row(rel.charAt(0).toUpperCase() + rel.slice(1), el("div", {className: "chips"}, asList(target).map(x => refChip(String(x), plan))));
-  if (it.labels) row("Labels", valueNode(asList(it.labels), plan));
+  if (it.labels) row("Labels", valueNode(asList(it.labels)));
   if (it.assignee) row("Assignee", el("span", {className: "mention", textContent: "@" + it.assignee}));
   if (it.status) row(existing ? "Move to" : "Status", el("span", {className: "pill p-todo", textContent: it.status}));
   for (const [k, v] of Object.entries(it.fields || {})) {
-    if (isMultiline(v)) blocks.push([k, v]); else row(k, valueNode(v, plan));
+    if (isMultiline(v)) blocks.push([k, v]); else row(k, valueNode(v));
   }
+  const blockNode = (k, content) => { fieldNames.push(k); return el("div", {className: "block"}, [el("h4", {}, [el("span", {textContent: k}), nb(k)]), content]); };
+  const blockEls = [
+    it.description ? blockNode("Description", markdown(it.description)) : null,
+    ...blocks.map(([k, v]) => blockNode(k, markdown(v))),
+    it.comment ? blockNode("Comment to post", markdown(it.comment)) : null];
+  box = notesBox(plan.id, id, [["", "Whole ticket"], ...fieldNames.map(f => [f, f])], "Notes on this ticket");
   const body = el("div", {className: "tk-body"}, [
     rows.length ? el("dl", {className: "flds"}, rows) : null,
-    it.description ? el("div", {className: "block"}, [/^\s*#/.test(it.description) ? null : el("h4", {textContent: "Description"}), markdown(it.description)]) : null,
-    ...blocks.map(([k, v]) => el("div", {className: "block"}, [el("h4", {textContent: k}), markdown(v)])),
-    it.comment ? el("div", {className: "block"}, [el("h4", {textContent: "Comment to post"}), markdown(it.comment)]) : null,
+    ...blockEls,
+    box,
     kids && kids.length ? el("div", {className: "kids"}, [el("div", {className: "group", textContent: "Children"}), ...kids]) : null]);
   const d = el("details", {className: "tk" + (isChild ? " child" : ""), id: anchor(id)}, [sum, body]);
+  if (openSet.has(id) || composingFor(plan.id, id)) d.open = true;
+  d.addEventListener("toggle", () => { d.open ? openSet.add(id) : openSet.delete(id); });
   animate(d);
   return d;
 }
+const openSet = new Set();
+const composingFor = (planId, item) => [...composing.keys()].some(k => k.startsWith(`${planId}|${item}|`));
+
+function renderCounts(){
+  const by = {draft: 0, approved: 0, cancelled: 0}; let arch = 0;
+  for (const p of plans) { if (isArchived(p)) arch++; else by[statusOf(p)]++; }
+  $("counts").replaceChildren(
+    ...STATUSES.map(([s, label, cls]) => el("span", {className: "count " + cls}, [el("b", {textContent: String(by[s])}), document.createTextNode(label)])),
+    el("span", {className: "count c-arch"}, [el("b", {textContent: String(arch)}), document.createTextNode("Archived")]),
+    el("span", {className: "mono", textContent: plans.length ? `${plural(openNotes(notes).length, "open note")}` : ""}));
+}
+
+function planSummary(plan){
+  const items = Array.isArray(plan.items) ? plan.items : [];
+  const newCount = items.filter(x => x.ref).length, upd = items.filter(x => !x.ref && x.key).length;
+  const links = items.reduce((c, x) => c + asList(x.blocked_by).length + asList(x.blocks).length + asList(x.links).length, 0);
+  const typeCounts = {}; for (const x of items) if (x.ref) typeCounts[x.type || "Task"] = (typeCounts[x.type || "Task"] || 0) + 1;
+  const spaces = [...new Set(items.map(x => x.project || plan.project).filter(Boolean))];
+  return {items, newCount, upd, links, typeCounts, spaces};
+}
 
 function render(){
-  const plan = plans.find(p => p.id === current) || plans[0];
-  $("pickWrap").hidden = plans.length < 2;
-  $("pick").replaceChildren(...plans.map(p => el("option", {value: p.id, textContent: `${p.name || p.id} (${p.status || "draft"})`, selected: p === plan})));
-  if (!plan) { $("tree").replaceChildren(el("p", {className: "empty", textContent: "No ticket plan to preview yet. Ask Claude to preview one."})); $("sources").hidden = true; return; }
-  current = plan.id;
-  const items = Array.isArray(plan.items) ? plan.items : [];
-  $("title").textContent = plan.name || plan.id;
-  document.title = `${CONFIG.project} Ticket Preview: ${plan.name || plan.id}`;
-  $("dest").textContent = plan.destination ? "Goes to " + plan.destination : "";
-  const approved = plan.status === "approved" && plan.approved_by;
-  const n = t => items.filter(t).length;
-  const newCount = n(x => x.ref), upd = n(x => !x.ref && x.key), links = items.reduce((c, x) => c + asList(x.blocked_by).length + asList(x.blocks).length + asList(x.links).length, 0);
-  const typeCounts = {}; for (const x of items) if (x.ref) typeCounts[x.type || "Task"] = (typeCounts[x.type || "Task"] || 0) + 1;
-  $("facts").replaceChildren(...[
-    el("span", {className: "pill " + (approved ? "p-ok" : "p-draft"), textContent: approved ? `Approved by ${plan.approved_by_name || plan.approved_by}${plan.approved_at ? " · " + plan.approved_at : ""}` : "Draft: not approved"}),
-    el("span", {}, [el("b", {textContent: String(newCount)}), document.createTextNode(` new`)]),
-    upd ? el("span", {}, [el("b", {textContent: String(upd)}), document.createTextNode(" updates")]) : null,
-    ...Object.entries(typeCounts).map(([t, c]) => el("span", {className: "chips"}, [icon(plan.tracker, t), document.createTextNode(` ${c} ${t}`)])),
-    links ? el("span", {}, [el("b", {textContent: String(links)}), document.createTextNode(" links")]) : null,
-    plan.project ? el("span", {className: "mono", textContent: `${plan.tracker === "github" ? "Repo" : "Space"} ${plan.project}`}) : null].filter(Boolean));
+  renderCounts();
+  const visible = plans.filter(p => filters.statuses.has(statusOf(p)) && (filters.archived || !isArchived(p)));
+  if (!visible.some(p => p.id === current)) current = visible[0] ? visible[0].id : "";
+  $("pick").disabled = !visible.length;
+  $("pick").replaceChildren(...(visible.length ? visible.map(p => {
+    const {newCount, upd} = planSummary(p);
+    const label = `${p.name || p.id} · ${statusInfo(statusOf(p))[1]}${isArchived(p) ? ", archived" : ""} · ${[newCount ? plural(newCount, "new ticket") : "", upd ? plural(upd, "update") : ""].filter(Boolean).join(", ") || "no items"} · ${String(p.id).slice(0, 10)}`;
+    return el("option", {value: p.id, textContent: label, selected: p.id === current});
+  }) : [el("option", {value: "", textContent: plans.length ? "No plans match these filters" : "No plans yet"})]));
+  const plan = visible.find(p => p.id === current);
+  $("treeBar").hidden = !plan;
+  if (!plan) {
+    $("status").hidden = true; $("sources").hidden = true;
+    $("tree").replaceChildren(el("p", {className: "empty", textContent: plans.length ? "No plan matches the filters above. Turn on another status, or Include archived." : "No ticket plan to review yet. Ask Claude to preview one."}));
+    return;
+  }
+  document.title = `${CONFIG.project} Issue Review Board: ${plan.name || plan.id}`;
+  const st = statusOf(plan), [, stLabel, , stPill] = statusInfo(st);
+  const {items, newCount, upd, links, typeCounts, spaces} = planSummary(plan);
+  const pNotes = openNotes(notesFor(plan.id));
+  const archived = isArchived(plan);
+  const archBtn = el("button", {className: "ghost", type: "button", textContent: archived ? "Unarchive" : "Archive", title: archived ? "Show this plan again without Include archived" : "Hide this plan unless Include archived is on"});
+  archBtn.addEventListener("click", async () => {
+    if (!db) return; archBtn.disabled = true;
+    try { await db.doc("state/" + plan.id).set({archived: !archived, at: new Date().toISOString()}); }
+    catch { archBtn.disabled = false; notice("The plan couldn't be archived. Try again."); }
+  });
+  const stText = st === "approved" ? `Approved${plan.approved_by ? " by " + (plan.approved_by_name || plan.approved_by) : ""}${plan.approved_at ? " · " + plan.approved_at : ""}` : st === "cancelled" ? "Cancelled: won't be sent" : "Draft: waiting for your review";
+  $("status").className = "status " + (st === "approved" ? "s-ok" : st === "cancelled" ? "s-cancel" : "s-draft");
+  $("status").hidden = false;
+  $("status").replaceChildren(
+    el("div", {className: "top"}, [el("h2", {className: "plan", textContent: plan.name || plan.id}), el("div", {className: "btns", style: "display:flex;gap:8px"}, [archived ? el("span", {className: "pill p-todo", textContent: "Archived"}) : null, archBtn])]),
+    el("div", {className: "facts"}, [
+      el("span", {className: "pill " + stPill, textContent: stText}),
+      newCount ? el("span", {}, [el("b", {textContent: String(newCount)}), document.createTextNode(newCount === 1 ? " new ticket" : " new tickets")]) : null,
+      upd ? el("span", {}, [el("b", {textContent: String(upd)}), document.createTextNode(upd === 1 ? " update" : " updates")]) : null,
+      ...Object.entries(typeCounts).map(([t, c]) => el("span", {className: "chips"}, [icon(plan.tracker, t), document.createTextNode(` ${c} ${t}`)])),
+      links ? el("span", {}, [el("b", {textContent: String(links)}), document.createTextNode(links === 1 ? " link" : " links")]) : null,
+      spaces.length ? el("span", {className: "mono", textContent: `${plan.tracker === "github" ? (spaces.length > 1 ? "Repos" : "Repo") : (spaces.length > 1 ? "Spaces" : "Space")} ${spaces.join(", ")}`}) : null,
+      pNotes.length ? el("span", {className: "pill p-note", textContent: plural(pNotes.length, "open note")}) : null].filter(Boolean)),
+    plan.destination ? el("p", {className: "sub", style: "font-size:14px", textContent: "Goes to " + plan.destination}) : null,
+    notesBox(plan.id, "", [["", "Whole plan"], ["Scope", "Scope (what's in or out)"], ["Shape", "Shape (how it's split into tickets)"], ["Lesson", "A lesson for future plans"]], "Notes on this plan"));
   // Nest every ticket under its parent when the parent is in this plan; the rest are top-level, epics first, in plan order.
   const ids = new Set(items.map(idOf));
   const childrenOf = {}; for (const it of items) if (it.parent && ids.has(it.parent)) (childrenOf[it.parent] = childrenOf[it.parent] || []).push(it);
@@ -333,9 +511,17 @@ function render(){
   const repo = safeUrl(plan.repoUrl) ? plan.repoUrl.replace(/\/?$/, "/") : "";
   const fileLink = f => repo && /^[\w.\/-]+$/.test(f) && !/\.\./.test(f) ? repo + f.replace(/\s*\(.*$/, "") : "";
   const src = [plan.file ? {label: plan.file, link: fileLink(plan.file), detail: "the ticket plan (the record)"} : null,
-    ...asList(plan.sources).map(s => typeof s === "string" ? {label: s, link: fileLink(s)} : s)].filter(Boolean);
+    ...asList(plan.sources).map(s => typeof s === "string" ? {label: s, link: fileLink(s.replace(/\s*\(.*$/, ""))} : s)].filter(Boolean);
   $("sources").hidden = !src.length;
   $("sources").replaceChildren(el("h2", {textContent: "Sources:"}), el("ul", {}, src.map(s => { const u = safeUrl(s.link); return el("li", {}, [u ? el("a", {href: u, target: "_blank", rel: "noopener", textContent: s.label}) : el("span", {textContent: s.label}), s.detail ? document.createTextNode(" · " + s.detail) : null]); })));
+}
+
+// Re-rendering while someone types would lose their place, so snapshots that arrive mid-typing wait until the text box loses focus.
+let renderQueued = false;
+function scheduleRender(){
+  const a = document.activeElement;
+  if (a && (a.tagName === "TEXTAREA" || (a.tagName === "SELECT" && a.closest(".notes")))) { if (!renderQueued) { renderQueued = true; a.addEventListener("blur", () => { renderQueued = false; setTimeout(render, 0); }, {once: true}); } return; }
+  render();
 }
 
 $("pick").addEventListener("change", e => { current = e.target.value; render(); });
@@ -343,11 +529,26 @@ const setAll = open => document.querySelectorAll("#tree details.tk").forEach(d =
 $("openAll").addEventListener("click", () => setAll(true));
 $("closeAll").addEventListener("click", () => setAll(false));
 
+// When Claude points the board at a plan (meta/current), open it once, turning on its status filter (and Include archived) if needed. The filters aren't saved by this.
+let wantedShown = false;
+function showWanted(){
+  if (wantedShown || !wanted) return;
+  const p = plans.find(x => x.id === wanted); if (!p) return;
+  wantedShown = true; current = p.id;
+  filters.statuses.add(statusOf(p)); if (isArchived(p)) filters.archived = true;
+  for (const cb of document.querySelectorAll("#filters input[data-status]")) cb.checked = filters.statuses.has(cb.dataset.status);
+  $("incArchived").checked = filters.archived;
+}
+
 (async () => {
-  const db = await window.claude?.use?.("db");
-  if (!db) { notice("This view can't load the ticket plans. Sign in to claude.ai to see them."); return; }
+  const timer = setTimeout(() => notice("The ticket plans are taking a while to load. Reload the page to try again."), 10000);
+  db = await window.claude?.use?.("db");
+  if (!db) { clearTimeout(timer); notice("This view can't load the ticket plans. Sign in to claude.ai to see them."); return; }
   let gotPlans = false, gotMeta = false;
-  db.collection("plans").onSnapshot(snap => { plans = snap.docs.map(x => ({...x.data(), id: x.id})).sort((a, b) => String(b.id).localeCompare(String(a.id))); gotPlans = true; if (!current && wanted) current = wanted; if (gotMeta || plans.length) render(); }, () => notice("The ticket plans couldn't load. Reload the page to try again."));
-  db.collection("meta").onSnapshot(snap => { const d = snap.docs.find(x => x.id === "current"); wanted = d ? d.data().plan || "" : ""; if (wanted) current = wanted; gotMeta = true; if (gotPlans) render(); }, () => {});
+  const done = () => clearTimeout(timer);
+  db.collection("plans").onSnapshot(snap => { done(); plans = snap.docs.map(x => ({...x.data(), id: x.id})).sort((a, b) => String(b.id).localeCompare(String(a.id))); gotPlans = true; showWanted(); if (gotMeta || plans.length) scheduleRender(); }, () => { done(); notice("The ticket plans couldn't load. Reload the page to try again."); });
+  db.collection("meta").onSnapshot(snap => { const d = snap.docs.find(x => x.id === "current"); const w = d ? d.data().plan || "" : ""; if (w && w !== wanted) { wanted = w; wantedShown = false; } gotMeta = true; showWanted(); if (gotPlans) scheduleRender(); }, () => {});
+  db.collection("notes").onSnapshot(snap => { notes = snap.docs.map(x => ({...x.data(), id: x.id})); if (gotPlans) scheduleRender(); }, () => notice("Notes couldn't load. Reload the page to try again."));
+  db.collection("state").onSnapshot(snap => { archivedState = Object.fromEntries(snap.docs.map(x => [x.id, x.data()])); if (gotPlans) scheduleRender(); }, () => {});
 })();
 </script>
