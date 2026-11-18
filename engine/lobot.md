@@ -68,6 +68,7 @@ Skills live in `.ai/general/skills/<name>/SKILL.md` (and `.ai/project/skills/`, 
 | "What do I need to know today?" | daily-board |
 | "Is that set up?", "where is this?", the project's setup; update it when something it shows changes | project-overview |
 | Logging work and decisions; closing every session | journal |
+| The daily sweep: journal gaps, processes left open, missed records, working files, then push; "tidy up"; its schedule | cleanup |
 | The weekly client status report (PM-approved risks only; full human review before filing) | client-status-report |
 | The weekly project journal entry for leadership (PM confirms the status color) | project-journal-entry |
 | Anything the PM sends or publishes as themselves | pm-voice |
