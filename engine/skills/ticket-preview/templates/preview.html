@@ -1,4 +1,4 @@
-<!-- Lobot page template: the Issue Review Board (ticket-preview skill). Fill {{PROJECT_NAME}}, then publish with capabilities {"db": {"rules": [...]}} as the skill's "Publish the page" gives. The page shows the ticket plans the database holds. It writes only two things: notes (collection `notes`) and each plan's archived flag (collection `state`). It never edits a plan. See .ai/general/skills/ticket-preview/SKILL.md. -->
+<!-- Lobot page template: the Issue Review Board (ticket-preview skill). Fill {{PROJECT_NAME}}, then publish with capabilities {"db": {"rules": [...]}} as the skill's "Publish the page" gives. The page shows the ticket plans the database holds. It writes only two things: notes (collection `notes`) and each plan's state on the board (collection `state`: the archived flag, and a status the PM set here, for Claude to file in the plan). It never edits a plan. See .ai/general/skills/ticket-preview/SKILL.md. -->
 <title>{{PROJECT_NAME}} Issue Review Board</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,8 @@ a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,
 .counts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .count{display:inline-flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-size:13.5px}
 .count b{font-size:18px;font-weight:700}
-.count.c-draft b{color:var(--prog)} .count.c-ok b{color:var(--done)} .count.c-cancel b{color:var(--crit)} .count.c-arch b{color:var(--todo)}
+.count.c-draft b{color:var(--prog)} .count.c-ok b{color:var(--done)} .count.c-cancel b{color:var(--crit)}
+.sumrow{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
 label.check{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer;user-select:none}
 label.check input{accent-color:var(--accent);width:15px;height:15px;margin:0}
 /* Filters and picker. */
@@ -64,7 +65,20 @@ select{font:inherit;font-size:14px;color:var(--fg);background:var(--surface);bor
 /* The chosen plan's status bar. */
 .status{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--todo);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
 .status.s-draft{border-left-color:var(--prog)} .status.s-ok{border-left-color:var(--done)} .status.s-cancel{border-left-color:var(--crit)}
+/* An archived plan: hatched, greyed status bar with a banner, so it can't be mistaken for a live one. */
+.status.s-arch{border-left-color:var(--todo);background:repeating-linear-gradient(135deg,var(--surface) 0 12px,var(--todo-bg) 12px 24px)}
+.archbanner{display:flex;gap:10px;align-items:center;background:var(--todo-bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px}
+.archbanner b{text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--todo)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button.act{font:inherit;font-size:13.5px;font-weight:600;border-radius:6px;padding:5px 12px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+button.act.approve{background:var(--done);border-color:var(--done);color:#fff}
+button.act.cancel{color:var(--crit);border-color:var(--crit)}
+button.act.confirming{outline:2px solid var(--warn);outline-offset:1px}
+button.act:disabled{opacity:.5;cursor:not-allowed}
+.hint{font-size:12.5px;color:var(--muted)}
+.pending{font-size:12.5px;color:var(--prog);background:var(--prog-bg);border-radius:6px;padding:2px 8px}
 .status .top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.status.s-arch h2.plan{color:var(--muted)}
 .tree{display:grid;gap:10px}
 .group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 -2px}
 /* One ticket: a collapsible box whose summary line reads like the tracker's list row. */
@@ -146,8 +160,11 @@ button.primary:disabled{opacity:.55;cursor:default}
   <header>
     <div class="eyebrow" id="eyebrow">Lobot</div>
     <h1>Issue Review Board</h1>
-    <p class="sub">Every batch of tickets Claude drafts is reviewed here before it goes to the tracker. Read each plan as the tracker will show it, and leave notes on a plan, a ticket, or a single field; Claude updates the plan from your notes and learns from them. Approve a plan in chat.</p>
-    <div class="counts" id="counts"></div>
+    <p class="sub">Every batch of tickets Claude drafts is reviewed here before it goes to the tracker. Read each plan as the tracker will show it, and leave notes on a plan, a ticket, or a single field; Claude updates the plan from your notes and learns from them. Approve, cancel, or archive a plan here; Claude sends an approved plan only when you ask.</p>
+    <div class="sumrow">
+      <div class="counts" id="counts"></div>
+      <label class="check" id="incWrap"><span>Include</span> <input type="checkbox" id="incArchived"> <span id="incLabel">archived plans</span></label>
+    </div>
   </header>
   <div class="notice" id="notice" hidden></div>
 
@@ -157,7 +174,6 @@ button.primary:disabled{opacity:.55;cursor:default}
       <label class="check"><input type="checkbox" data-status="draft"> Draft</label>
       <label class="check"><input type="checkbox" data-status="approved"> Approved</label>
       <label class="check"><input type="checkbox" data-status="cancelled"> Cancelled</label>
-      <label class="check"><input type="checkbox" id="incArchived"> Include archived</label>
     </div>
     <div class="pickrow">
       <label for="pick" class="lbl" style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600">Plan</label>
@@ -173,7 +189,7 @@ button.primary:disabled{opacity:.55;cursor:default}
   </div>
   <div class="tree" id="tree"><p class="empty">Loading the ticket plans from Lobot. If nothing shows, ask Claude to preview a plan.</p></div>
   <section class="srcs" id="sources" hidden></section>
-  <p class="foot">The plan file in the Project Brain is the record: this board never changes a plan or sends anything. Notes and the archived flag are the only things it saves. Ask Claude to act on your notes, and approve a plan in chat before anything goes to the tracker.</p>
+  <p class="foot">The plan file in the Project Brain is the record: this board never changes a plan or sends anything. It saves only your notes, the archived flag, and a status you set here; Claude files the status in the plan and acts on your notes. Approving a plan doesn't send it: ask Claude to send it.</p>
 </div>
 
 <script>
@@ -199,7 +215,13 @@ for (const cb of document.querySelectorAll("#filters input[data-status]")) {
 $("incArchived").checked = filters.archived;
 $("incArchived").addEventListener("change", e => { filters.archived = e.target.checked; savePrefs(); render(); });
 
-const statusOf = p => { const s = String(p.status || "draft").toLowerCase(); return s === "canceled" ? "cancelled" : (STATUSES.some(x => x[0] === s) ? s : "draft"); };
+const norm = v => { const s = String(v || "draft").toLowerCase(); return s === "canceled" ? "cancelled" : (STATUSES.some(x => x[0] === s) ? s : "draft"); };
+const fileStatus = p => norm(p.status);
+// A status set on the board wins until Claude files it. An approval counts only for the exact version of the plan it was given on (its fingerprint).
+const boardStatus = p => { const st = archivedState[p.id]; if (!st || !st.status) return ""; const s = norm(st.status); if (s === "approved" && st.fingerprint !== p.fingerprint) return ""; return s; };
+const statusOf = p => boardStatus(p) || fileStatus(p);
+const staleApproval = p => { const st = archivedState[p.id]; return !!(st && norm(st.status) === "approved" && st.fingerprint !== p.fingerprint && fileStatus(p) !== "approved"); };
+const unfiled = p => { const b = boardStatus(p); return !!b && b !== fileStatus(p); };
 const isArchived = p => (p.id in archivedState) ? !!archivedState[p.id].archived : !!p.archived;
 const statusInfo = s => STATUSES.find(x => x[0] === s) || STATUSES[0];
 
@@ -439,8 +461,8 @@ function renderCounts(){
   for (const p of plans) { if (isArchived(p)) arch++; else by[statusOf(p)]++; }
   $("counts").replaceChildren(
     ...STATUSES.map(([s, label, cls]) => el("span", {className: "count " + cls}, [el("b", {textContent: String(by[s])}), document.createTextNode(label)])),
-    el("span", {className: "count c-arch"}, [el("b", {textContent: String(arch)}), document.createTextNode("Archived")]),
     el("span", {className: "mono", textContent: plans.length ? `${plural(openNotes(notes).length, "open note")}` : ""}));
+  $("incLabel").textContent = `${arch} archived ${arch === 1 ? "plan" : "plans"}`;
 }
 
 function planSummary(plan){
@@ -474,19 +496,47 @@ function render(){
   const {items, newCount, upd, links, typeCounts, spaces} = planSummary(plan);
   const pNotes = openNotes(notesFor(plan.id));
   const archived = isArchived(plan);
-  const archBtn = el("button", {className: "ghost", type: "button", textContent: archived ? "Unarchive" : "Archive", title: archived ? "Show this plan again without Include archived" : "Hide this plan unless Include archived is on"});
-  archBtn.addEventListener("click", async () => {
-    if (!db) return; archBtn.disabled = true;
-    try { await db.doc("state/" + plan.id).set({archived: !archived, at: new Date().toISOString()}); }
-    catch { archBtn.disabled = false; notice("The plan couldn't be archived. Try again."); }
-  });
-  const stText = st === "approved" ? `Approved${plan.approved_by ? " by " + (plan.approved_by_name || plan.approved_by) : ""}${plan.approved_at ? " · " + plan.approved_at : ""}` : st === "cancelled" ? "Cancelled: won't be sent" : "Draft: waiting for your review";
-  $("status").className = "status " + (st === "approved" ? "s-ok" : st === "cancelled" ? "s-cancel" : "s-draft");
+  const probs0 = asList(plan.problems).filter(Boolean);
+  const saveState = async (patch, btn) => {
+    if (!db) return; if (btn) btn.disabled = true;
+    const prev = archivedState[plan.id] || {};
+    try { await db.doc("state/" + plan.id).set({...prev, ...patch, at: new Date().toISOString()}); }
+    catch { if (btn) btn.disabled = false; notice("That change couldn't be saved. Try again."); }
+  };
+  const setStatus = (to, btn) => saveState({status: to, fingerprint: to === "approved" ? (plan.fingerprint || "") : "", statusAt: new Date().toISOString()}, btn);
+  // Buttons that change a plan ask for a second click, since the browser's confirm dialog is blocked here.
+  const act = (label, cls, confirmLabel, fn, disabledWhy) => {
+    const b = el("button", {className: "act " + cls, type: "button", textContent: label});
+    if (disabledWhy) { b.disabled = true; b.title = disabledWhy; return b; }
+    let armed = null;
+    b.addEventListener("click", () => {
+      if (!confirmLabel) return fn(b);
+      if (armed) { clearTimeout(armed); armed = null; b.classList.remove("confirming"); return fn(b); }
+      b.textContent = confirmLabel; b.classList.add("confirming");
+      armed = setTimeout(() => { armed = null; b.textContent = label; b.classList.remove("confirming"); }, 4000);
+    });
+    return b;
+  };
+  const archBtn = act(archived ? "Unarchive" : "Archive", "", "", btn => saveState({archived: !archived}, btn));
+  archBtn.title = archived ? "Bring this plan back into the default list" : "Hide this plan unless archived plans are included; its status doesn't change";
+  const statusBtns = [];
+  if (plan.sent) statusBtns.push(el("span", {className: "pill p-ok", textContent: "Sent to the tracker"}));
+  else if (st === "draft") {
+    statusBtns.push(act("Approve", "approve", "Click again to approve this version", btn => setStatus("approved", btn),
+      archived ? "Archived plans can't be approved. Unarchive it first." : probs0.length ? "Fix the plan's problems before approving it." : !plan.fingerprint ? "Ask Claude to refresh this plan before approving it." : ""));
+    statusBtns.push(act("Cancel plan", "cancel", "Click again to cancel", btn => setStatus("cancelled", btn)));
+  } else statusBtns.push(act("Back to draft", "", "Click again to reopen", btn => setStatus("draft", btn)));
+  const stText = st === "approved" ? `Approved${plan.approved_by && !unfiled(plan) ? " by " + (plan.approved_by_name || plan.approved_by) : ""}${plan.approved_at && !unfiled(plan) ? " · " + plan.approved_at : ""}` : st === "cancelled" ? "Cancelled: won't be sent" : "Draft: waiting for your review";
+  $("status").className = "status " + (archived ? "s-arch" : st === "approved" ? "s-ok" : st === "cancelled" ? "s-cancel" : "s-draft");
   $("status").hidden = false;
   $("status").replaceChildren(
-    el("div", {className: "top"}, [el("h2", {className: "plan", textContent: plan.name || plan.id}), el("div", {className: "btns", style: "display:flex;gap:8px"}, [archived ? el("span", {className: "pill p-todo", textContent: "Archived"}) : null, archBtn])]),
+    archived ? el("div", {className: "archbanner", role: "note"}, [el("b", {textContent: "Archived"}), el("span", {textContent: `This plan is archived and stays ${stLabel.toLowerCase()}. It's hidden unless archived plans are included${st === "draft" ? ", and it can't be approved until it's unarchived" : ""}.`})]) : null,
+    el("div", {className: "top"}, [el("h2", {className: "plan", textContent: plan.name || plan.id}), el("div", {className: "actions"}, [...statusBtns, archBtn])]),
     el("div", {className: "facts"}, [
       el("span", {className: "pill " + stPill, textContent: stText}),
+      archived ? el("span", {className: "pill p-todo", textContent: "Archived"}) : null,
+      unfiled(plan) ? el("span", {className: "pending", textContent: "Set on the board: Claude files it in the plan next"}) : null,
+      staleApproval(plan) ? el("span", {className: "pending", textContent: "You approved an earlier version: review it and approve again"}) : null,
       newCount ? el("span", {}, [el("b", {textContent: String(newCount)}), document.createTextNode(newCount === 1 ? " new ticket" : " new tickets")]) : null,
       upd ? el("span", {}, [el("b", {textContent: String(upd)}), document.createTextNode(upd === 1 ? " update" : " updates")]) : null,
       ...Object.entries(typeCounts).map(([t, c]) => el("span", {className: "chips"}, [icon(plan.tracker, t), document.createTextNode(` ${c} ${t}`)])),
