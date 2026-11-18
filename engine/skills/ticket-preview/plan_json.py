@@ -7,7 +7,7 @@ Usage:
 Prints a short check of the plan to stderr (duplicate refs, a parent or link that names a ref not in the plan,
 an item with neither ref nor key, a status other than draft, approved, or cancelled) and writes the document to OUT.json, or stdout. Needs PyYAML.
 """
-import argparse, hashlib, json, re, sys
+import argparse, datetime, hashlib, json, re, sys
 from pathlib import Path
 
 try:
@@ -106,7 +106,13 @@ def main():
     # The fingerprint names this exact version of the plan, so an approval given on the board counts only for what the PM read.
     basis = {k: doc[k] for k in ("destination", "tracker", "project", "items")}
     doc["fingerprint"] = hashlib.sha256(json.dumps(basis, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
-    doc["sent"] = path.with_name(path.stem + ".created.json").exists() or bool(plan.get("sent"))
+    # Sent: the plan's own `sent:` date, else the date PLAN.created.json was written. A sent plan is locked.
+    created = path.with_name(path.stem + ".created.json")
+    sent_on = str(plan.get("sent") or "")
+    if not sent_on and created.exists():
+        sent_on = datetime.date.fromtimestamp(created.stat().st_mtime).isoformat()
+    doc["sent"] = bool(sent_on)
+    doc["sentOn"] = sent_on
     text = json.dumps(doc, ensure_ascii=False, indent=1)
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8")

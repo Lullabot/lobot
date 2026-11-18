@@ -219,9 +219,12 @@ const norm = v => { const s = String(v || "draft").toLowerCase(); return s === "
 const fileStatus = p => norm(p.status);
 // A status set on the board wins until Claude files it. An approval counts only for the exact version of the plan it was given on (its fingerprint).
 const boardStatus = p => { const st = archivedState[p.id]; if (!st || !st.status) return ""; const s = norm(st.status); if (s === "approved" && st.fingerprint !== p.fingerprint) return ""; return s; };
-const statusOf = p => boardStatus(p) || fileStatus(p);
-const staleApproval = p => { const st = archivedState[p.id]; return !!(st && norm(st.status) === "approved" && st.fingerprint !== p.fingerprint && fileStatus(p) !== "approved"); };
-const unfiled = p => { const b = boardStatus(p); return !!b && b !== fileStatus(p); };
+// Once a plan is sent, the tracker is the source of truth: the plan is locked, and only its own status counts.
+const isLocked = p => !!p.sent;
+const statusOf = p => (isLocked(p) ? "" : boardStatus(p)) || fileStatus(p);
+const trackerName = p => p.tracker === "github" ? "GitHub" : p.tracker === "jira" ? "Jira" : "the tracker";
+const staleApproval = p => { const st = archivedState[p.id]; return !!(!isLocked(p) && st && norm(st.status) === "approved" && st.fingerprint !== p.fingerprint && fileStatus(p) !== "approved"); };
+const unfiled = p => { if (isLocked(p)) return false; const b = boardStatus(p); return !!b && b !== fileStatus(p); };
 const isArchived = p => (p.id in archivedState) ? !!archivedState[p.id].archived : !!p.archived;
 const statusInfo = s => STATUSES.find(x => x[0] === s) || STATUSES[0];
 
@@ -378,14 +381,15 @@ function noteNode(n){
     n.reply ? el("div", {className: "reply", textContent: "Claude: " + n.reply + (n.resolvedAt ? ` (${when(n.resolvedAt)})` : "")}) : null]);
 }
 // A notes box: the notes on a plan or a ticket, a field picker, and a text box. fieldOptions is [[value, label], ...].
-function notesBox(planId, item, fieldOptions, heading){
+function notesBox(planId, item, fieldOptions, heading, readOnly){
   const all = notesFor(planId, item);
+  if (readOnly && !all.length) return null;
   const visible = showResolved ? all : openNotes(all);
   const key = f => `${planId}|${item}|${f}`;
   const sel = el("select", {ariaLabel: "What the note is about"}, fieldOptions.map(([v, l]) => el("option", {value: v, textContent: l})));
   const pending = [...composing.keys()].find(k => k.startsWith(`${planId}|${item}|`));
   if (pending) sel.value = pending.split("|").slice(2).join("|");
-  const ta = el("textarea", {placeholder: item ? "What should change in this ticket?" : "What should change in this plan, or in how plans like it are written?", value: pending ? composing.get(pending) : ""});
+  const ta = el("textarea", {placeholder: item ? "What should change in this ticket?" : fieldOptions.length === 1 ? "What should future plans do differently?" : "What should change in this plan, or in how plans like it are written?", value: pending ? composing.get(pending) : ""});
   ta.setAttribute("aria-label", "Note");
   const save = el("button", {className: "primary", type: "button", textContent: "Add note"});
   const sync = () => { const t = ta.value; for (const k of [...composing.keys()]) if (k.startsWith(`${planId}|${item}|`)) composing.delete(k); if (t.trim()) composing.set(key(sel.value), t); save.disabled = !t.trim(); };
@@ -400,8 +404,8 @@ function notesBox(planId, item, fieldOptions, heading){
     el("h4", {}, [el("span", {textContent: heading + (openNotes(all).length ? ` (${openNotes(all).length} open)` : "")}),
       all.some(n => n.status === "resolved") ? (() => { const b = el("button", {className: "link", type: "button", textContent: showResolved ? "Hide resolved" : "Show resolved"}); b.addEventListener("click", () => { showResolved = !showResolved; render(); }); return b; })() : null]),
     ...visible.sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt))).map(noteNode),
-    el("div", {className: "compose"}, [ta, el("div", {className: "row"}, [el("span", {className: "mono", textContent: "About"}), sel, save])])]);
-  box.focusField = f => { sel.value = f; sync(); ta.focus(); };
+    readOnly ? null : el("div", {className: "compose"}, [ta, el("div", {className: "row"}, [el("span", {className: "mono", textContent: "About"}), sel, save])])]);
+  box.focusField = f => { if (readOnly) return; sel.value = f; sync(); ta.focus(); };
   return box;
 }
 
@@ -419,7 +423,8 @@ function ticket(it, plan, kids, isChild){
   // Every field gets a note button that opens this ticket's notes box set to that field.
   const fieldNames = [];
   let box = null;
-  const nb = field => { const has = openNotes(notesFor(plan.id, id, field)).length; const b = el("button", {className: "nb" + (has ? " has" : ""), type: "button", textContent: has ? plural(has, "note") : "+ note", title: `Leave a note on ${field}`}); b.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); box && box.focusField(field); }); return b; };
+  const locked = isLocked(plan);
+  const nb = field => { if (locked) return null; const has = openNotes(notesFor(plan.id, id, field)).length; const b = el("button", {className: "nb" + (has ? " has" : ""), type: "button", textContent: has ? plural(has, "note") : "+ note", title: `Leave a note on ${field}`}); b.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); box && box.focusField(field); }); return b; };
   const rows = [], blocks = [];
   const row = (k, node) => { fieldNames.push(k); rows.push(el("dt", {}, [el("span", {textContent: k}), nb(k)]), el("dd", {}, node)); };
   row("Title", el("span", {textContent: title}));
@@ -441,11 +446,11 @@ function ticket(it, plan, kids, isChild){
     it.description ? blockNode("Description", markdown(it.description)) : null,
     ...blocks.map(([k, v]) => blockNode(k, markdown(v))),
     it.comment ? blockNode("Comment to post", markdown(it.comment)) : null];
-  box = notesBox(plan.id, id, [["", "Whole ticket"], ...fieldNames.map(f => [f, f])], "Notes on this ticket");
+  box = notesBox(plan.id, id, [["", "Whole ticket"], ...fieldNames.map(f => [f, f])], "Notes on this ticket", locked);
   const body = el("div", {className: "tk-body"}, [
     rows.length ? el("dl", {className: "flds"}, rows) : null,
     ...blockEls,
-    box,
+    box || null,
     kids && kids.length ? el("div", {className: "kids"}, [el("div", {className: "group", textContent: "Children"}), ...kids]) : null]);
   const d = el("details", {className: "tk" + (isChild ? " child" : ""), id: anchor(id)}, [sum, body]);
   if (openSet.has(id) || composingFor(plan.id, id)) d.open = true;
@@ -481,7 +486,7 @@ function render(){
   $("pick").disabled = !visible.length;
   $("pick").replaceChildren(...(visible.length ? visible.map(p => {
     const {newCount, upd} = planSummary(p);
-    const label = `${p.name || p.id} · ${statusInfo(statusOf(p))[1]}${isArchived(p) ? ", archived" : ""} · ${[newCount ? plural(newCount, "new ticket") : "", upd ? plural(upd, "update") : ""].filter(Boolean).join(", ") || "no items"} · ${String(p.id).slice(0, 10)}`;
+    const label = `${p.name || p.id} · ${isLocked(p) ? "Sent" : statusInfo(statusOf(p))[1]}${isArchived(p) ? ", archived" : ""} · ${[newCount ? plural(newCount, "new ticket") : "", upd ? plural(upd, "update") : ""].filter(Boolean).join(", ") || "no items"} · ${String(p.id).slice(0, 10)}`;
     return el("option", {value: p.id, textContent: label, selected: p.id === current});
   }) : [el("option", {value: "", textContent: plans.length ? "No plans match these filters" : "No plans yet"})]));
   const plan = visible.find(p => p.id === current);
@@ -517,19 +522,22 @@ function render(){
     });
     return b;
   };
+  const locked = isLocked(plan);
   const archBtn = act(archived ? "Unarchive" : "Archive", "", "", btn => saveState({archived: !archived}, btn));
   archBtn.title = archived ? "Bring this plan back into the default list" : "Hide this plan unless archived plans are included; its status doesn't change";
   const statusBtns = [];
-  if (plan.sent) statusBtns.push(el("span", {className: "pill p-ok", textContent: "Sent to the tracker"}));
+  if (locked) statusBtns.push(el("span", {className: "pill p-ok", textContent: "🔒 Locked"}));
   else if (st === "draft") {
     statusBtns.push(act("Approve", "approve", "Click again to approve this version", btn => setStatus("approved", btn),
       archived ? "Archived plans can't be approved. Unarchive it first." : probs0.length ? "Fix the plan's problems before approving it." : !plan.fingerprint ? "Ask Claude to refresh this plan before approving it." : ""));
     statusBtns.push(act("Cancel plan", "cancel", "Click again to cancel", btn => setStatus("cancelled", btn)));
   } else statusBtns.push(act("Back to draft", "", "Click again to reopen", btn => setStatus("draft", btn)));
-  const stText = st === "approved" ? `Approved${plan.approved_by && !unfiled(plan) ? " by " + (plan.approved_by_name || plan.approved_by) : ""}${plan.approved_at && !unfiled(plan) ? " · " + plan.approved_at : ""}` : st === "cancelled" ? "Cancelled: won't be sent" : "Draft: waiting for your review";
+  const sentText = locked ? `Sent to ${trackerName(plan)}${plan.sentOn ? " on " + plan.sentOn : ""}` : "";
+  const stText = locked && st === "approved" ? sentText : st === "approved" ? `Approved${plan.approved_by && !unfiled(plan) ? " by " + (plan.approved_by_name || plan.approved_by) : ""}${plan.approved_at && !unfiled(plan) ? " · " + plan.approved_at : ""}` : st === "cancelled" ? "Cancelled: won't be sent" : "Draft: waiting for your review";
   $("status").className = "status " + (archived ? "s-arch" : st === "approved" ? "s-ok" : st === "cancelled" ? "s-cancel" : "s-draft");
   $("status").hidden = false;
-  $("status").replaceChildren(
+  $("status").replaceChildren(...[
+    locked ? el("div", {className: "archbanner", role: "note"}, [el("b", {textContent: "🔒 Locked"}), el("span", {textContent: `${sentText}. The tickets in ${trackerName(plan)} are now the source of truth, so this plan can't be reopened, cancelled, or changed. Change a ticket in ${trackerName(plan)}, or ask Claude for a new plan that updates it. Notes here are lessons for future plans.`})]) : null,
     archived ? el("div", {className: "archbanner", role: "note"}, [el("b", {textContent: "Archived"}), el("span", {textContent: `This plan is archived and stays ${stLabel.toLowerCase()}. It's hidden unless archived plans are included${st === "draft" ? ", and it can't be approved until it's unarchived" : ""}.`})]) : null,
     el("div", {className: "top"}, [el("h2", {className: "plan", textContent: plan.name || plan.id}), el("div", {className: "actions"}, [...statusBtns, archBtn])]),
     el("div", {className: "facts"}, [
@@ -544,7 +552,7 @@ function render(){
       spaces.length ? el("span", {className: "mono", textContent: `${plan.tracker === "github" ? (spaces.length > 1 ? "Repos" : "Repo") : (spaces.length > 1 ? "Spaces" : "Space")} ${spaces.join(", ")}`}) : null,
       pNotes.length ? el("span", {className: "pill p-note", textContent: plural(pNotes.length, "open note")}) : null].filter(Boolean)),
     plan.destination ? el("p", {className: "sub", style: "font-size:14px", textContent: "Goes to " + plan.destination}) : null,
-    notesBox(plan.id, "", [["", "Whole plan"], ["Scope", "Scope (what's in or out)"], ["Shape", "Shape (how it's split into tickets)"], ["Lesson", "A lesson for future plans"]], "Notes on this plan"));
+    notesBox(plan.id, "", locked ? [["Lesson", "A lesson for future plans"]] : [["", "Whole plan"], ["Scope", "Scope (what's in or out)"], ["Shape", "Shape (how it's split into tickets)"], ["Lesson", "A lesson for future plans"]], locked ? "Lessons from this plan" : "Notes on this plan")].filter(Boolean));
   // Nest every ticket under its parent when the parent is in this plan; the rest are top-level, epics first, in plan order.
   const ids = new Set(items.map(idOf));
   const childrenOf = {}; for (const it of items) if (it.parent && ids.has(it.parent)) (childrenOf[it.parent] = childrenOf[it.parent] || []).push(it);
