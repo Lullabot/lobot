@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.40.0](https://github.com/Lullabot/lobot/compare/v0.39.5...v0.40.0) (2026-11-18)
+
+### Added
+
+* **engine:** approve, cancel, reopen, and archive ticket plans from the Issue Review Board ([fcaa6d6](https://github.com/Lullabot/lobot/commit/fcaa6d6318c4fa446a504f4fdc9b56da43a3e6bd))
+* **engine:** the ticket preview becomes the Issue Review Board: filter plans by status, archive old ones, and leave notes on a plan, ticket, or field for Claude to act on ([33acd2d](https://github.com/Lullabot/lobot/commit/33acd2d636adc2e12725453c6a2fd00ae8f13490))
+* **engine:** ticket plans lock once they're sent, since the tracker is the source of truth from then on ([fe68e0a](https://github.com/Lullabot/lobot/commit/fe68e0a1d163da6be483b9a80ac148c6f908857c))
+
 ## [0.39.5](https://github.com/Lullabot/lobot/compare/v0.39.4...v0.39.5) (2026-11-18)
 
 ### Fixed
