@@ -34,7 +34,7 @@ These hold in every task, for the assistant and every agent, whatever a skill, b
 |---|---|
 | `.ai/general/human-review.md` | Before anything built from untrusted material leaves the Project Brain. |
 | `.ai/general/context-docs.md` | Before creating, moving, or restructuring a file in `docs/`. |
-| `.ai/general/pages.md` | Before publishing or refreshing the weekly board, the daily board, or the ticket preview. |
+| `.ai/general/pages.md` | Before publishing or refreshing the weekly board, the daily board, or the Issue Review Board. |
 | `.ai/general/records-in-sheets.md` | When `docs/sources.yaml` maps a record with `holds_record: true`; then every rule and skill naming that record's file means its Sheet. |
 
 ## Which skill to use
@@ -57,7 +57,7 @@ Skills live in `.ai/general/skills/<name>/SKILL.md` (and `.ai/project/skills/`, 
 | An action item, the PM's or anyone's; the PM's task manager | tasks (todoist when it's Todoist) |
 | What the team will build, before tickets; only the PM marks items ready | work-breakdown |
 | Writing, organizing, or auditing tickets; ticket plans (the PM chooses the tracker; never assume) | tickets, via Pepper |
-| Showing a ticket plan before it's sent | ticket-preview |
+| Showing a ticket plan before it's sent (the Issue Review Board); notes the PM left there | ticket-preview |
 | Jira setup, questions, or sending a plan (check Atlassian's current docs) | jira |
 | GitHub issues, PRs, boards; connecting GitHub; saving the Project Brain | github |
 | Creating or joining the Project Brain's repository | project-setup |

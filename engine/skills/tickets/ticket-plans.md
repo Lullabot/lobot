@@ -4,16 +4,19 @@ Part of the tickets skill (`SKILL.md`). The format of a ticket plan, the one tra
 
 ## Ticket plans
 
-Tickets that come in a batch, such as the `ready` items of the work breakdown, are drafted as one **ticket plan**: a YAML file with the same shape whichever tracker the project uses. Pepper drafts it, the PM reviews it on the ticket preview page (ticket-preview skill) and approves it, and the tracker's skill checks it against the tracker and sends it. Show the plan on that page before asking for approval, and again after every change.
+Tickets that come in a batch, such as the `ready` items of the work breakdown, are drafted as one **ticket plan**: a YAML file with the same shape whichever tracker the project uses. Pepper drafts it, the PM reviews it on the Issue Review Board (ticket-preview skill) and approves it, and the tracker's skill checks it against the tracker and sends it. Show the plan on that page before asking for approval, and again after every change.
 
-- **Where:** `docs/work/tickets/YYYY-MM-DD-<slug>.yaml`. After sending, `PLAN.created.json` beside it records the ticket each `ref` became.
+- **Status:** `draft` until the PM approves the exact plan, on the Issue Review Board or in chat (`approved`, stamped with `approved_by` and `approved_at`), or `cancelled` when the PM drops it; a cancelled plan is kept, never deleted, and never sent. `archived: true` is a flag beside the status: it hides a plan on the board, and an archived plan can't be approved.
+- **Where:** `docs/work/tickets/YYYY-MM-DD-<slug>.yaml`. After sending, `PLAN.created.json` beside it records the ticket each `ref` became. A plan that only changes existing tickets gets no such file, so add `sent: YYYY-MM-DD` to it once it's sent.
+- **Locked once sent.** Once a plan is in the tracker, the tracker is the source of truth and the plan is a record of what was sent: never edit, reopen, or cancel it (adding `sent:` or `archived:` is fine). A change to those tickets is made in the tracker, or drafted as a new plan whose items name the tickets by `key`.
 - **The tracker's own names.** Work types, labels, statuses, and extra fields use the names the tracker uses, from its project file: the structure file `.ai/project/jira/<SPACE>.yaml` for Jira (jira skill), `.ai/project/github.md` for GitHub (github skill). If that file is missing or doesn't have what a ticket needs, say so rather than guessing.
 - **Everything else is neutral:** titles and descriptions follow this skill, and people are people-directory keys, turned into usernames or account IDs only when the plan is sent.
 
 ```yaml
 destination: Jira, space ABC          # the human-review stamp (.ai/general/human-review.md); never sent
 sources: [docs/work/site/search.md]
-status: draft                         # approved_by: and approved_at: are added on the PM's approval
+status: draft                         # draft, approved (approved_by: and approved_at: are added), or cancelled
+archived: false                       # optional; true hides the plan on the Issue Review Board unless "Include archived" is on
 tracker: jira                         # jira or github, as recorded in .ai/project/tickets.md
 project: ABC                          # a Jira space key, or a GitHub OWNER/REPO
 items:
