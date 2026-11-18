@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.39.5](https://github.com/Lullabot/lobot/compare/v0.39.4...v0.39.5) (2026-11-18)
+
+### Fixed
+
+* **engine:** project journal entries go into the journal doc marked as a draft until you finalize them, and leave out ticket-level detail ([fe76c3c](https://github.com/Lullabot/lobot/commit/fe76c3c50a26443daa4051fc865483ce54d5cca3))
+
 ## [0.39.4](https://github.com/Lullabot/lobot/compare/v0.39.3...v0.39.4) (2026-11-11)
 
 ### Changed
