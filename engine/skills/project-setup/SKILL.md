@@ -58,7 +58,7 @@ When `token-expires` is two weeks away or less, tell the PM and walk them throug
 
 1. Read `git status --short` and confirm `.env` isn't in it.
 2. Stage by name, not with `git add -A`: `.ai`, `.claude`, `docs`, `CLAUDE.md`, `README.md`, `.env.example`, `.gitignore`, and `AGENTS.md` or `.agents` if they exist. Show the PM what's included in a line or two.
-3. Commit ("Set up the Project Brain with Lobot x.y.z", using the installed version) and push with the command in the github skill's "Saving the Project Brain". The repository is empty, so skip the pull before it: there's nothing to get yet.
+3. Commit ("Set up the Project Brain with Lobot x.y.z", using the installed version) and push with the command in the save skill's "Getting changes and pushing". The repository is empty, so skip the pull before it: there's nothing to get yet.
 4. Tell the PM the repository's address and that the next PM can join from it. Then "Keeping it saved" and "Record it".
 5. Publish the project overview (project-overview skill), or update it if the project has one, so the PM can see what's set up and what's left.
 
@@ -134,10 +134,10 @@ For a PM taking over or joining a project that already has a repository. Their f
 
 ## Keeping it saved
 
-Once the repository is connected, ask the PM once: "Want me to save and push the Project Brain at the end of every session, or only when you ask?" Nothing runs in the background, so "automatic" means at wrap-up.
+Every finished process is committed as it ends (save skill); the question is when those commits go to GitHub. Once the repository is connected, ask the PM once: "Want me to push your saved work to GitHub at the end of every session, or only when you ask?" Nothing runs in the background, so "automatic" means at wrap-up.
 
-- **At wrap-up (their yes is the standing approval):** after the journal closes, commit what changed (staged by name, with the summary shown in a line) and push. If the push can't fast-forward, stop and explain, as the github skill says.
-- **Only when asked:** follow the github skill, offering at the end of a session that changed files.
+- **At wrap-up (their yes is the standing approval):** after the journal's close commit, push. If the push can't fast-forward, stop and explain, as the save skill says.
+- **Only when asked:** offer to push at the end of a session that left commits unpushed.
 
 It's the PM's own habit, so save the answer in their personal profile (pm-profile skill), never in the project's files, which the next PM shares. If the profile can't be read, ask again at wrap-up. Don't push anything else, and never push the code repository.
 

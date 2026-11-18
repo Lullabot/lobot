@@ -112,8 +112,9 @@ Trigger: the PM says "wrap up", "end of day", "close the session", or similar. I
 2. Rewrite **Summary** (1–3 lines).
 3. Update **Open threads** and **Next**.
 4. Ask the PM once: "Anything to add to Thoughts?" Record answers verbatim-ish, attributed.
-5. Clear `tmp/` (skip if it's empty or missing). List its files, marking which are finished (posted, filed, published, or superseded) and which are still in progress. In the same question as step 4, ask once whether to delete the finished ones, and delete them on a yes. Move anything worth keeping to its home in `docs/` first. Files still in progress stay. Check `Claude outputs/` the same way (the Claude app's own saved files): propose a home in `docs/` or the mapped Drive folder for anything worth keeping, and include deleting the rest in the same question.
-6. Report in one or two lines what was written and what was cleared.
+5. Clear `tmp/` (skip if it's empty or missing). List its files, marking which are finished (posted, filed, published, or superseded) and which are still in progress. In the same question as step 4, ask once whether to delete the finished ones, and delete them on a yes. Move anything worth keeping to its home in `docs/` first. Files still in progress stay, and so do the files listed under `files:` in an open process marker (`tmp/processes/`). Check `Claude outputs/` the same way (the Claude app's own saved files): propose a home in `docs/` or the mapped Drive folder for anything worth keeping, and include deleting the rest in the same question.
+6. Commit the close ("Close the YYYY-MM-DD session", save skill), and push if the PM has a standing approval for it. Process markers left in `tmp/processes/` are listed in Open threads, not deleted.
+7. Report in one or two lines what was written, committed, and cleared.
 
 ### 3. Catch-up (start of session)
 
