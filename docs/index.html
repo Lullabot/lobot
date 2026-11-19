@@ -391,7 +391,7 @@ footer a { color: var(--ink-2); }
         <div class="when">End of day<small>wrap up</small></div>
         <div>
           <div class="say">Wrap up.</div>
-          <p>Lobot closes out the day's journal entry and clears scratch files, so tomorrow's session, or the next PM, starts with an accurate picture.</p>
+          <p>Lobot closes out the day's journal entry and clears scratch files, so tomorrow's session, or the next PM, starts with an accurate picture. If a session never got its wrap-up, the evening cleanup catches what it missed and pushes the day's work.</p>
         </div>
       </div>
     </div>
@@ -702,6 +702,11 @@ footer a { color: var(--ink-2); }
         <header><h3>Journal</h3><span class="owner lucy">Lucy</span></header>
         <p>Logs the work as it happens, closes out each day, and recaps where things stand when you start a new session.</p>
         <div class="try">"Wrap up."</div>
+      </article>
+      <article class="skill" data-skill="cleanup" data-group="capture">
+        <header><h3>Cleanup</h3><span class="owner lobot">Lobot</span></header>
+        <p>Once a day, on a schedule if you like, reads back over everything since its last run: catches the journal up, finishes work that stopped halfway, files what never reached a record, clears finished scratch files, and pushes. Anything that needs you waits as a question on your review desk.</p>
+        <div class="try">"Run the cleanup."</div>
       </article>
 
       <div class="group-label" data-group="records">Keep the records</div>

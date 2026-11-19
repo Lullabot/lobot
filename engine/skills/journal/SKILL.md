@@ -49,7 +49,7 @@ Omit empty sections' content but keep the headings.
 ```
 - <What was done>. Why: <reason>. → <file links> #tags
 ```
-- No timestamps. Entries are listed in the order they happened; the file's date is the only time reference.
+- No timestamps. Entries are listed in the order they happened; the file's date is the only time reference. The one exception is backfill for an earlier day (cleanup skill), which goes in today's file and starts with that day's date: `- (2026-11-17) Processed the client weekly. Why: ...`.
 - Link to files with paths relative to the Project Brain root. Don't copy content into the journal.
 
 **Decisions**
