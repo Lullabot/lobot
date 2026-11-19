@@ -96,7 +96,7 @@ items:
     record: [docs/risks.yaml, docs/decisions.yaml, docs/questions.yaml]
     tabs: ["Risks", "Decisions", "Questions"]
     edit: ask
-    why: "The risk, decision, and questions logs in one workbook, one tab each, so the PM reviews them together and entries can point at each other. The docs/ files stay the record of truth unless the project moves the records into the Sheet."
+    why: "The risk, decision, and questions logs in one workbook, one tab each (plus an Updates tab for the risks' dated updates, one row each, so the Sheet stays readable when shared), so the PM reviews them together and entries can point at each other. The docs/ files stay the record of truth unless the project moves the records into the Sheet."
   status-reports:
     name: "Status reports"
     look_for: ["Status", "Weekly updates", "Weekly reports", "Reports"]
