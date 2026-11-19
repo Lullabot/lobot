@@ -39,7 +39,8 @@ MARK_EVERY = 120  # seconds: a merged turn gets an inline timestamp at least thi
 TS = r"(\d{1,2}:\d{2}(?::\d{2})?)(?:[.,]\d+)?"
 NAME = r"([^\W\d_][\w.'’-]*(?: [\w.'’()/-]+){0,4})"
 RE_VTT_TIME = re.compile(r"^\s*" + TS + r"\s+-->")
-RE_TS_LINE = re.compile(r"^[#*\s]*\[?" + TS + r"\]?[*\s]*$")
+ANCHOR = r"(?:\s*\{#[^}]*\})?"  # a heading anchor a Drive Markdown export adds: ### **00:13:54** {#00:13:54}
+RE_TS_LINE = re.compile(r"^[#*\s]*\[?" + TS + r"\]?[*\s]*" + ANCHOR + r"\s*$")
 RE_BRACKET_HEADER = re.compile(r"^\[" + NAME + r"\]\s+" + TS + r"\s*$")          # [Jane Doe] 00:01:02
 RE_NAME_TIME_HEADER = re.compile(r"^" + NAME + r"\s+" + TS + r"\s*$")            # Jane Doe  0:03
 RE_TS_SPEAKER = re.compile(r"^\[?" + TS + r"\]?\s*[-–]?\s*\*{0,2}" + NAME + r"\*{0,2}\s*:\s*\*{0,2}\s*(.*)$")
@@ -48,8 +49,10 @@ RE_SPEAKER = re.compile(r"^\*{0,2}" + NAME + r"\*{0,2}\s*:\s*\*{0,2}\s*(.*)$")  
 RE_SKIP = re.compile(r"(?i)^\W*(this editable transcript was computer generated|transcription ended after|"
                      r"meeting ended after|you should review gemini's notes)")
 # A transcript heading in a file that has a summary or notes first (Gemini notes Docs)
-# The prefix allows an emoji, including one Drive turned into stray characters ("ð").
-RE_TRANSCRIPT_HEADING = re.compile(r"(?i)^(?:#{1,4}\s*)?[*_]*\s*(?:\S{1,8}\s+)?[*_]*\s*transcript\s*[*_]*\s*$")
+# The prefix allows an emoji, including one Drive turned into stray characters ("ð"), or, in a
+# Markdown heading, the meeting title and a dash ("## **Weekly sync \- Transcript**").
+RE_TRANSCRIPT_HEADING = re.compile(r"(?i)^(?:#{1,4}\s*)?[*_]*\s*(?:\S{1,8}\s+)?[*_]*\s*transcript\s*[*_]*" + ANCHOR + r"\s*$"
+                                   r"|^#{1,4}\s.*?\s*\\?[-–—:|]\s*[*_]*\s*transcript\s*[*_]*" + ANCHOR + r"\s*$")
 # Signs that a file starts with notes or a summary before its transcript
 RE_NOTES_HINT = re.compile(r"(?im)^(?:#{1,4}\s.*|.*\bnotes by gemini\b.*|.*\bsuggested next steps\b.*)$")
 # Something that looks like another speaker's label inside a turn: two to four capitalized
