@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.42.2](https://github.com/Lullabot/lobot/compare/v0.42.1...v0.42.2) (2026-11-19)
+
+### Fixed
+
+* **engine:** read timestamps and the transcript heading in Gemini notes exported as Markdown ([#65](https://github.com/Lullabot/lobot/issues/65)) ([3ad8877](https://github.com/Lullabot/lobot/commit/3ad88777137bd7fdd8ac6093d66d8a0f61e95f1a)), closes [#58](https://github.com/Lullabot/lobot/issues/58)
+
 ## [0.42.1](https://github.com/Lullabot/lobot/compare/v0.42.0...v0.42.1) (2026-11-19)
 
 ### Fixed
