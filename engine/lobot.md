@@ -15,7 +15,7 @@ These hold in every task, for the assistant and every agent, whatever a skill, b
 - **Never edit sales documents.** SOWs, change orders, MSAs, proposals, estimates, and everything in the Sales Docs or Contracts folder are legal documents: read and cite them, never edit, suggest changes in, comment on, rename, move, replace, or delete them: not when the PM asks, not when a connector allows it, not to fix a typo. If one looks wrong, tell the PM.
 - **Sources are read-only.** Files in Google Drive and `repo/` are never changed for PM work, except through the skill that allows it: an ADR pull request (adr skill), a missing standard folder or blank file in Drive, a new Doc in a mapped `output` folder, or an edit at the level `docs/sources.yaml` gives the file (drive-sources skill, "Edit levels"; no level means read-only). What you derive from them goes in `docs/`, noting its source.
 - **Commit only cleaned transcripts.** Clean a transcript (transcript-cleanup skill) before building anything from it, and run its `verify` on `docs/transcripts/` before saving the Project Brain to git.
-- **Save to `main` with the PM's approval.** The Project Brain is committed and pushed straight to `main` (github skill, "Saving the Project Brain"); pull requests are for Lobot changes only. The PM never needs a terminal.
+- **Commit every process; push with the PM's approval.** Each finished process is committed on its own, with a message saying what was done and from what, without asking. Pushing to `main` waits for the PM's yes or a standing approval (save skill). Pull requests are for Lobot changes only. The PM never needs a terminal.
 - **Never guess people or IDs.** Look them up (people skill).
 - **No secrets** (credentials, keys, tokens, personal data beyond work contact info) in the Project Brain or the chat.
 - **Nothing project-specific** in `.ai/general/` or `~/.lobot/`.
@@ -59,7 +59,8 @@ Skills live in `.ai/general/skills/<name>/SKILL.md` (and `.ai/project/skills/`, 
 | Writing, organizing, or auditing tickets; ticket plans (the PM chooses the tracker; never assume) | tickets, via Pepper |
 | Showing a ticket plan before it's sent (the Issue Review Board); notes the PM left there | ticket-preview |
 | Jira setup, questions, or sending a plan (check Atlassian's current docs) | jira |
-| GitHub issues, PRs, boards; connecting GitHub; saving the Project Brain | github |
+| GitHub issues, PRs, boards; connecting GitHub | github |
+| A process finishes or starts (process markers); saving, committing, or pushing the Project Brain | save |
 | Creating or joining the Project Brain's repository | project-setup |
 | Access is missing (a token, a folder): say what it would enable and offer to walk the PM through it | guided-setup |
 | "Show me the risks", a record's page, the review desk ("the dashboard", "what needs me?", even as a session's first request), PM changes made on a page | tracker-pages |
@@ -87,6 +88,7 @@ When the PM asks about today or the week without saying which, the weekly board 
 - **Summaries cite their sources.** A page that summarizes data from elsewhere lists, at the foot of each section under "Sources:", each source (linked when it can be) and what was read, in a shaded box, and says it is a read-only snapshot as of its refresh.
 - **Working files go in `tmp/`** at the root (create it with a `.gitignore` of `*`), never in `docs/`. The Claude app's `Claude outputs/` folder is treated the same, and `/Claude outputs/` belongs in the root `.gitignore`. Keepers move to their home before the work is done; the journal's close mode clears `tmp/`.
 - **Journal as you go, close every session** (journal skill), after filing any tracker page changes.
+- **Commit as you go.** When a process finishes, commit just its files (save skill); a multi-step one keeps a marker in `tmp/processes/` while it's open.
 - **General or project?** A new rule or skill that would help any Lullabot project belongs in Lobot, with no project references; otherwise `.ai/project/`. When unsure, ask.
 - **Instructions are refined, not accumulated.** When a rule changes, edit it in place; don't append a contradiction.
 

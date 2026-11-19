@@ -808,7 +808,7 @@ footer a { color: var(--ink-2); }
       </article>
       <article class="skill" data-skill="github" data-group="tickets">
         <header><h3>GitHub</h3><span class="owner pepper">Pepper</span></header>
-        <p>Reads and updates issues, pull requests, and project boards, reports on sprint status, and saves the Project Brain itself to GitHub.</p>
+        <p>Reads and updates issues, pull requests, and project boards, and reports on sprint status.</p>
         <div class="try">"How's the sprint looking?"</div>
       </article>
       <article class="skill" data-skill="adr" data-group="tickets">
@@ -832,6 +832,11 @@ footer a { color: var(--ink-2); }
         <header><h3>Project setup</h3><span class="owner lobot">Lobot</span></header>
         <p>Puts the Project Brain in a private GitHub repository, helps a new PM join an existing one, and when GitHub says no, drafts the request for whoever has to approve it.</p>
         <div class="try">"Put this Project Brain on GitHub."</div>
+      </article>
+      <article class="skill" data-skill="save" data-group="setup">
+        <header><h3>Save</h3><span class="owner lobot">Lobot</span></header>
+        <p>Commits each piece of work on its own as it finishes, with a note of what was done and what it was built from, so the Project Brain's history is a paper trail. Pushes to GitHub only when you say so, or on a schedule you set.</p>
+        <div class="try">"Save and push."</div>
       </article>
       <article class="skill" data-skill="lobot" data-group="setup">
         <header><h3>Lobot</h3><span class="owner lobot">Lobot</span></header>
@@ -880,7 +885,7 @@ footer a { color: var(--ink-2); }
 <span class="d">~/.lobot/</span>                <span class="c"># your voice and preferences,</span>
                          <span class="c"># on your computer, every project</span></div>
       <div class="notes">
-        <div class="note"><div><b>Saved to a private GitHub repository</b><span>The assistant commits and pushes for you. You never need a terminal to keep the Project Brain safe.</span></div></div>
+        <div class="note"><div><b>Saved to a private GitHub repository</b><span>The assistant commits each piece of work as it finishes, with a note of what it was built from, and pushes when you say so. You never need a terminal to keep the Project Brain safe.</span></div></div>
         <div class="note"><div><b>One fact, one home</b><span>People live in the people directory, ownership in RACI, decisions in the decision log. Everything else points to them instead of copying.</span></div></div>
         <div class="note"><div><b>Sources stay untouched</b><span>Transcripts, Drive files, and the code are read, never edited. Summaries go in <code>docs/</code> with a note of where they came from.</span></div></div>
         <div class="note"><div><b>Lobot updates itself, not your records</b><span>An update only replaces Lobot's own files. If you've edited one, it stops and lists them instead of overwriting your work.</span></div></div>

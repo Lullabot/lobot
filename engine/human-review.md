@@ -22,7 +22,7 @@ Anything sent to a tool or service outside the Project Brain:
 - A task manager, email, chat, calendar, or anything else a connector reaches.
 - Sharing a Claude hosted page with anyone.
 
-These stay inside: files in the Project Brain (including `docs/` and `tmp/`), saving the Project Brain to its own private repository (github skill), the PM's tracker pages and review desk while they're private to the PM's account, and empty standard folders or blank files created in the project's drive (drive-sources skill).
+These stay inside: files in the Project Brain (including `docs/` and `tmp/`), saving the Project Brain to its own private repository (save skill), the PM's tracker pages and review desk while they're private to the PM's account, and empty standard folders or blank files created in the project's drive (drive-sources skill).
 
 ## When review is required
 
