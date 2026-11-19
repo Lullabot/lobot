@@ -89,7 +89,7 @@ With `Internal: keep`, internal matters stay unless they're also another kind (a
    ```sh
    python3 .ai/general/skills/transcript-cleanup/transcript.py prepare docs/transcripts/raw/<file> --out tmp/<slug>.turns.md
    ```
-   Add `--title "<meeting title>"` and `--date YYYY-MM-DD` when the raw file doesn't carry them (a Zoom or dropped-in file; Drive snapshots do). For a Gemini notes Doc, which starts with a summary, the script starts after the "Transcript" heading on its own and says so. If it warns that it found no transcript heading, or picked the wrong place, pass `--from "<text of the heading>"`. The summary stays in Drive.
+   Add `--title "<meeting title>"` and `--date YYYY-MM-DD` when the raw file doesn't carry them (a Zoom or dropped-in file; Drive snapshots do). For a Gemini notes Doc, which starts with a summary, the script starts after the "Transcript" heading (or a "<meeting title> - Transcript" heading) on its own and says so. If it warns that it found no transcript heading, or picked the wrong place, pass `--from "<text of the heading>"`. The summary stays in Drive.
 
    Check what it prints. Compare the speaker list with who was on the call. A warning that a speaker label appears inside other turns usually means a speaker the parser didn't recognize, whose lines were merged into someone else's. When the speakers look wrong, stop: report the parse problem (it's a Lobot bug worth reporting with the lobot-feedback skill) rather than cleaning a misattributed transcript.
 3. **Mark the cuts.** Read every turn, in chunks for a long meeting, and write `tmp/<slug>.edits.yaml`:
