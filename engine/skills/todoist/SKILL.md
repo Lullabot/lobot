@@ -28,6 +28,7 @@ Todoist is reached through a Todoist connector (an MCP server) in the PM's assis
 
 - Lobot sees only the projects the PM shared with it, and that account's own Inbox and personal labels, not the PM's.
 - "Me" means the assistant's account. To assign a task to the PM, use the PM's Todoist user ID or email.
+- A connector's "my tasks" search (`responsibleUser`, or no assignee given) can also return unassigned tasks, including those in any project the PM shared with the assistant. Before acting on tasks assigned to someone, check each task's assignee (`responsibleUid`), or search with a filter such as `##<project> & assigned to: me`.
 - Todoist shows the assistant as the one who added or changed each task, so the PM may not need a label to spot them.
 
 Connectors name their tools differently. Look for the Todoist tools the session has and match them to the operations below; tell the PM about any operation their connector lacks rather than working around it.
@@ -38,7 +39,7 @@ Connectors name their tools differently. Look for the Todoist tools the session 
 | List projects | `find-projects`, `get_projects` | Names and IDs. Also proves the connection works. |
 | List sections | `find-sections` | Not every connector has it; see "Section IDs". |
 | List labels | `find-labels` | A separate assistant account has no personal labels of the PM's; labels on shared tasks still work by name. |
-| List tasks | `find-tasks`, `get_tasks` | Always pass a project ID (or section ID, or task IDs). Ask for 20 at most unless the PM asks for more; some connectors ignore the limit, so don't page through everything. |
+| List tasks | `find-tasks`, `get_tasks` | Always pass a project ID (or section ID, or task IDs). Ask for 20 at most unless the PM asks for more; some connectors ignore the limit, so don't page through everything. Searching by assignee may also return unassigned tasks; check each task's `responsibleUid`. |
 | List completed tasks | `find-completed-tasks` | Tells a finished task from a deleted one. Not every connector has it. Some look back only a week unless given a start date, so pass one from before the oldest open entry was filed. |
 | Create tasks | `add-tasks`, `create_task` | Title, description, project, section, labels, priority, due date, deadline, assignee. Some take several at once. |
 | Update tasks | `update-tasks`, `update_task` | By task ID, never by name. Sending labels usually replaces all of a task's labels, so send the full list. |
