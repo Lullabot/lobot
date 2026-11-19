@@ -106,5 +106,14 @@
         "unless_frontmatter": "cleaned"
       }
     ]
+  },
+  {
+    "id": "project-local-ignored",
+    "why": "Settings for the PM's own tools (outside Lobot) now have a home in .ai/project/local/, which git ignores so they're never committed or handed to the next PM.",
+    "steps": [
+      {
+        "ignore": "/.ai/project/local/"
+      }
+    ]
   }
 ]

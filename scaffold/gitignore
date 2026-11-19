@@ -10,6 +10,8 @@
 # A project virtualenv, if Python needed one for PyYAML (lobot.md, "Python and PyYAML")
 /.venv/
 /venv/
+# The PM's own tool settings for this project: never committed or handed over (.ai/general/lobot.md, "Portability")
+/.ai/project/local/
 # Local secrets (per-PM tokens). Never commit. See .env.example
 .env
 .env.*

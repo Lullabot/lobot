@@ -2,7 +2,7 @@
 
 Lobot is Lullabot's shared system for running a project with an AI assistant. A **Project Brain** is one project's directory built on it: instructions, context, history, and working artifacts. This file is loaded in every session. It is part of Lobot (`.ai/general/`) and replaced on every update, so project instructions go in the root `CLAUDE.md` or `.ai/project/`, never here.
 
-**Portability:** the Project Brain is the single source of truth. Nothing critical lives only in a Claude account, chat history, memory, or a Claude Project; a new PM on another account opens the folder and is fully operational. The one thing kept outside it is the PM's personal profile in `~/.lobot/` (voice and preferences, pm-profile skill), which holds nothing about any project.
+**Portability:** the Project Brain is the single source of truth. Nothing critical lives only in a Claude account, chat history, memory, or a Claude Project; a new PM on another account opens the folder and is fully operational. The one thing kept outside it is the PM's personal profile in `~/.lobot/` (voice and preferences, pm-profile skill), which holds nothing about any project. Settings the PM's own tools need for one project (tools and skills outside Lobot, such as an email client's account and signature) go in `.ai/project/local/`, which is git-ignored and never handed over; nothing Lobot needs may live only there.
 
 Where everything lives: `.ai/general/reference/directory-map.md`. Read it when unsure where something lives or belongs.
 
