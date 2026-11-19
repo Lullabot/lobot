@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.40.1](https://github.com/Lullabot/lobot/compare/v0.40.0...v0.40.1) (2026-11-19)
+
+### Fixed
+
+* **engine:** risk updates in the Maintenance Logs get their own Updates tab, with each risk's latest update and a link to its history, so the Sheet reads well when shared ([#53](https://github.com/Lullabot/lobot/issues/53)) ([5fe8de5](https://github.com/Lullabot/lobot/commit/5fe8de5ac1862def0005ce2b757450102e107b59))
+
 ## [0.40.0](https://github.com/Lullabot/lobot/compare/v0.39.5...v0.40.0) (2026-11-18)
 
 ### Added
