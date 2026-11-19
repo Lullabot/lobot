@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.41.0](https://github.com/Lullabot/lobot/compare/v0.40.1...v0.41.0) (2026-11-19)
+
+### Added
+
+* **engine:** commit each finished piece of work on its own, with a note of what it was built from ([#63](https://github.com/Lullabot/lobot/issues/63)) ([daaa2de](https://github.com/Lullabot/lobot/commit/daaa2de15f8038465b27d3dbf1aafa7897b54338))
+
 ## [0.40.1](https://github.com/Lullabot/lobot/compare/v0.40.0...v0.40.1) (2026-11-19)
 
 ### Fixed
