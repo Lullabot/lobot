@@ -90,4 +90,9 @@ The token is passed by `gh` for that one command. Never put it in a URL, `.git/c
 - **Pull before the first commit of a session,** so the commits land on top of a teammate's saves. If git refuses because of uncommitted changes, commit them first (as their own process) and pull again; never stash, reset, or discard them.
 - **Push only with the PM's yes:** when they ask, or under a standing approval they gave (project-setup skill, "Keeping it saved", or a scheduled job they set up to push). Before pushing, list the commits it will send (`git log --oneline origin/main..HEAD`) in a line or two.
 - If a pull can't fast-forward (someone else saved changes too), stop and explain it to the PM in plain terms. Never force-push, rebase, or reset without their explicit approval. Commits keep piling up locally in the meantime, which is safe.
+- **When the push is blocked here** (Cowork answers 403 with "Cowork blocked this request … not git push"), the commits are safe on the PM's computer. Say how many are waiting and that the PM has to push them by hand, either way:
+  - **GitHub Desktop:** open the Project Brain (the first time, File > Add Local Repository and choose its folder), then click **Push origin**.
+  - **Terminal:** go to the Project Brain folder and run `git push origin main`.
+
+  Don't look for another way around the block. If the push is refused there because GitHub has newer saves, the PM pulls first (**Fetch origin**, then **Pull origin** in GitHub Desktop) and pushes again.
 - No GitHub repository yet: commit anyway, and offer to finish setup (project-setup skill) once per session.
