@@ -12,11 +12,7 @@ Part of the jira skill (`SKILL.md`, "Connecting to Jira"). Read the section that
 
 `jira.py` needs nothing beyond Python's standard library, except PyYAML for ticket plans, `docs/people.yaml`, and the structure file. The `pyyaml:` line of `check` says whether the Python running it has PyYAML. When it doesn't and the Project Brain has its own virtualenv (`.venv/` or `venv/`), `jira.py` reruns itself with that Python, so the commands in this skill work as written.
 
-When `check` still says PyYAML is missing:
-
-1. Install it for the PM's user, in the shell on their computer: `python3 -m pip install --user pyyaml`. Tell the PM in a line what you installed and why.
-2. If pip refuses (an "externally managed" Python, as Homebrew's is), don't force it: no `--break-system-packages`, no `sudo`. Tell the PM that `jira.py` needs PyYAML and that this Python won't take packages, and ask whether to use another Python they have, or to make a virtualenv for the project in `.venv/` (add `.venv/` to the Project Brain's `.gitignore` first, and tell the PM to commit that change).
-3. Run `check` again.
+When `check` still says PyYAML is missing, install it as "Python and PyYAML" in `.ai/general/lobot.md` describes, with the Python that `check` names, then run `check` again.
 
 ## Setting up the token
 

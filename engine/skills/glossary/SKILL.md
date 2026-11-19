@@ -85,5 +85,5 @@ Rules:
    python3 .ai/general/skills/glossary/validate.py .ai/general/glossary.yaml
    ```
    Project `related` entries may point at shared keys. The validator flags project entries that override shared ones so the override is deliberate.
-   (Requires PyYAML: `pip install pyyaml`.)
+   (Needs PyYAML: "Python and PyYAML" in `.ai/general/lobot.md`.)
 7. Mention the change in chat in one line. Log to the journal only when a meaning change reflects a project decision (tag `#decision`).

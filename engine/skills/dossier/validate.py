@@ -22,7 +22,15 @@ import sys
 try:
     import yaml
 except ImportError:
-    sys.exit("PyYAML is required: pip install pyyaml")
+    # Every Lobot script handles a missing PyYAML the same way ("Python and PyYAML" in .ai/general/lobot.md).
+    import os
+    if not os.environ.get("LOBOT_YAML_RERUN"):
+        for _py in (".venv/bin/python", "venv/bin/python"):  # the Project Brain's own virtualenv
+            if os.access(_py, os.X_OK) and os.path.abspath(_py) != os.path.abspath(sys.executable):
+                os.environ["LOBOT_YAML_RERUN"] = "1"
+                os.execv(_py, [_py] + sys.argv)
+    sys.exit(f"PyYAML is required, and this Python ({sys.executable}) doesn't have it. "
+             "See \"Python and PyYAML\" in .ai/general/lobot.md.")
 
 REQUIRED = ("title", "status", "updated", "sources")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")

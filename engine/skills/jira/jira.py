@@ -95,17 +95,16 @@ def have_yaml():
 
 def yaml_help(what):
     return (f"PyYAML is needed {what}, and this Python ({sys.executable}) doesn't have it. "
-            "Install it for your user with: python3 -m pip install --user pyyaml "
-            "(the jira skill, \"Connecting to Jira\", says what to do if pip refuses)")
+            "See \"Python and PyYAML\" in .ai/general/lobot.md")
 
 
 def use_project_python():
     """Without PyYAML, rerun once under the Project Brain's own virtualenv, if it has one."""
-    if have_yaml() or os.environ.get("LOBOT_JIRA_RERUN"):
+    if have_yaml() or os.environ.get("LOBOT_YAML_RERUN"):
         return
     for py in VENV_PYTHONS:
         if os.access(py, os.X_OK) and os.path.abspath(py) != os.path.abspath(sys.executable):
-            os.environ["LOBOT_JIRA_RERUN"] = "1"
+            os.environ["LOBOT_YAML_RERUN"] = "1"
             os.execv(py, [py] + sys.argv)
 
 

@@ -89,7 +89,7 @@ Over time the Project Brain becomes the project's memory. When a new PM takes ov
 
 ## Installing Lobot
 
-You'll need [Node 18 or later](https://nodejs.org/). Some skills also need Python 3 with PyYAML (`pip install pyyaml`), and the GitHub and ADR skills need the [GitHub CLI](https://cli.github.com/) (`gh`).
+You'll need [Node 18 or later](https://nodejs.org/). Some skills also need Python 3 with PyYAML (the assistant installs it for you when it's missing), and the GitHub and ADR skills need the [GitHub CLI](https://cli.github.com/) (`gh`).
 
 ### Add Lobot to a project folder
 

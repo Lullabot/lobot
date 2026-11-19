@@ -87,6 +87,6 @@ Verify Lullabot employees' full names and titles against the team page, https://
    ```sh
    python3 .ai/general/skills/people/validate.py docs/people.yaml
    ```
-   Fix every error before moving on. (Requires PyYAML: `pip install pyyaml`.)
+   Fix every error before moving on. (Needs PyYAML: "Python and PyYAML" in `.ai/general/lobot.md`.)
 5. Log to the journal when someone joins or leaves the project, or changes role (`#people` tag). Routine additions like a new ID or nickname don't need a journal entry.
 6. Mention the change in chat in one line.

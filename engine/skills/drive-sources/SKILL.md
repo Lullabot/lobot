@@ -161,7 +161,7 @@ When a Google Sheet needs a local copy in `docs/` (the kickoff checklist, until 
    ```sh
    python3 .ai/general/skills/drive-sources/validate.py docs/sources.yaml
    ```
-   (Requires PyYAML: `pip install pyyaml`.)
+   (Needs PyYAML: "Python and PyYAML" in `.ai/general/lobot.md`.)
 4. **The project journal doc** (the weekly entry for Lullabot leadership, project-journal-entry skill) is mapped as `project-journal`: `kind: file`, `purpose: reference`, and a note that it is internal to Lullabot. It usually lives in Lullabot's own Drive, not the client's: never create it in, copy it to, or link it from the client's shared drive.
 5. To stop using a source, delete its entry and leave its `processed` entries; the validator warns about them but keeps them as history.
 
