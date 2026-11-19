@@ -135,7 +135,7 @@ python3 .ai/general/skills/decision-log/validate.py docs/decisions.yaml --pendin
    ```sh
    python3 .ai/general/skills/decision-log/validate.py docs/decisions.yaml
    ```
-   (Requires PyYAML: `pip install pyyaml`.)
+   (Needs PyYAML: "Python and PyYAML" in `.ai/general/lobot.md`.)
 7. **Journal** one Log line tagged `#decision`: the ID, the decision, its status, and where it came from (meeting notes file and timestamp, issue, or who stated it).
    ```
    - Recorded D-012 (Don't use CSS hyphenation), pending. Why: proposed by Jane Doe in the design review (00:14:10). → docs/decisions.yaml, docs/meetings/2026-01-15-design-review.md #decision

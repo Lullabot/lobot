@@ -15,7 +15,7 @@ The plan file is the record. The board never edits a plan and never sends anythi
 
 ## Needs
 
-A hosted page with a shared database (`.ai/general/pages.md`, "Needs"), and Python with PyYAML (the same as `jira.py`). Without the page, say so once, show the plan in chat as one fenced `yaml` block, and take feedback in chat.
+A hosted page with a shared database (`.ai/general/pages.md`, "Needs"), and Python with PyYAML ("Python and PyYAML" in `.ai/general/lobot.md`). Without the page, say so once, show the plan in chat as one fenced `yaml` block, and take feedback in chat.
 
 ## Where
 

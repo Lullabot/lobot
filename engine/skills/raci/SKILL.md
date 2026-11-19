@@ -218,7 +218,7 @@ When the project maps a Roster & RACI Sheet (drive-sources skill, layout key `ra
    ```sh
    python3 .ai/general/skills/raci/validate.py docs/raci.yaml
    ```
-   (Requires PyYAML: `pip install pyyaml`.)
+   (Needs PyYAML: "Python and PyYAML" in `.ai/general/lobot.md`.)
 5. **Journal** one Log line tagged `#people` for a change of who fills a role, or `#decision` for a change of who is accountable, with the source.
 
 ## Empty file
