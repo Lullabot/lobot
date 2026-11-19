@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.42.1](https://github.com/Lullabot/lobot/compare/v0.42.0...v0.42.1) (2026-11-19)
+
+### Fixed
+
+* **engine:** a missing PyYAML is handled the same way by every skill, and the assistant installs it without handing the PM a pip command ([#66](https://github.com/Lullabot/lobot/issues/66)) ([c09f367](https://github.com/Lullabot/lobot/commit/c09f3670b1ad12a5e7ebfdfcccf6a68f2de0a330)), closes [#37](https://github.com/Lullabot/lobot/issues/37)
+
 ## [0.42.0](https://github.com/Lullabot/lobot/compare/v0.41.0...v0.42.0) (2026-11-19)
 
 ### Added
