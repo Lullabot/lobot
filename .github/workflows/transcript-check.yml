@@ -1,0 +1,27 @@
+name: Transcript check
+
+# Runs the transcript-cleanup script on the sample transcripts in
+# .github/fixtures/transcript-cleanup/ and compares the turns it finds.
+
+on:
+  pull_request:
+    paths:
+      - engine/skills/transcript-cleanup/**
+      - .github/fixtures/transcript-cleanup/**
+      - .github/scripts/test-transcript.py
+      - .github/workflows/transcript-check.yml
+  push:
+    branches: [main]
+    paths:
+      - engine/skills/transcript-cleanup/**
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install --user pyyaml
+      - run: python3 .github/scripts/test-transcript.py
