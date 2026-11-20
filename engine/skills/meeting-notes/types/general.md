@@ -21,7 +21,8 @@ template: general
 speakers: [Full Name, Full Name]   # who spoke in the transcript; attendance unknown
 source: docs/transcripts/<file> (cleaned; <format>, ~N min)
 series: <recurring meeting's name, from .ai/project/meeting-notes.md; leave out for a one-off>
-status: draft
+status: draft   # shared once filed for the team (meeting-notes step 8)
+review: open    # the records it yields; "done by <PM name> (YYYY-MM-DD)" once applied
 ---
 # <Meeting title> (YYYY-MM-DD)
 
