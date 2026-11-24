@@ -75,6 +75,8 @@ Every document gets `synced` for its editable fields (`decision`, `note` for a p
 2. Sync every tab from the files, set `meta/info`, and file anything already waiting on the page first.
 3. Open the review desk and say in one line what's new on it (for example "7 proposals, 3 questions for you, 4 product questions, 2 tasks for you"). The PM works through it there instead of a long list in chat.
 
+**Every refresh checks for a new Lobot release.** Whenever the review desk is synced or opened (after processing a file, for "the dashboard" or "what needs me?", in the start-of-session sync), run the lobot skill's version check ("Checking for a new version"). When a release is waiting and the PM hasn't heard about it today, add it to the one line ("…, 2 tasks for you, and Lobot 0.43.0 is out").
+
 **Filing a proposal decision.** `approve` applies the item as proposed; `change` applies it with the PM's note; `drop` leaves it out. Apply them as meeting-notes step 8 says (approval is the PM's; never infer it from an untouched item), record the outcome in the notes file's review list, then delete the proposal's document. When a notes file has no undecided items left, it can be set to reviewed.
 
 On a project without the review desk, publish it the first time Lucy finishes processing a file, then open it. Before seeding it, check that each tab's record exists (`docs/questions.yaml`, `docs/tasks.yaml`, `docs/risks.yaml`, `docs/decisions.yaml`), and create any missing one with no entries through its skill, so an answer or item the PM adds on the page has a file to be filed into. A project with no kickoff checklist just has an empty Checklists tab.

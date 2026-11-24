@@ -1,6 +1,6 @@
 ---
 name: lobot
-description: Check, update, and contribute to Lobot (.ai/general/). Use for "update Lobot", which version is installed, linking a new project skill, sending an improvement back, and when a session changed .ai/general/.
+description: Check, update, and contribute to Lobot (.ai/general/). Use for "update Lobot", which version is installed, the daily check for a new release, linking a new project skill, sending an improvement back, and when a session changed .ai/general/.
 ---
 
 # Lobot
@@ -17,6 +17,7 @@ description: Check, update, and contribute to Lobot (.ai/general/). Use for "upd
 | Installed version, and the checksums used to spot local changes | `.ai/general/.lobot-version` |
 | Skill links assistants discover | `.claude/skills/`, and `.agents/skills/` when that harness is set up |
 | Agent definitions Claude discovers | `.claude/agents/` (copies of `.ai/general/agents/`) |
+| Is a newer release out? (a quick check; changes nothing) | `python3 .ai/general/skills/lobot/version_check.py` |
 | Lobot's source | https://github.com/Lullabot/lobot |
 
 All commands run from the Project Brain root and need Node 18 or later and network access:
@@ -36,6 +37,25 @@ Run `status`. It changes nothing and reports:
 - what an update would write or delete;
 - whether skill links are current;
 - "Updating brings": what the new version would add, change, or remove, and the release notes since the installed version.
+
+## Checking for a new version
+
+PMs only hear about a release if something tells them, so Lobot checks on its own: `version_check.py` reads the installed version and asks GitHub for the latest release in one quick request. It needs no login, no Node, and no PyYAML, and sends nothing about the project.
+
+**When:**
+- the PM's first session of the day, in the start-of-session routine (the same session that refreshes the daily or weekly board);
+- every time the review desk is refreshed (tracker-pages skill), so a PM who lives on the dashboard still hears about it;
+- every cleanup run, including scheduled ones (cleanup skill), so a PM with the nightly sweep hears about it on days they don't open a session;
+- whenever the PM asks ("is Lobot up to date?").
+
+**What to do with `state:`**
+- `behind`: tell the PM in one line, with the age of their copy: "Lobot 0.43.0 is out; you're on 0.42.2, updated 12 days ago. Want to see what it brings?" If they say yes, run `status` ("Check") and summarize "Updating brings"; update only on their go-ahead ("Update"). On the daily board it's the `lobot` section (daily-board skill).
+- `current` or `ahead`: say nothing.
+- `unknown`: say nothing and carry on; `reason:` is for you (no network, a tool blocking the request). Mention it only when the PM asked.
+
+**Once a day, not every refresh.** After the PM has heard about a version, don't repeat it in later refreshes or sessions that day; check the day's journal entry for the line below. If they decline ("not now"), leave it until the next day, or until a newer version comes out.
+
+Log the first mention each day in the journal with `#brain-kit` ("Lobot 0.43.0 available, on 0.42.2"), so a later session or the cleanup report knows the PM was told.
 
 ## Update
 
