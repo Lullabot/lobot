@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.43.0](https://github.com/Lullabot/lobot/compare/v0.42.2...v0.43.0) (2026-11-24)
+
+### Added
+
+* **engine:** Lobot asks how comfortable you are with git and the terminal, and walks you through pushing yourself when your assistant can't ([3fbc59c](https://github.com/Lullabot/lobot/commit/3fbc59c9eefe5258242c42beb7f55227fbb8d554))
+
 ## [0.42.2](https://github.com/Lullabot/lobot/compare/v0.42.1...v0.42.2) (2026-11-19)
 
 ### Fixed
