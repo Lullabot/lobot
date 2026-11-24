@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.43.1](https://github.com/Lullabot/lobot/compare/v0.43.0...v0.43.1) (2026-11-24)
+
+### Fixed
+
+* **engine:** Lobot tells you when a new version is out, on your first session of the day, when the dashboard is refreshed, and in the cleanup ([85836cf](https://github.com/Lullabot/lobot/commit/85836cf12ebd885b6f2d28f6dcc054be2163ebdc))
+
 ## [0.43.0](https://github.com/Lullabot/lobot/compare/v0.42.2...v0.43.0) (2026-11-24)
 
 ### Added
