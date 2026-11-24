@@ -7,7 +7,7 @@ description: 'Commit each finished process (a transcript processed, page changes
 
 The Project Brain is a git repository, and its history is the project's paper trail. A folder on one computer is lost with that computer, so commits are what keep the work, and the push to the private repository is what keeps it off the PM's laptop. One commit per finished process means anyone (the PM, the next PM, an assistant) can see what was done, from what, and when, and can undo one piece of work without touching another.
 
-The PM never needs a terminal: the assistant does the git work, in plain language. If the Project Brain isn't in git yet or has no GitHub repository, use the project-setup skill first. If it isn't in git and the PM doesn't want it to be, everything here except the commits still applies (process markers, the journal). Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
+The assistant does the git work, in plain language, so the PM never needs a terminal unless they prefer one. Before the first git command in a session, check that the Project Brain is a git repository with a GitHub remote (`git rev-parse --is-inside-work-tree`, `git remote get-url origin`, or the project-setup skill's `brain-state.sh`). If it isn't in git yet or has no GitHub repository, use the project-setup skill first. If it isn't in git and the PM doesn't want it to be, everything here except the commits still applies (process markers, the journal). Run git in the same shell as `gh` (in Cowork, the shell on the PM's computer), from the Project Brain root.
 
 ## Before the first git command in a session
 
@@ -90,9 +90,39 @@ The token is passed by `gh` for that one command. Never put it in a URL, `.git/c
 - **Pull before the first commit of a session,** so the commits land on top of a teammate's saves. If git refuses because of uncommitted changes, commit them first (as their own process) and pull again; never stash, reset, or discard them.
 - **Push only with the PM's yes:** when they ask, or under a standing approval they gave (project-setup skill, "Keeping it saved", or a scheduled job they set up to push). Before pushing, list the commits it will send (`git log --oneline origin/main..HEAD`) in a line or two.
 - If a pull can't fast-forward (someone else saved changes too), stop and explain it to the PM in plain terms. Never force-push, rebase, or reset without their explicit approval. Commits keep piling up locally in the meantime, which is safe.
-- **When the push is blocked here** (Cowork answers 403 with "Cowork blocked this request … not git push"), the commits are safe on the PM's computer. Say how many are waiting and that the PM has to push them by hand, either way:
-  - **GitHub Desktop:** open the Project Brain (the first time, File > Add Local Repository and choose its folder), then click **Push origin**.
-  - **Terminal:** go to the Project Brain folder and run `git push origin main`.
-
-  Don't look for another way around the block. If the push is refused there because GitHub has newer saves, the PM pulls first (**Fetch origin**, then **Pull origin** in GitHub Desktop) and pushes again.
+- **If the push fails,** see "When the push fails" below.
 - No GitHub repository yet: commit anyway, and offer to finish setup (project-setup skill) once per session.
+
+## When the push fails
+
+Always try the push yourself first, once the PM has approved it: don't assume from the tool you're running in that it will fail, because a PM may have connected something that lets it through. When it fails, find out why from the error, keep the commits (they're safe on the PM's computer), and say how many are waiting.
+
+| Error | Why | What next |
+|---|---|---|
+| 403 with "Cowork blocked this request … not git push" (or another assistant's own block) | The assistant's tool doesn't allow pushes | The PM pushes, as below. Don't look for another way around the block. |
+| `auth`, 401, or "could not read Username" | No working GitHub login here | The github skill's "Connecting GitHub" (guided-setup skill), then try again |
+| 403 "Permission … denied" | The token or account can't write to this repository | project-setup skill, "Access ladder" |
+| Rejected, "fetch first" or non-fast-forward | GitHub has newer saves | Pull, then push again; if the pull can't fast-forward, stop and explain |
+| Can't resolve host, timed out | No network from here | Try again later; offer the PM's way if it's urgent |
+
+**When the PM pushes,** give the steps for the app and level in their technical comfort settings (pm-profile skill, "Technical comfort"; until they have one, step-by-step with GitHub Desktop). Use the Project Brain's full path and the branch, and say what they'll see when it worked. At `step-by-step`, call it sending their saved work up to GitHub, one step per message:
+
+- **GitHub Desktop, step-by-step:**
+  1. Open **GitHub Desktop**. (Not installed, or the PM has `none yet`: offer guided-setup's "GitHub Desktop" walkthrough first.)
+  2. At the top left, check that **Current repository** shows the Project Brain's folder name. If it isn't in the list, choose **File** > **Add Local Repository…**, choose the folder (give its path), and click **Add Repository**.
+  3. Click **Push origin** at the top (it shows the number of saves waiting). If it says **Fetch origin** instead, click it first; if it then says **Pull origin**, click that, then **Push origin**.
+  4. Done when the button says **Fetch origin** again with no number. Then ask them to tell you, and check with `git fetch` and `git status` that nothing is waiting.
+- **GitHub Desktop, checklist or fluent:** "In GitHub Desktop, open the Project Brain and click **Push origin** (pull first if it asks)."
+- **Terminal, step-by-step:** how to open it (Mac: **Cmd + Space**, type **Terminal**, press **Return**; Windows: **Git Bash** from the Start menu, or **Terminal** if Git for Windows isn't installed), then one command at a time, each with what it does and what they'll see: `cd "<full path>"`, then `git push origin main`. Done when the last line names `main -> main`.
+- **Terminal, checklist:**
+
+  ```sh
+  cd "<full path to the Project Brain>"
+  git pull --ff-only origin main   # only if the push is refused for newer saves
+  git push origin main
+  ```
+
+- **Terminal, fluent:** "`git push origin main` in the Project Brain; I couldn't push from here."
+- **Another app** (VS Code, Tower): name its push action if you know it ("**Sync Changes** in VS Code's Source Control panel"); otherwise say what needs to happen in git's words and ask what they see.
+
+If they hit something their level hasn't covered (a refused push, a sign-in prompt, a conflict), walk them through that part step-by-step, whatever their level (pm-profile skill, "Something new to their level"). A scheduled or unattended run can't ask: its report says how many commits are waiting and to ask the assistant for the steps.

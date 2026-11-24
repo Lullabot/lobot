@@ -47,6 +47,6 @@ Commit after each step that changed files, as its own commit (save skill), with 
 Offer once, after the first cleanup the PM runs by hand: "Want me to run this every evening and push the result?" The default is weekdays at the end of the PM's working day; they choose. The PM's computer must be on at that time when the Project Brain is a folder on it.
 
 - Create it with the assistant's scheduled-task tools if it has them; otherwise give the PM a prompt to schedule themselves: work in the Project Brain, follow `.ai/general/lobot.md`, run the cleanup skill unattended, and push at the end.
-- In Cowork, a scheduled run can commit but can't push: tell the PM when they set it up that they'll push by hand (GitHub Desktop or the terminal, save skill), and the report says how many commits are waiting.
+- In Cowork, a scheduled run can commit but can't push: tell the PM when they set it up that they'll push by hand (save skill, "When the push fails", at their technical comfort level), and the report says how many commits are waiting.
 - In Cowork, git needs delete permission in the folder; when a scheduled run's request goes unanswered, the run does what it can without git and says so.
 - The schedule is the PM's own habit, so record it in their personal profile (pm-profile skill), never in the project's files. Saying yes to the schedule is the standing approval for its push, and nothing else.

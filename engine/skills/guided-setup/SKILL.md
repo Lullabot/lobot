@@ -1,13 +1,13 @@
 ---
 name: guided-setup
-description: 'Walk a non-technical PM step by step through setup only they can do: a GitHub or Jira token, the .env file, connecting a folder. Use when a task is blocked by missing access, when the overview lists something to set up, or the PM asks how.'
+description: 'Walk a PM, at their level of technical comfort, through setup only they can do: a GitHub or Jira token, the .env file, connecting a folder, installing GitHub Desktop. Use when a task is blocked by missing access, when the overview lists something to set up, the PM has to push by hand, or the PM asks how.'
 ---
 
 # Guided setup
 
 ## Why
 
-Some setup only the PM can do: a token is theirs alone, and a folder is connected from their own computer. Most PMs don't live in a terminal, and "paste it into `.env`" means nothing to someone who has never seen a hidden file. When access is missing, the PM shouldn't hit a dead end ("Pepper can't reach GitHub") and have to work out the fix alone. The assistant names what's missing, offers to help, and walks them through it one step at a time.
+Some setup only the PM can do: a token is theirs alone, and a folder is connected from their own computer. Many PMs don't live in a terminal, and "paste it into `.env`" means nothing to someone who has never seen a hidden file, while a PM who does live there wants the one line, not ten messages. When access is missing, the PM shouldn't hit a dead end ("Pepper can't reach GitHub") and have to work out the fix alone. The assistant names what's missing, offers to help, and walks them through it one step at a time.
 
 The click-by-click steps for each token stay in their own skills (github, project-setup, jira). This skill is how to walk a PM through them, plus the steps those skills leave out: hidden files, editing `.env`, and connecting folders.
 
@@ -24,6 +24,7 @@ When a task can't go ahead because something isn't set up, say so in one line, s
 | `jira.py check` says `missing` or `refused` | A Jira token | "Jira token" |
 | The pm-profile skill can't read `~/.lobot/` | The profile folder connected to the session (or created) | "Connect a folder" |
 | The project folder isn't in the session | The project folder connected | "Connect a folder" |
+| The PM has to push by hand (save skill, "When the push fails") and has no git app, or GitHub Desktop doesn't have the Project Brain | GitHub Desktop, set up with the Project Brain | "GitHub Desktop" |
 | The project overview lists one of these under what isn't set up | That item | The matching walkthrough |
 
 - **When an agent reports missing access,** the assistant makes the offer: agents can't talk to the PM mid-run (`.ai/general/delegation.md`). Keep the agent's other results; once access works, rerun only the part that needed it.
@@ -31,6 +32,8 @@ When a task can't go ahead because something isn't set up, say so in one line, s
 - **Fix what's yours first.** Anything that is a command (`gh-setup.sh`, `jira.py setup`, creating `.env`, checking `.gitignore`) the assistant runs before the walkthrough starts. The PM only does what needs them: their browser, their accounts, their own computer's windows.
 
 ## How to walk someone through it
+
+Match the PM's technical comfort (pm-profile skill, "Technical comfort"). At `step-by-step`, and for any step new to the PM whatever their level, follow every step below. At `checklist`, send the steps as one numbered list and skip explaining what they already know. At `fluent`, say what's needed and why in a line or two, and give the walkthrough only if they ask. The rules on tokens (step 5) and checking it worked (step 6) hold at every level.
 
 1. **Set it up in one message.** What we're doing, why, roughly how long, and what they'll need ("a browser where you're signed in to GitHub").
 2. **Know their computer.** Work it out from the project folder's path (`/Users/…` is a Mac, `C:\…` is Windows) and give only that computer's steps. Ask only if you can't tell.
@@ -89,6 +92,17 @@ Then check it yourself: the file is still called `.env`, and its line has a valu
 2. Walk them through the token steps in that section, one per message. Its step for opening `.env` is the Mac one; on Windows, use "Find and edit `.env`" above.
 3. Run `jira.py check`. If it says `blocked`, the token is fine but this session can't reach Jira: follow the jira skill's "Using Claude Code".
 
+### GitHub Desktop
+
+For a PM who has to push by hand (save skill, "When the push fails") and doesn't use the terminal. GitHub Desktop is GitHub's free app for saving and sending work without commands. Check first whether it's installed (Mac: `/Applications/GitHub Desktop.app`; Windows: `%LOCALAPPDATA%\GitHubDesktop`); if it is, skip to step 3.
+
+1. **Download it** from https://desktop.github.com and open the download. Mac: drag **GitHub Desktop** into **Applications**, then open it from there. Windows: the installer opens it when it's done.
+2. **Sign in.** Choose **Sign in to GitHub.com**; the browser opens, they sign in and click **Authorize desktop**. If it asks how to configure git, the name and email it suggests are fine. This sign-in is GitHub Desktop's own; it doesn't touch `.env`.
+3. **Add the Project Brain.** **File** > **Add Local Repository…**, **Choose…**, pick the Project Brain folder (give its full path), then **Add Repository**. If it says the folder isn't a git repository, stop: it's the wrong folder, or the Project Brain isn't in git yet (project-setup skill).
+4. **Check it.** The top left shows the folder's name under **Current repository**, and the top right shows **Push origin** with a number when saves are waiting. Then go back to the save skill's steps.
+
+If the org asks GitHub Desktop for SSO approval, the browser shows an **Authorize** button for the org at step 2; that's expected. When it's done, offer once to record `git app: GitHub Desktop` in the PM's settings (pm-profile skill).
+
 ### Connect a folder
 
 The session can only see folders the PM has connected. Two come up: the project folder, and the personal profile folder `~/.lobot` in their home folder (pm-profile skill).
@@ -116,6 +130,6 @@ Then check: list the folder. For `~/.lobot`, carry on with the pm-profile skill 
 ## Hard limits
 
 - Never ask for, read out, print, or copy a token, and never have the PM paste one anywhere but their own `.env`.
-- Never ask the PM to open a terminal or run a command. Commands are the assistant's job.
+- Never ask the PM to run a command you can run yourself; commands are the assistant's job. A terminal step for the PM only when their technical comfort says they use one, or they choose it.
 - Never change a security or organization setting for the PM, or tell them to turn off a protection (SSO, an approval, a firewall rule) to get past a step. If the organization says no, use the project-setup skill's access ladder.
 - Never walk a PM through giving a token more access than the task needs.

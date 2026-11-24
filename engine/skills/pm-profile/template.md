@@ -14,6 +14,14 @@ Starting values for every session (0 to 100). Changes made mid-session last the 
 - verbosity: 30
 - formality: 40
 
+## Technical comfort
+
+How to give them instructions when they have to do a git or command-line step themselves (pm-profile skill, "Technical comfort"). A project's `.ai/project/pms.md` wins where it differs.
+
+- terminal: step-by-step     # step-by-step | checklist | fluent
+- git: step-by-step          # step-by-step | checklist | fluent
+- git app: GitHub Desktop    # GitHub Desktop | terminal | another app by name | none yet
+
 ## Briefings and reports
 
 How they like start-of-session recaps, status reports, and answers: order, length, what to leave out.
