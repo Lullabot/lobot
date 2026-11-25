@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get started · Lobot</title>
+<meta name="description" content="Set up Lobot on a new project or join one that already uses it. No command line required.">
+<!--
+  Maintainers: this site is kept by hand. Pages share assets/site.css and assets/site.js,
+  and the same nav. Refine after watching a new PM set up (see the maintainer's notes).
+  `node .github/scripts/check-pages.js` checks the pages against engine/.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="top" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><img src="assets/avatars/lobot.webp" alt=""></span>Lobot</a>
+    <a class="version nav-version" id="version" href="https://github.com/Lullabot/lobot/releases" hidden><span class="dot"></span><span></span></a>
+    <div class="nav-links">
+      <a href="skills.html">What it can do</a><a href="records.html">Records</a><a href="security.html">Security</a><a class="btn primary nav-cta" href="start.html" aria-current="page">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Get started</div>
+    <h1>Get Lobot running on your project.</h1>
+    <p class="lede">No command line required. You make a folder and paste a prompt; your assistant does the technical setup, explains each step in plain language, and stops to ask when it needs you.</p>
+  </div>
+</header>
+
+<section id="before">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Before you start</div>
+      <h2>Three things to have ready.</h2>
+    </div>
+    <div class="trio">
+      <div class="card"><h3>An AI assistant</h3><p>One that can work in a folder on your computer. Claude Cowork is the easiest; Claude Code, Codex, Cursor, Gemini CLI, and OpenCode work too.</p></div>
+      <div class="card"><h3>A GitHub account</h3><p>Lobot saves your project to a private GitHub repository. The assistant walks you through making the access key it needs.</p></div>
+      <div class="card"><h3>The project basics</h3><p>The project's name, a short project key (like EXU), and its code repository, if it has one.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="paths">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Pick your path</div>
+      <h2>Starting fresh, or joining in?</h2>
+      <p class="lede">Make an empty folder for the project, connect it to your assistant (in Claude Cowork, add the folder to the session), and paste the prompt that fits.</p>
+    </div>
+    <div class="paths">
+      <div class="path" id="new-project">
+        <h3>Starting a new project</h3>
+        <p class="muted">You're the first PM to use Lobot on this project.</p>
+        <div class="prompt">
+          <header><b>New project prompt</b><button class="copy" data-copy="p-new">Copy</button></header>
+<pre id="p-new">## Goal
+Set up a new Lobot Project Brain in this folder. Lobot: https://github.com/Lullabot/lobot
+
+## What I'll do
+- Give you the project's name, a short project key (like EXU), and its code repository.
+- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Approve anything other people will see, like creating the GitHub repository.
+
+## What you'll do
+1. Check that Node 18 or later is installed, and help me install it if it isn't.
+2. Install Lobot here with: npx --yes github:Lullabot/lobot init --name "&lt;name&gt;" --key &lt;KEY&gt;
+3. Clone the code repository into repo/.
+4. Read the new CLAUDE.md, then follow the project-setup skill to put this Project Brain on GitHub.
+5. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
+
+## How
+Do the terminal work for me, explain what's happening in plain language, and stop to ask when you need me.</pre>
+        </div>
+      </div>
+      <div class="path" id="join">
+        <h3>Joining or taking over a project</h3>
+        <p class="muted">The project already has a Project Brain on GitHub (its name ends in <code>-pm</code>).</p>
+        <div class="prompt">
+          <header><b>Join prompt</b><button class="copy" data-copy="p-join">Copy</button></header>
+<pre id="p-join">## Goal
+Join a project whose Project Brain is already on GitHub, and set it up in this folder.
+
+## What I'll do
+- Tell you the Project Brain's repository (it ends in -pm, like Lullabot/example-site-pm).
+- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Approve anything other people will see.
+
+## What you'll do
+1. Read the project-setup skill: https://github.com/Lullabot/lobot/blob/main/engine/skills/project-setup/SKILL.md
+2. Follow its "Join a project" section to bring the Project Brain into this folder and set up what it leaves out.
+3. If I'm using Claude Cowork, tell me what to paste into my Cowork project's instructions.
+4. Run the start-of-session routine and catch me up on the project.
+
+## How
+Do the terminal work for me, explain what's happening in plain language, and stop to ask when you need me.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="next">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">What happens next</div>
+      <h2>Your assistant takes it from here.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>It checks your computer</h3><p>It installs the few tools Lobot needs (Node, Python, and GitHub's tool). You don't need to know what they are.</p></div>
+      <div class="step"><h3>It asks for the details</h3><p>The project's name and key, and its code repository. It walks you through making a GitHub access key, which you paste only where it tells you, never into the chat.</p></div>
+      <div class="step"><h3>It saves and catches you up</h3><p>Lobot moves in, the project is saved to its private repository with your approval, and you're ready for your first question.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="first-day">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Your first day</div>
+      <h2>Talk to it like a project coordinator.</h2>
+    </div>
+    <div class="says">
+      <div><span class="say">Good morning. Where are we?</span><p>Lobot catches you up and opens your dashboard for the day.</p></div>
+      <div><span class="say">Process today's meeting with the client.</span><p>Lucy writes the notes and proposes the decisions, risks, and action items for your approval.</p></div>
+      <div><span class="say">Wrap up.</span><p>Lobot closes out the day's journal, so tomorrow starts with an accurate picture.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="stuck">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">When you get stuck</div>
+      <h2>Just say what happened.</h2>
+    </div>
+    <div class="trio">
+      <div class="card"><h3>Describe it in plain words</h3><p>Tell your assistant what you saw or what went wrong. It knows Lobot's setup and can usually fix it for you.</p></div>
+      <div class="card"><h3>Already set up?</h3><p>Tell your assistant <b>"update Lobot"</b> to get the latest version.</p></div>
+      <div class="card"><h3>Something's off with Lobot?</h3><p>Ask your assistant to send feedback to Lobot. It drafts the report without project details, and you approve it first.</p></div>
+    </div>
+    <p class="fineprint">Want to improve Lobot itself? Read <a href="https://github.com/Lullabot/lobot#contributing-to-lobot">Contributing to Lobot</a>.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sponsor">A <a href="https://www.lullabot.com">Lullabot</a>-sponsored project. MIT licensed.</span>
+    <span><a href="start.html">Get started</a> · <a href="skills.html">What it can do</a> · <a href="records.html">Records</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
