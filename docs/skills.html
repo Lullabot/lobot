@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is Lobot? · Lobot</title>
+<meta name="description" content="The Lobot team (Lobot, Lucy, and Pepper), every skill they use, integrations, and a day with Lobot.">
+<!--
+  Maintainers: this site is kept by hand. Pages share assets/site.css and assets/site.js,
+  and the same nav. Every skill needs a card here whose data-skill is its folder name, and every agent a card whose data-agent is its name.
+  `node .github/scripts/check-pages.js` checks the pages against engine/.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="top" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><img src="assets/avatars/lobot.webp" alt=""></span>Lobot</a>
+    <a class="version nav-version" id="version" href="https://github.com/Lullabot/lobot/releases" hidden><span class="dot"></span><span></span></a>
+    <div class="nav-links">
+      <a href="skills.html" aria-current="page">What Is Lobot?</a><a href="records.html">How It Works</a><a href="security.html">Security</a><a class="btn primary nav-cta" href="start.html">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">What Is Lobot?</div>
+    <h1>Your Project Assistant Team.</h1>
+    <p class="lede">A personal assistant, two specialists, and the skills they reach for, plus how a day with them actually goes.</p>
+  </div>
+</header>
+<section id="team">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">The Team</div>
+      <h2>An Assistant, and Two Helpers It Hands Work To.</h2>
+      <p class="lede">Each one has a personality drawn from great fictional aides, keeping the best traits and leaving the rest behind. The traits left behind become hard limits. Personality stays in conversation; records stay neutral, and drafts go out in your voice.</p>
+    </div>
+    <div class="grid-3">
+      <article class="card agent" data-tone="lobot">
+        <img class="avatar" src="assets/avatars/lobot.webp" alt="">
+        <h3>Lobot</h3>
+        <div class="role">Your chief of staff</div>
+        <div class="namesake">Named for Lando's aide in <i>The Empire Strikes Back</i>: wired into everything, quietly running the machinery. Unlike him, this Lobot talks. It just doesn't waste words.</div>
+        <p>Calm and direct. Bottom line first, bad news early, and a fix ready (but never applied) when it spots a problem.</p>
+        <div class="chips"><span class="chip">Alfred Pennyworth</span><span class="chip">J.A.R.V.I.S.</span><span class="chip">Jeeves</span><span class="chip">Radar O'Reilly</span><span class="chip">Donna Moss</span><span class="chip">TARS</span><span class="chip">K-2SO</span><span class="chip">C-3PO</span></div>
+        <div class="dials" aria-label="Default settings, adjustable by the PM">
+          <div class="dial">Humor<span class="bar"><i style="width:40%"></i></span><b>40</b></div>
+          <div class="dial">Verbosity<span class="bar"><i style="width:30%"></i></span><b>30</b></div>
+          <div class="dial">Formality<span class="bar"><i style="width:40%"></i></span><b>40</b></div>
+        </div>
+        <p class="muted" style="font-size:.85rem;margin-top:10px">Say "humor to 10" and it changes on the spot. Honesty isn't a dial.</p>
+      </article>
+
+      <article class="card agent" data-tone="lucy" data-agent="lucy">
+        <img class="avatar" src="assets/avatars/lucy.webp" alt="">
+        <h3>Lucy</h3>
+        <div class="role">The Librarian</div>
+        <div class="namesake">Named for Lucienne, keeper of the library in <i>The Sandman</i>. She catalogs what comes in, keeps it where it belongs, and finds it again the moment you need it.</div>
+        <div class="chips"><span class="chip">Evelyn Carnahan</span><span class="chip">Oracle</span><span class="chip">Penelope Garcia</span><span class="chip">Hermione Granger</span><span class="chip">Leslie Knope</span></div>
+        <dl>
+          <dt>Owns</dt>
+          <dd>Meeting notes, the project dossier, people, RACI, glossary, decisions, risks, questions, tasks, the work breakdown, the journal, and the map of the project's shared Drive.</dd>
+          <dt>Never touches</dt>
+          <dd>GitHub, Jira, email, or anything outside the Project Brain and the project's Drive.</dd>
+        </dl>
+      </article>
+
+      <article class="card agent" data-tone="pepper" data-agent="pepper">
+        <img class="avatar" src="assets/avatars/pepper.webp" alt="">
+        <h3>Pepper</h3>
+        <div class="role">The Process Wrangler</div>
+        <div class="namesake">Named for Pepper Potts in <i>Iron Man</i>: runs the operation around the geniuses and turns chaos into something trackable.</div>
+        <div class="chips"><span class="chip">Jared Dunn</span><span class="chip">Nyota Uhura</span><span class="chip">Toby Ziegler</span><span class="chip">Teal'c</span><span class="chip">Hermes Conrad</span></div>
+        <dl>
+          <dt>Owns</dt>
+          <dd>Tickets in GitHub and Jira: writing and tidying them, labels, links, statuses, ticket plans, comment drafts, and board reports.</dd>
+          <dt>Never touches</dt>
+          <dd>Code or code review, merging, repository settings, or Project Brain records.</dd>
+        </dl>
+      </article>
+    </div>
+    <p class="lede" style="margin-top:28px">Lucy and Pepper work like new hires: they start out checking with you, and earn more independence in each area as you correct and promote them.</p>
+  </div>
+</section>
+<section id="skills">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Skills</div>
+      <h2>Things the AI Agent Knows How to Do.</h2>
+      <p class="lede">You can ask for any of them by name, but usually the AI agent reaches for the right one on its own.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter skills">
+      <button class="filter" aria-pressed="true" data-filter="all">All</button>
+      <button class="filter" aria-pressed="false" data-filter="capture">Capture</button>
+      <button class="filter" aria-pressed="false" data-filter="records">Records</button>
+      <button class="filter" aria-pressed="false" data-filter="report">Review &amp; report</button>
+      <button class="filter" aria-pressed="false" data-filter="voice">Your voice</button>
+      <button class="filter" aria-pressed="false" data-filter="tickets">Tickets &amp; code</button>
+      <button class="filter" aria-pressed="false" data-filter="setup">Setup &amp; upkeep</button>
+    </div>
+
+    <div class="skills" id="skill-list">
+      <div class="group-label" data-group="capture">Capture what happens</div>
+      <article class="skill" data-skill="transcript-cleanup" data-group="capture">
+        <header><h3>Transcript Cleanup</h3><span class="owner lucy">Lucy</span></header>
+        <p>Cuts the small talk and anything sensitive from a transcript and drops the filler words, leaving one timestamped paragraph per speaker. You approve the cuts, and only the cleaned copy is committed.</p>
+        <div class="try">"Clean up yesterday's transcript."</div>
+      </article>
+      <article class="skill" data-skill="meeting-notes" data-group="capture">
+        <header><h3>Meeting Notes</h3><span class="owner lucy">Lucy</span></header>
+        <p>Turns a transcript into notes with a summary, action items, and flags, and suggests the decisions, tasks, and risks that came out of it. For a recurring meeting, you choose one Doc per meeting, a running doc with a dated entry each time, newest first, or both. By default that's one Recurring Meeting Notes Doc, named with the project key, with a tab for each kind of meeting.</p>
+        <div class="try">"Process today's meeting with the client."</div>
+      </article>
+      <article class="skill" data-skill="drive-sources" data-group="capture">
+        <header><h3>Drive Sources</h3><span class="owner lucy">Lucy</span></header>
+        <p>Maps the project's shared Google Drive against Lullabot's standard layout, watches it for new transcripts and changed documents, and reads them straight from Drive. When a document changes, it lists the facts and records built from the earlier version, so they get rechecked.</p>
+        <div class="try">"Anything new in Drive?"</div>
+      </article>
+      <article class="skill" data-skill="dossier" data-group="capture">
+        <header><h3>Project Dossier</h3><span class="owner lucy">Lucy</span></header>
+        <p>Keeps everything known about the project and each site in one set of linked files, every fact citing its source, so questions get answered from the record. When a new source contradicts a fact, you see both on the review desk and decide.</p>
+        <div class="try">"What do we know about how content gets onto the site?"</div>
+      </article>
+      <article class="skill" data-skill="journal" data-group="capture">
+        <header><h3>Journal</h3><span class="owner lucy">Lucy</span></header>
+        <p>Logs the work as it happens, closes out each day, and recaps where things stand when you start a new session.</p>
+        <div class="try">"Wrap up."</div>
+      </article>
+      <article class="skill" data-skill="cleanup" data-group="capture">
+        <header><h3>Cleanup</h3><span class="owner lobot">Lobot</span></header>
+        <p>Once a day, on a schedule if you like, reads back over everything since its last run: catches the journal up, finishes work that stopped halfway, files what never reached a record, clears finished scratch files, and pushes. Anything that needs you waits as a question on your review desk.</p>
+        <div class="try">"Run the cleanup."</div>
+      </article>
+
+      <div class="group-label" data-group="records">Keep the records</div>
+      <article class="skill" data-skill="decision-log" data-group="records">
+        <header><h3>Decision Log</h3><span class="owner lucy">Lucy</span></header>
+        <p>Records what was decided, why, who drove it, and who approved it, and tracks what is still waiting on approval.</p>
+        <div class="try">"What's still waiting on approval?"</div>
+      </article>
+      <article class="skill" data-skill="questions" data-group="records">
+        <header><h3>Questions Log</h3><span class="owner lucy">Lucy</span></header>
+        <p>Every open question in four kinds: the ones only you can answer, product questions for the client, technical questions for developers or client IT, and quick checks for the records. Each one says who answers it, how much it matters, and when the answer is needed.</p>
+        <div class="try">"What do you need from me?"</div>
+      </article>
+      <article class="skill" data-skill="risks" data-group="records">
+        <header><h3>Risk Tracker</h3><span class="owner lucy">Lucy</span></header>
+        <p>Keeps the project's risks with severity, who confirmed them, the next step, and a dated history of how each one developed. Risks, decisions, and questions can live in one Maintenance Logs Sheet in Drive instead, with each risk's latest update beside it and the full history on its own tab, so it reads well when shared with the client.</p>
+        <div class="try">"What could go wrong this month?"</div>
+      </article>
+      <article class="skill" data-skill="tasks" data-group="records">
+        <header><h3>Task List</h3><span class="owner lucy">Lucy</span></header>
+        <p>Your own one-off actions from meetings and documents, each with a short summary and a due date. Development work goes to tickets, and what you're waiting on goes to the questions log.</p>
+        <div class="try">"What's on my plate this week?"</div>
+      </article>
+      <article class="skill" data-skill="todoist" data-group="records">
+        <header><h3>Todoist</h3><span class="owner lobot">Lobot</span></header>
+        <p>If Todoist is your to-do list, files the tasks you approve there, set up your way, and keeps the Project Brain's copy in step with everything you change there.</p>
+        <div class="try">"Use Todoist for my tasks."</div>
+      </article>
+      <article class="skill" data-skill="work-breakdown" data-group="records">
+        <header><h3>Work Breakdown</h3><span class="owner lucy">Lucy</span></header>
+        <p>Lays out what the team will build, site by site and area by area, with goals, scope, open questions, and sources. You mark which items are ready to become tickets.</p>
+        <div class="try">"Break down the work for the main site."</div>
+      </article>
+      <article class="skill" data-skill="people" data-group="records">
+        <header><h3>People</h3><span class="owner lucy">Lucy</span></header>
+        <p>A directory of everyone on the project: roles, time zones, and the usernames the AI agent needs to look them up in other tools. It never guesses.</p>
+        <div class="try">"What time zone is the client's design lead in?"</div>
+      </article>
+      <article class="skill" data-skill="raci" data-group="records">
+        <header><h3>RACI</h3><span class="owner lucy">Lucy</span></header>
+        <p>Who is responsible, accountable, consulted, and informed for each area of work, on both teams, site by site, plus a "who to go to" table and a Roster &amp; RACI Sheet to share with the client.</p>
+        <div class="try">"Who signs off on content changes?"</div>
+      </article>
+      <article class="skill" data-skill="glossary" data-group="records">
+        <header><h3>Glossary</h3><span class="owner lucy">Lucy</span></header>
+        <p>Acronyms, product names, and words that mean something specific on this project, so the AI agent reads them correctly, even when a transcript mangles them.</p>
+        <div class="try">"What does the client mean by 'the portal'?"</div>
+      </article>
+
+      <div class="group-label" data-group="report">Review and report</div>
+      <article class="skill" data-skill="tracker-pages" data-group="report">
+        <header><h3>Tracker Pages &amp; Review Desk</h3><span class="owner lobot">Lobot</span></header>
+        <p>Working pages for risks, decisions, RACI, questions, and the kickoff checklist, plus a review desk with a tab for everything that needs you. Questions show the most important first, and you can narrow them by kind or priority to answer them in chunks. Change things there and the AI agent files them.</p>
+        <div class="try">"Show me the dashboard."</div>
+      </article>
+      <article class="skill" data-skill="daily-board" data-group="report">
+        <header><h3>Daily Board</h3><span class="owner lobot">Lobot</span></header>
+        <p>One screen that answers "what do I need to know today?": your last session, unprocessed transcripts, changed Drive files, what's waiting on you, today's tasks, urgent questions, sprint days left and stuck tickets, new risks, and today's meetings. It opens on your first session of the day (the weekly board takes Mondays), and every item links to where you act on it.</p>
+        <div class="try">"Start the day."</div>
+      </article>
+      <article class="skill" data-skill="weekly-board" data-group="report">
+        <header><h3>Weekly Board</h3><span class="owner lobot">Lobot</span></header>
+        <p>The shape of your week on one page: this week's and next week's milestones (with a Slack kickoff message, by discipline, to copy to your team), who's working and who's out both weeks, the sprint, your tasks from your task manager, this week's reports, a recap of last week, and cards counting what's open on the review desk by priority. Opens on the first workday of the week, each item linked to where you act on it; a section that can't connect says so in place.</p>
+        <div class="try">"What does this week look like?"</div>
+      </article>
+      <article class="skill" data-skill="client-status-report" data-group="report">
+        <header><h3>Client Status Report</h3><span class="owner lobot">Lobot</span></header>
+        <p>Drafts the weekly client report from the records and last week's report, in Lobot's template or one built for your stakeholders. Every report says what we need from each site's stakeholders, or that nothing is due, and the AI agent asks about any meeting this week that has no notes before drafting, so no ask slips through. Once approved, it's filed as a Google Doc.</p>
+        <div class="try">"Draft this week's status report for the client."</div>
+      </article>
+      <article class="skill" data-skill="project-journal-entry" data-group="report">
+        <header><h3>Project Journal Entry</h3><span class="owner lobot">Lobot</span></header>
+        <p>Drafts your weekly entry for Lullabot leadership from the week's journals: status, progress, problems, opportunities. Carries open threads forward and suggests a status color. Can add it to your journal doc marked as a draft until you finalize it.</p>
+        <div class="try">"Draft my PJE."</div>
+      </article>
+
+      <div class="group-label" data-group="voice" id="voice">Sound like you</div>
+      <article class="skill" data-skill="pm-voice" data-group="voice">
+        <header><h3>PM Voice</h3><span class="owner lobot">Lobot</span></header>
+        <p>Learns how you write, so the status updates, client email, and tickets it drafts sound like you. It can keep a different style for tickets, email, and team chat.</p>
+        <div class="try">"Learn my voice from these emails."</div>
+      </article>
+      <article class="skill" data-skill="pm-profile" data-group="voice">
+        <header><h3>PM Profile</h3><span class="owner lobot">Lobot</span></header>
+        <p>Keeps your voice and preferences on your own computer, so they follow you to every project instead of being relearned. Nothing about a client is saved there. It also learns how comfortable you are with git and the command line, and whether you use GitHub Desktop or the terminal, so steps you do yourself come at your level, and each PM on a project gets their own.</p>
+        <div class="try">"From now on, keep my reports short."</div>
+      </article>
+
+      <div class="group-label" data-group="tickets">Tickets and code</div>
+      <article class="skill" data-skill="tickets" data-group="tickets">
+        <header><h3>Tickets</h3><span class="owner pepper">Pepper</span></header>
+        <p>Writes and organizes tickets to a shared standard: clear titles, testable acceptance criteria, sensible labels and links. Drafts a batch as one ticket plan for whichever tracker you use. When the code repository keeps a kenkeep knowledge base, tickets follow the team's conventions from it.</p>
+        <div class="try">"Turn the ready items into tickets."</div>
+      </article>
+      <article class="skill" data-skill="ticket-preview" data-group="tickets">
+        <header><h3>Issue Review Board</h3><span class="owner lobot">Lobot</span></header>
+        <p>Before any ticket is created, shows you the whole batch on one clean page: epics you can open and close with their tickets nested inside, the tracker's own work type icons, and every field laid out to read. Approve, cancel, or archive a plan there, and filter by status. Leave notes on a plan, a ticket, or one field, and your AI agent updates the plan from them and learns from your corrections. Nothing is sent until you ask.</p>
+        <div class="try">"I left notes on the review board."</div>
+      </article>
+      <article class="skill" data-skill="jira" data-group="tickets">
+        <header><h3>Jira</h3><span class="owner pepper">Pepper</span></header>
+        <p>Explains what Jira's screens are asking for, sets up spaces, boards, and workflows, audits a site into a workbook, and creates a whole backlog from an approved ticket plan. Connecting checks what the Jira tools need on your computer, so a missing piece shows up at setup rather than later.</p>
+        <div class="try">"Walk me through setting up a board for this space."</div>
+      </article>
+      <article class="skill" data-skill="github" data-group="tickets">
+        <header><h3>GitHub</h3><span class="owner pepper">Pepper</span></header>
+        <p>Reads and updates issues, pull requests, and project boards, and reports on sprint status.</p>
+        <div class="try">"How's the sprint looking?"</div>
+      </article>
+      <article class="skill" data-skill="adr" data-group="tickets">
+        <header><h3>ADR</h3><span class="owner lobot">Lobot</span></header>
+        <p>Writes up architecture decisions and hands them to the technical lead for review in the code repository, as a draft pull request.</p>
+        <div class="try">"Write an ADR for the search approach we chose."</div>
+      </article>
+
+      <div class="group-label" data-group="setup">Setup and upkeep</div>
+      <article class="skill" data-skill="project-overview" data-group="setup">
+        <header><h3>Project Overview</h3><span class="owner lobot">Lobot</span></header>
+        <p>One page that shows how the project is set up and where everything lives: repositories, where tickets go, the project's library of records and folders, your pages, connected tools, and what's still missing, each with a link.</p>
+        <div class="try">"Is the Jira space set up? Where are the transcripts?"</div>
+      </article>
+      <article class="skill" data-skill="guided-setup" data-group="setup">
+        <header><h3>Guided Setup</h3><span class="owner lobot">Lobot</span></header>
+        <p>When something can't be done because access is missing, says what and offers to walk you through it, one step at a time on your Mac or Windows computer: a GitHub or Jira token, the hidden <code>.env</code> file, connecting your folders, installing GitHub Desktop. One step at a time or one short list, whichever suits you; no terminal unless you prefer one, and your token never goes in the chat.</p>
+        <div class="try">"Walk me through connecting GitHub."</div>
+      </article>
+      <article class="skill" data-skill="project-setup" data-group="setup">
+        <header><h3>Project Setup</h3><span class="owner lobot">Lobot</span></header>
+        <p>Puts the Project Brain in a private GitHub repository, helps a new PM join an existing one, and when GitHub says no, drafts the request for whoever has to approve it.</p>
+        <div class="try">"Put this Project Brain on GitHub."</div>
+      </article>
+      <article class="skill" data-skill="save" data-group="setup">
+        <header><h3>Save</h3><span class="owner lobot">Lobot</span></header>
+        <p>Commits each piece of work on its own as it finishes, with a note of what was done and what it was built from, so the Project Brain's history is a paper trail. Pushes to GitHub only when you say so, or on a schedule you set. When your AI agent can't push, it tells you how in GitHub Desktop or the terminal, at your level.</p>
+        <div class="try">"Save and push."</div>
+      </article>
+      <article class="skill" data-skill="lobot" data-group="setup">
+        <header><h3>Lobot</h3><span class="owner lobot">Lobot</span></header>
+        <p>Checks which version your project has, and tells you when a new one is out: once a day, when the dashboard is refreshed, and in the nightly cleanup. Updates it with a short "what's new" report when you say so, and helps send improvements back.</p>
+        <div class="try">"Update Lobot."</div>
+      </article>
+      <article class="skill" data-skill="lobot-health" data-group="setup">
+        <header><h3>Lobot Health</h3><span class="owner lobot">Lobot</span></header>
+        <p>Checks how much of the AI agent's working memory Lobot's instructions take up and where a rule is likely to be missed, fixes what belongs to your project with your approval, and offers to report the rest.</p>
+        <div class="try">"Lobot ignored a rule. Run a health check."</div>
+      </article>
+      <article class="skill" data-skill="lobot-feedback" data-group="setup">
+        <header><h3>Lobot Feedback</h3><span class="owner lobot">Lobot</span></header>
+        <p>Notices when a correction would help every project and offers to report it, without any project details, posting only after you approve the exact text.</p>
+        <div class="try">"Report that to Lobot."</div>
+      </article>
+    </div>
+  </div>
+</section>
+<section id="integrations">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Integrations</div>
+      <h2>Works With the Tools You Already Use.</h2>
+      <p class="lede">Everything lives in the Project Brain folder first. Each connection is optional, and Lobot asks before it changes anything outside the folder.</p>
+    </div>
+    <div class="tools">
+      <div class="card tool">
+        <h3>Documents</h3>
+        <div class="logos"><span class="logo"><img src="assets/logos/googledrive.svg" alt="" width="20" height="20">Drive</span><span class="logo"><img src="assets/logos/googledocs.svg" alt="" width="20" height="20">Docs</span><span class="logo"><img src="assets/logos/googlesheets.svg" alt="" width="20" height="20">Sheets</span></div>
+        <p>Maps the project's shared drive, spots new transcripts and changed documents, and reads them in place. With your approval, it keeps tracker Sheets and the journal Doc current. Contracts are never edited. <a href="#skills">Drive sources</a></p>
+      </div>
+      <div class="card tool">
+        <h3>Tasks</h3>
+        <div class="logos"><span class="logo"><img src="assets/logos/todoist.svg" alt="" width="20" height="20">Todoist</span></div>
+        <p>Files your approved action items where you already keep your to-dos and tells you what's due. Without it, the task list in the Project Brain is the list. <a href="#skills">Todoist</a></p>
+      </div>
+      <div class="card tool">
+        <h3>Tickets</h3>
+        <div class="logos"><span class="logo"><img src="assets/logos/github.svg" alt="" width="20" height="20">GitHub</span><span class="logo"><img src="assets/logos/jira.svg" alt="" width="20" height="20">Jira</span></div>
+        <p>Pepper drafts a ticket plan to Lullabot's standard; you review it, and the tickets are created in the tracker you chose. It also keeps boards tidy and reports on the sprint. <a href="#skills">GitHub · Jira</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="day">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">A Day With Lobot</div>
+      <h2>Talk to It Like a Project Coordinator.</h2>
+      <p class="lede">Open your AI agent in the Project Brain folder and say what you need. Lobot knows which skill to use.</p>
+    </div>
+    <div class="day">
+      <div class="moment">
+        <div class="when">Morning<small>start of session</small></div>
+        <div>
+          <div class="say">Good morning. Where are we?</div>
+          <p>Lobot reads the rules, catches up on the latest journal entry, checks the project's Google Drive for new transcripts and changed documents, and tells you where things stand. On the first workday of the week it opens your weekly board. On other days your first session opens the daily board: a recap of your last session, transcripts still to process, Drive files that changed, what's waiting on you, today's tasks, urgent questions, the sprint, new risks, and today's meetings when your calendar is connected.</p>
+        </div>
+      </div>
+      <div class="moment">
+        <div class="when">After a call<small>meeting notes</small></div>
+        <div>
+          <div class="say">Process today's meeting with the client.</div>
+          <p>Lucy finds the transcript in Drive (or you drop it in), cuts the small talk and anything sensitive, and writes the meeting notes. Lobot then opens your review desk with the proposed cuts, decisions, risks, questions, and action items, and waits for your approval before filing them.</p>
+        </div>
+      </div>
+      <div class="moment">
+        <div class="when">Midday<small>planning the work</small></div>
+        <div>
+          <div class="say">Turn the ready items into tickets for Jira.</div>
+          <p>Pepper drafts one ticket plan from the work breakdown, written to Lullabot's ticket standard. You review it, and Lobot creates the tickets in the tracker you chose.</p>
+        </div>
+      </div>
+      <div class="moment">
+        <div class="when">Afternoon<small>reporting</small></div>
+        <div>
+          <div class="say">What did we decide about the launch date, and what's still waiting on approval?</div>
+          <p>Answered from the decision log, with who drove it and who approved it. Then "draft this week's status report for the client" produces a draft in your own voice for you to edit and send.</p>
+        </div>
+      </div>
+      <div class="moment">
+        <div class="when">End of day<small>wrap up</small></div>
+        <div>
+          <div class="say">Wrap up.</div>
+          <p>Lobot closes out the day's journal entry and clears scratch files, so tomorrow's session, or the next PM, starts with an accurate picture. If a session never got its wrap-up, the evening cleanup catches what it missed and pushes the day's work.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sponsor">A <a href="https://www.lullabot.com">Lullabot</a>-sponsored project. MIT licensed.</span>
+    <span><a href="start.html">Get Started</a> · <a href="skills.html">What Is Lobot?</a> · <a href="records.html">How It Works</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

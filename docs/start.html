@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Started · Lobot</title>
+<meta name="description" content="Set up Lobot on a new project, use files you already have, or join a project another PM runs. No Git required to start.">
+<!--
+  Maintainers: this site is kept by hand. Pages share assets/site.css and assets/site.js,
+  and the same nav. Refine after watching a new PM set up (see the maintainer's notes).
+  `node .github/scripts/check-pages.js` checks the pages against engine/.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="top" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><img src="assets/avatars/lobot.webp" alt=""></span>Lobot</a>
+    <a class="version nav-version" id="version" href="https://github.com/Lullabot/lobot/releases" hidden><span class="dot"></span><span></span></a>
+    <div class="nav-links">
+      <a href="skills.html">What Is Lobot?</a><a href="records.html">How It Works</a><a href="security.html">Security</a><a class="btn primary nav-cta" href="start.html" aria-current="page">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Get Started</div>
+    <h1>Get Lobot Running on Your Project.</h1>
+    <p class="lede">Start with a folder and a prompt. Your AI agent does the technical work, explains each step in plain language, and stops to ask when it needs you.</p>
+    <div class="paths-nav">
+      <a class="path-card" href="#new"><b>Start a New Project</b><span>You're the first PM using Lobot on it.</span></a>
+      <a class="path-card" href="#existing"><b>Use Files You Already Have</b><span>Point Lobot at a folder of project files.</span></a>
+      <a class="path-card" href="#join"><b>Join or Share a Project</b><span>Work on a Project Brain another PM set up.</span></a>
+    </div>
+  </div>
+</header>
+
+<section id="need">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">All You Need</div>
+      <h2>A Folder and an AI Agent.</h2>
+    </div>
+    <div class="trio">
+      <div class="card"><h3>Required</h3><p>An AI agent that can edit files in a folder on your computer, and an empty folder. Lobot works with any of them, for example Claude, Codex, Cursor, Gemini CLI, or OpenCode.</p></div>
+      <div class="card"><h3>Recommended</h3><p>Connect your AI agent to Google Drive, Docs, and Sheets, so it can find meeting transcripts and keep project Docs and Sheets current.</p></div>
+      <div class="card"><h3>Optional</h3><p>A GitHub account, for a backup, a history of every change, and sharing the project with another PM. You can add it any time. <a href="#github">Back up to GitHub</a></p></div>
+    </div>
+  </div>
+</section>
+
+<div class="level-bar" id="levels">
+  <div class="wrap">
+    <span class="level-q">How comfortable are you with Git and the terminal?</span>
+    <div class="level-tabs" role="tablist" aria-label="Your comfort with Git">
+      <button class="level-tab" role="tab" data-level="step" aria-selected="true">New to both</button>
+      <button class="level-tab" role="tab" data-level="checklist" aria-selected="false">I've used GitHub</button>
+      <button class="level-tab" role="tab" data-level="terminal" aria-selected="false">I use a terminal</button>
+    </div>
+  </div>
+</div>
+
+<section id="new">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Start a New Project</div>
+      <h2>Up and Running, No Git Required.</h2>
+      <p class="lede">Everything stays in the folder on your computer. Add GitHub later, when you want a backup or a teammate.</p>
+    </div>
+    <ol class="steplist">
+      <li><h3>Make a Folder</h3><p>Create an empty folder for the project, for example <code>Documents/Projects/acme-pm</code>.</p>
+        <p data-level="terminal" hidden><code>mkdir -p ~/Projects/acme-pm</code></p></li>
+      <li><h3>Give Your AI Agent Access</h3><p>Give your AI agent access to edit files in the folder: open the folder in it, or add the folder to a project there. If it asks whether to allow access once or always, allow it for this project only.</p></li>
+      <li><h3>Paste the Prompt</h3><p>Copy it into your AI agent and send it. It says how comfortable you are with Git, so Lobot pitches its instructions at your level.</p>
+        <div class="prompt">
+          <header><b>New Project Prompt</b><button class="copy" data-copy="p-new">Copy</button></header>
+<pre id="p-new">## Goal
+Set up a new Lobot Project Brain in this folder. Lobot: https://github.com/Lullabot/lobot
+
+## What I'll do
+- Give you the project's name and a short project key (like EXU).
+- <span data-level="step">Tell you I'm new to Git and the terminal, so walk me through anything I have to do myself.</span><span data-level="checklist" hidden>Tell you I've used GitHub (GitHub Desktop) but not the terminal, so give me short steps.</span><span data-level="terminal" hidden>Tell you I'm comfortable with git and the terminal, so just give me the commands.</span>
+- Approve anything other people will see.
+
+## What you'll do
+1. Check that Node 18 or later is installed, and help me install it if it isn't.
+2. Install Lobot here with: npx --yes github:Lullabot/lobot init --name "&lt;name&gt;" --key &lt;KEY&gt;
+3. Read the new CLAUDE.md and save my comfort with Git and the terminal (pm-profile skill).
+4. Skip GitHub for now. Keep everything in this folder and remind me later.
+5. If you keep standing instructions for this project, tell me what to add to them.
+
+## How
+Do the terminal work for me, explain what's happening in plain language, and stop to ask when you need me.</pre>
+        </div>
+        <p data-level="terminal" hidden>Or install it yourself: <code>npx --yes github:Lullabot/lobot init --name "Acme" --key ACM</code>, then ask your AI agent to read <code>CLAUDE.md</code>.</p></li>
+      <li><h3>Answer Its Questions</h3><p>The project's name, a short key, and what you'd like Lobot to keep track of. "Not yet" is a fine answer.</p></li>
+      <li><h3>Connect the Tools You Use</h3><p>In your AI agent's connector or integration settings, connect the tools your project runs on. Lobot works with Google Drive, Docs, and Sheets for sharing files, and Todoist for managing your tasks. Then start a new chat, so your AI agent sees them. <a href="skills.html#integrations">See all integrations</a></p></li>
+      <li><h3>Try It</h3><p>Say <span class="say inline">Process my last meeting.</span> Lobot finds the transcript (in Google Drive if you connected it, or a file you drop into the folder), writes the notes, and asks you to approve what it found.</p></li>
+    </ol>
+    <div class="more-links"><a class="learn" href="#github">When you're ready: back up to GitHub</a></div>
+  </div>
+</section>
+
+<section id="existing">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Use Files You Already Have</div>
+      <h2>Bring an Existing Folder Along.</h2>
+      <p class="lede">Lobot can't be installed straight into a folder that already has files yet. Until it can, give it a folder of its own and let it read yours.</p>
+    </div>
+    <ol class="steplist">
+      <li><h3>Make a New, Empty Folder for Lobot</h3><p>Put it next to your existing folder, not inside it.</p></li>
+      <li><h3>Give Your AI Agent Access to Both</h3><p>It edits files in the new folder and only reads the old one.</p></li>
+      <li><h3>Paste the New Project Prompt</h3><p>The same prompt as <a href="#new">Start a new project</a>, in the new folder.</p></li>
+      <li><h3>Ask for an Inventory</h3><p>Say <span class="say inline">Take an inventory of my folder &lt;name&gt;. Read it, don't change it.</span> Lobot builds the project overview, people, glossary, and open questions from what it finds, citing each file.</p></li>
+    </ol>
+    <p class="fineprint">Is the existing folder a code repository? Ask Lobot to clone it into the Project Brain's <code>repo/</code> folder instead, where it's read but never changed.</p>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Join or Share a Project</div>
+      <h2>Anyone With the Repository Can Pick It Up.</h2>
+      <p class="lede">A Project Brain is a Git repository on GitHub. Anyone with access can get a copy and work on it with any AI agent. Sharing one needs <a href="#github">GitHub</a>.</p>
+    </div>
+    <div class="paths">
+      <div class="path">
+        <h3>To Share Yours</h3>
+        <ol>
+          <li>Make sure the project is <a href="#github">backed up to GitHub</a>.</li>
+          <li>Invite them: on GitHub, open the repository, then <b>Settings › Collaborators › Add people</b>. They need their own GitHub account.</li>
+          <li>Send them this page.</li>
+        </ol>
+      </div>
+      <div class="path">
+        <h3>To Join One</h3>
+        <ol>
+          <li>Accept the invitation while signed in to GitHub.</li>
+          <li><span data-level="step">Make an empty folder and give your AI agent access to edit files in it. Lobot copies the project into it for you.</span><span data-level="checklist" hidden>In GitHub Desktop, choose <b>File › Clone repository</b>, pick the repository ending in <code>-pm</code>, and put it in its own folder. Give your AI agent access to edit files in that folder.</span><span data-level="terminal" hidden><code>gh repo clone Lullabot/&lt;project&gt;-pm</code>, then give your AI agent access to edit files in the folder.</span></li>
+          <li>Paste the join prompt.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="prompt step-prompt">
+      <header><b>Join Prompt</b><button class="copy" data-copy="p-join">Copy</button></header>
+<pre id="p-join">## Goal
+Join a project whose Project Brain is on GitHub, in this folder. Lobot: https://github.com/Lullabot/lobot
+
+## What I'll do
+- Tell you the Project Brain's repository (it ends in -pm, like Lullabot/example-site-pm).
+- <span data-level="step">Tell you I'm new to Git and the terminal, so walk me through anything I have to do myself.</span><span data-level="checklist" hidden>Tell you I've used GitHub (GitHub Desktop) but not the terminal, so give me short steps.</span><span data-level="terminal" hidden>Tell you I'm comfortable with git and the terminal, so just give me the commands.</span>
+- Create a GitHub token when you walk me through it, and paste it only where you tell me, never into this chat.
+- Approve anything other people will see.
+
+## What you'll do
+1. Read the project-setup skill: https://github.com/Lullabot/lobot/blob/main/engine/skills/project-setup/SKILL.md
+2. Follow its "Join a project" section. If this folder already holds the Project Brain, skip getting the repository.
+3. If you keep standing instructions for this project, tell me what to add to them.
+4. Run the start-of-session routine and catch me up on the project.
+
+## How
+Do the terminal work for me, explain what's happening in plain language, and stop to ask when you need me.</pre>
+    </div>
+  </div>
+</section>
+
+<section id="github">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Back up to GitHub</div>
+      <h2>Add GitHub When You're Ready.</h2>
+    </div>
+    <div class="trio">
+      <div class="card"><h3>A Backup</h3><p>Your project lives somewhere besides your laptop.</p></div>
+      <div class="card"><h3>A History</h3><p>Lobot saves each piece of work as its own change, labeled with what it did and where it came from.</p></div>
+      <div class="card"><h3>A Way to Share</h3><p>Another PM can join or take over and pick up exactly where you left off.</p></div>
+    </div>
+    <ol class="steplist" data-level="step">
+      <li><h3>Create a GitHub Account</h3><p>Sign up at github.com with your work email. Use your own account; there's no separate company account. Turn on two-factor sign-in (<b>Settings › Password and authentication</b>) and save the recovery codes. Your organization may require it.</p></li>
+      <li><h3>Install GitHub Desktop</h3><p>Download it from desktop.github.com and sign in. It's how you'll send your work up to GitHub.</p></li>
+      <li><h3>Ask Lobot to Set It Up</h3><p>Say <span class="say inline">Set up GitHub for this project.</span> Lobot walks you through an access key (you paste it only where it says, never into the chat) and creates a private repository for the project.</p></li>
+      <li><h3>Send Your Work Up</h3><p>Lobot saves your work as it goes, but some AI agents can't send it to GitHub themselves. When Lobot says work is waiting, open GitHub Desktop, choose your project's folder, and click <b>Push origin</b> (the first time, <b>Publish branch</b>).</p></li>
+    </ol>
+    <ol class="steplist compact" data-level="checklist" hidden>
+      <li><p>GitHub account on your work email, with two-factor sign-in on.</p></li>
+      <li><p>GitHub Desktop (or your git app), signed in.</p></li>
+      <li><p>Tell Lobot <span class="say inline">Set up GitHub for this project.</span> It creates a private repository named after the code repository plus <code>-pm</code>.</p></li>
+      <li><p>If your AI agent can't push, push from GitHub Desktop when Lobot says commits are waiting.</p></li>
+    </ol>
+    <div data-level="terminal" hidden>
+<pre class="cmd">gh auth login
+gh repo create Lullabot/&lt;code-repo&gt;-pm --private --source . --remote origin --push
+
+# later, if your AI agent can't push Lobot's commits itself:
+git push</pre>
+      <p class="fineprint">Or tell Lobot <span class="say inline">Set up GitHub for this project.</span> and it runs these for you where your AI agent allows.</p>
+    </div>
+    <p class="fineprint">Can't create the repository (your account isn't in the organization yet)? Keep working: Lobot saves everything in the folder and reminds you. Until then, make sure Time Machine or similar backs the folder up.</p>
+  </div>
+</section>
+
+<section id="help">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Troubleshooting</div>
+      <h2>Common Snags.</h2>
+    </div>
+    <dl class="faq">
+      <dt>A GitHub invitation link shows "404 Not Found"</dt><dd>You're signed out. Sign in to GitHub, then open the link again.</dd>
+      <dt>GitHub asks for two-factor sign-in</dt><dd>Your organization requires it. Use an authenticator app, and save the recovery codes somewhere safe.</dd>
+      <dt>Your AI agent can't see a folder you just added</dt><dd>Start a new chat. A session only sees the folders it started with.</dd>
+      <dt>Asked to allow a folder "once" or "always"</dt><dd>Allow it for this project. "Always" opens the folder to every project.</dd>
+      <dt>Lobot says it can't push</dt><dd>Your AI agent blocks it. Push from GitHub Desktop (or <code>git push</code>).</dd>
+      <dt>GitHub Desktop shows a folder inside a folder</dt><dd>Choose the project's top folder, the one with <code>CLAUDE.md</code> in it.</dd>
+      <dt>Your AI agent can read a Google Doc or Sheet but not edit it</dt><dd>Some AI agents connect Google Drive, Docs, and Sheets separately, and Drive alone can only read and create files. Connect Docs and Sheets too.</dd>
+      <dt>Something else</dt><dd>Tell your AI agent what you saw, in plain words. It knows Lobot's setup and can usually fix it. Already set up? Say <b>"update Lobot"</b> to get the latest version.</dd>
+    </dl>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sponsor">A <a href="https://www.lullabot.com">Lullabot</a>-sponsored project. MIT licensed.</span>
+    <span><a href="start.html">Get Started</a> · <a href="skills.html">What Is Lobot?</a> · <a href="records.html">How It Works</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

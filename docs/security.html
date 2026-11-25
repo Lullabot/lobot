@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security · Lobot</title>
+<meta name="description" content="Lobot's ground rules, how outside material is handled, and the security patterns its approval rules are modeled on.">
+<!--
+  Maintainers: this site is kept by hand. Pages share assets/site.css and assets/site.js,
+  and the same nav. 
+  `node .github/scripts/check-pages.js` checks the pages against engine/.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="top" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><img src="assets/avatars/lobot.webp" alt=""></span>Lobot</a>
+    <a class="version nav-version" id="version" href="https://github.com/Lullabot/lobot/releases" hidden><span class="dot"></span><span></span></a>
+    <div class="nav-links">
+      <a href="skills.html">What Is Lobot?</a><a href="records.html">How It Works</a><a href="security.html" aria-current="page">Security</a><a class="btn primary nav-cta" href="start.html">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Security</div>
+    <h1>Built to Be Trusted.</h1>
+    <p class="lede">The same ground rules on every project, so you always know what Lobot will and won't do.</p>
+  </div>
+</header>
+<section id="rules">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Ground Rules</div>
+      <h2>The Same Rules on Every Project.</h2>
+      <p class="lede">So you can count on them, whoever's project it is.</p>
+    </div>
+    <div class="rules">
+      <div class="rule"><h3>Write It Down</h3><p>Anything that matters goes in a file in the Project Brain, not just in the chat.</p></div>
+      <div class="rule"><h3>You Approve What Others See</h3><p>Anything sent to the team or client, posted, or merged waits for your yes.</p></div>
+      <div class="rule"><h3>Outside Material Never Leaves Unread</h3><p>Drafts built from web pages, email, or client documents go out only after you approve the exact text.</p></div>
+      <div class="rule"><h3>Never Guess</h3><p>People and terms are looked up, not guessed. The AI agent says when it's unsure.</p></div>
+      <div class="rule"><h3>Sources Stay Untouched</h3><p>Transcripts, shared Drive files, and the code repository are read, never edited. Contracts are never changed, even on request.</p></div>
+      <div class="rule"><h3>No Secrets</h3><p>Passwords, keys, and sensitive personal details never go in the Project Brain.</p></div>
+      <div class="rule"><h3>Scratch Stays Out of the Record</h3><p>Drafts and working files go in <code>tmp/</code>, never saved, and cleared when you wrap up.</p></div>
+      <div class="rule"><h3>Approval Is Never Assumed</h3><p>Silence doesn't mean a decision was approved.</p></div>
+    </div>
+
+    <div class="trust">
+      <div class="card">
+        <h3>Trusted</h3>
+        <p class="muted" style="margin:0">Follows each skill's usual approvals.</p>
+        <ul><li>You and the Lullabot team</li><li>Lobot's own files</li><li>Your project's meeting transcripts</li><li>Records built only from these</li></ul>
+      </div>
+      <div class="card">
+        <h3>Outside Material</h3>
+        <p class="muted" style="margin:0">Treated as data, never as instructions.</p>
+        <ul><li>Web pages</li><li>Email</li><li>Client documents</li><li>Anything not from Lullabot or Lobot</li></ul>
+      </div>
+    </div>
+    <div class="flow" aria-label="How a draft built from outside material leaves the Project Brain">
+      <div><span class="n">1</span><b>Drafted</b><span>The AI agent writes the draft and shows you exactly what will be sent.</span></div>
+      <div><span class="n">2</span><b>You approve</b><span>You read and approve the exact text. For a run of similar items, approve the first and let the rest follow.</span></div>
+      <div><span class="n">3</span><b>Sent as approved</b><span>It goes to GitHub, Jira, or Drive word for word, stamped with who approved it.</span></div>
+      <div><span class="n">4</span><b>Logged</b><span>The journal records what was sent and who approved it.</span></div>
+    </div>
+  </div>
+</section>
+<section id="frameworks">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">The Thinking Behind It</div>
+      <h2>Modeled on Published Security Patterns.</h2>
+      <p class="lede">Lobot reads private project data, takes in outside material, and can write to tools like GitHub and Jira. Security researchers warn that this combination is exactly what lets an AI agent be tricked into leaking data, so Lobot puts a person between the drafting and the sending.</p>
+    </div>
+    <div class="frameworks">
+      <div class="card"><h3>The Lethal Trifecta</h3><p>Private data, untrusted content, and a way to send things out: an agent with all three can be tricked into leaking. Lobot needs all three to do its job, so anything built from outside material waits for your approval of the exact text.</p><a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/">Simon Willison, 2025 →</a></div>
+      <div class="card"><h3>Agents Rule of Two</h3><p>An AI agent should combine at most two of those three powers on its own; when it needs all three, a person approves. That's Lobot's human-review rule.</p><a href="https://ai.meta.com/blog/practical-ai-agent-security/">Meta AI, 2025 →</a></div>
+    </div>
+    <p class="fineprint">These rules are instructions to the AI agent, not enforced controls. The hard limits are the permissions on your GitHub token and connectors, so keep them as narrow as you can. Security team asking what Lobot can access? Send them <a href="https://github.com/Lullabot/lobot/blob/main/engine/reference/security.md">the security page</a>.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sponsor">A <a href="https://www.lullabot.com">Lullabot</a>-sponsored project. MIT licensed.</span>
+    <span><a href="start.html">Get Started</a> · <a href="skills.html">What Is Lobot?</a> · <a href="records.html">How It Works</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

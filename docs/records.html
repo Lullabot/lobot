@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How It Works · Lobot</title>
+<meta name="description" content="The core records Lobot keeps for a PM, and the folder layout of a Project Brain.">
+<!--
+  Maintainers: this site is kept by hand. Pages share assets/site.css and assets/site.js,
+  and the same nav. 
+  `node .github/scripts/check-pages.js` checks the pages against engine/.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="top" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><img src="assets/avatars/lobot.webp" alt=""></span>Lobot</a>
+    <a class="version nav-version" id="version" href="https://github.com/Lullabot/lobot/releases" hidden><span class="dot"></span><span></span></a>
+    <div class="nav-links">
+      <a href="skills.html">What Is Lobot?</a><a href="records.html" aria-current="page">How It Works</a><a href="security.html">Security</a><a class="btn primary nav-cta" href="start.html">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">How It Works</div>
+    <h1>Your Whole Project, Written Down.</h1>
+    <p class="lede">Every project gets a Project Brain: one folder that holds Lobot plus everything about the project, from people and decisions to meeting notes and a daily journal.</p>
+  </div>
+</header>
+<section id="records">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Core Records</div>
+      <h2>The PM's Records, Kept for You.</h2>
+      <p class="lede">The five records every project leans on. Lucy fills them from meetings, documents, and your answers, cites where each fact came from, and keeps them current. You make the calls.</p>
+    </div>
+    <div class="links" aria-label="How the records connect">
+      <span>Every name in the RACI and decision log comes from the roster</span>
+      <span>Each answer you give is filed into the record it changes</span>
+      <span>Approved risks feed the weekly client report</span>
+    </div>
+
+    <div class="rec-tabs" role="tablist" aria-label="Core records">
+      <button class="rec-tab" role="tab" id="t-roster" aria-controls="r-roster" aria-selected="true"><b>Team Roster</b><small>Who's who</small></button>
+      <button class="rec-tab" role="tab" id="t-raci" aria-controls="r-raci" aria-selected="false" tabindex="-1"><b>RACI Matrix</b><small>Who decides</small></button>
+      <button class="rec-tab" role="tab" id="t-questions" aria-controls="r-questions" aria-selected="false" tabindex="-1"><b>Questions Log</b><small>What's still open</small></button>
+      <button class="rec-tab" role="tab" id="t-risks" aria-controls="r-risks" aria-selected="false" tabindex="-1"><b>Risk Tracker</b><small>What could go wrong</small></button>
+      <button class="rec-tab" role="tab" id="t-decisions" aria-controls="r-decisions" aria-selected="false" tabindex="-1"><b>Decision Log</b><small>What we agreed</small></button>
+    </div>
+
+    <div class="rec" role="tabpanel" id="r-roster" aria-labelledby="t-roster">
+      <div>
+        <p class="asks">"Who is this, what do they own, and how do I reach them?"</p>
+        <div class="file">People directory · <code>docs/people.yaml</code></div>
+        <h4>Each person</h4>
+        <ul>
+          <li><b>Name</b>, plus the names they go by and the misspellings transcripts produce, so every mention lands on the right person</li>
+          <li><b>Organization, role, and status</b> (active or former)</li>
+          <li><b>Time zone</b></li>
+          <li><b>Usernames</b> in GitHub, Jira, Slack, and email, so tickets and lookups never guess</li>
+          <li><b>What they own</b> on this project, and dated, sourced notes</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li>Only people with an active role get an entry</li>
+          <li>Anything inferred is marked unverified until someone confirms it</li>
+          <li>Lullabot titles are checked against the team page; work contact details only</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> fill in a surname or confirm a role when Lucy asks.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entry</div>
+        <div class="entry">
+          <header><strong>Ana Ruiz</strong><span class="pill ok">Active</span></header>
+          <dl>
+            <dt>Goes by</dt><dd>Ana <small>· "Anna" in transcripts</small></dd>
+            <dt>Org · role</dt><dd>Client · Program lead</dd>
+            <dt>Time zone</dt><dd>America/Chicago</dd>
+            <dt>Usernames</dt><dd>GitHub <code>aruiz</code> · Jira account ID · email</dd>
+            <dt>Owns</dt><dd>Content approvals, launch sign-off</dd>
+            <dt>Notes</dt><dd>Oct 8: Prefers decisions confirmed by email. <small>(Kickoff)</small></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="rec" role="tabpanel" id="r-raci" aria-labelledby="t-raci" hidden>
+      <div>
+        <p class="asks">"Who decides this, and who do I ask?"</p>
+        <div class="file">RACI matrix · <code>docs/raci.yaml</code> · tracker page</div>
+        <h4>Each responsibility</h4>
+        <ul>
+          <li><b>Responsible:</b> who does the work</li>
+          <li><b>Accountable:</b> the one person who makes the final call</li>
+          <li><b>Consulted</b> before (three at most) and <b>Informed</b> after</li>
+          <li><b>Backup and response window</b> when the client decides, so a late approval has a clear next step</li>
+          <li><b>SOW reference</b>, a flag where we're waiting on the client, and where the assignment came from</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li>Both teams, site by site, built on roles: when someone leaves, one line changes</li>
+          <li>Moves from <b>draft</b> to <b>agreed</b> only when both sides accept it, and back to <b>needs review</b> when a phase or contract changes</li>
+          <li>Produces a "who to go to" table and contact list to share with the client</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> get both sides to agree it, and approve the table before the client sees it.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample row</div>
+        <div class="entry">
+          <header><strong>Make business decisions for the site</strong><span class="pill ok">Agreed</span></header>
+          <div class="raci-grid">
+            <div><b>R</b>Program lead</div><div><b>A</b>Program lead</div><div><b>C</b>Agency PM</div><div><b>I</b>—</div>
+          </div>
+          <dl>
+            <dt>Program lead</dt><dd>Ana Ruiz</dd>
+            <dt>Backup</dt><dd>Executive sponsor</dd>
+            <dt>Respond in</dt><dd>3 business days</dd>
+            <dt>Source</dt><dd>Kickoff meeting <small>(00:12:40)</small></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="rec" role="tabpanel" id="r-questions" aria-labelledby="t-questions" hidden>
+      <div>
+        <p class="asks">"What do you need from me?"</p>
+        <div class="file">Questions log · <code>docs/questions.yaml</code> · tracker page and review desk</div>
+        <h4>Two kinds, kept apart</h4>
+        <ul>
+          <li><b>Project questions</b> only you can answer: a surname, who owns something, whether the SOW is signed, a risk's severity</li>
+          <li><b>Product questions</b> for the product owner or designer, with who should answer and the ticket where it's logged, so you can chase them</li>
+        </ul>
+        <h4>Each question</h4>
+        <ul>
+          <li>Answerable on its own: says what's missing and where the answer goes</li>
+          <li>The site it's about, when it was raised, and the meeting or document that raised it</li>
+          <li>Open or answered, with the answer, who gave it, and when</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> answer them in a batch. Each answer is filed where it belongs: a surname into the roster, a backup into the RACI, a severity into the risk tracker.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entries</div>
+        <div class="entry" style="margin-bottom:14px">
+          <header><span class="id">Q-002</span><strong>What is Alex's surname?</strong><span class="pill open">Open</span></header>
+          <dl>
+            <dt>Kind</dt><dd>Project question, for you</dd>
+            <dt>Raised</dt><dd>Oct 9 · Kickoff meeting notes</dd>
+            <dt>Goes to</dt><dd>Team roster</dd>
+          </dl>
+        </div>
+        <div class="entry">
+          <header><span class="id">Q-003</span><strong>Does the contact form need a phone number field?</strong><span class="pill open">Open</span></header>
+          <dl>
+            <dt>Kind</dt><dd>Product question</dd>
+            <dt>Ask</dt><dd>Product owner</dd>
+            <dt>Logged on</dt><dd>Ticket #42</dd>
+            <dt>Raised</dt><dd>Oct 10 · Design review</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="rec" role="tabpanel" id="r-risks" aria-labelledby="t-risks" hidden>
+      <div>
+        <p class="asks">"What could go wrong, and what are we doing about it?"</p>
+        <div class="file">Risk tracker · <code>docs/risks.yaml</code> · tracker page</div>
+        <h4>Each risk</h4>
+        <ul>
+          <li><b>A one-line summary</b> that reads on its own in a list, and what could go wrong</li>
+          <li><b>Severity</b> (High, Medium, Low, or TBD until you set it) and <b>status</b> (Open, Monitoring, Closed)</li>
+          <li><b>Who confirmed it</b> and where it was raised, down to the meeting timestamp</li>
+          <li><b>The next step</b>: who does what</li>
+          <li><b>Dated updates</b>, so you can see how it developed</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li>Every risk is confirmed by a named person, never invented</li>
+          <li>Updates are added, not rewritten, so the history stays honest</li>
+          <li>Only the risks you approve, in the words you approve, reach the client's status report</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> set the severity, choose what the client sees, and close risks.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entry</div>
+        <div class="entry">
+          <header><span class="id">R-001</span><strong>Launch window falls over the holidays</strong><span class="pill hi">High</span></header>
+          <dl>
+            <dt>Status</dt><dd>Open</dd>
+            <dt>Why it matters</dt><dd>Funding depends on launching by year end, which leaves no slack if launch slips past the holidays.</dd>
+            <dt>Confirmed by</dt><dd>Sam Lee, Ana Ruiz</dd>
+            <dt>Source</dt><dd>Kickoff meeting <small>(00:31:10)</small></dd>
+            <dt>Next step</dt><dd>PM and Sam Lee agree a launch date with the client.</dd>
+            <dt>Updates</dt><dd><ul class="hist"><li>Oct 14: The schedule marks the last two weeks of December as a change freeze. <small>(Schedule Sheet)</small></li></ul></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="rec" role="tabpanel" id="r-decisions" aria-labelledby="t-decisions" hidden>
+      <div>
+        <p class="asks">"What did we decide, and who signed off?"</p>
+        <div class="file">Decision log · <code>docs/decisions.yaml</code> · tracker page</div>
+        <h4>Each decision</h4>
+        <ul>
+          <li><b>The decision</b>, stated as a choice, and <b>why</b>, with the meeting or message it came from</li>
+          <li><b>Driver:</b> who pushed for it. <b>Approver:</b> who signed off</li>
+          <li><b>Status:</b> pending, approved, denied, superseded, or deprecated</li>
+          <li><b>Needed by</b> for pending decisions, so you chase them before they block work</li>
+          <li><b>Tags</b> for filtering by feature or system</li>
+        </ul>
+        <h4>Why you can trust it</h4>
+        <ul>
+          <li><b>Approval is never inferred.</b> Nobody objecting isn't a yes; it stays pending until someone confirms who approved it</li>
+          <li>One decision per entry, and denied ones are kept, so settled questions aren't reopened</li>
+          <li>Architecture decisions go to ADRs in the code repository instead</li>
+        </ul>
+        <div class="yours"><b>Your part:</b> confirm approvers and chase what's pending.</div>
+      </div>
+      <div>
+        <div class="sample-label">Sample entry</div>
+        <div class="entry">
+          <header><span class="id">D-004</span><strong>Launch before the December change freeze</strong><span class="pill open">Pending</span></header>
+          <dl>
+            <dt>Why</dt><dd>Avoids the freeze and protects year-end funding. Raised in the weekly check-in <small>(00:08:15)</small>.</dd>
+            <dt>Driver</dt><dd>Sam Lee</dd>
+            <dt>Approver</dt><dd>Ana Ruiz <small>(needed)</small></dd>
+            <dt>Needed by</dt><dd>Nov 1</dd>
+            <dt>Tags</dt><dd>launch, schedule</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="brain">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Inside a Project Brain</div>
+      <h2>Everything Has One Home.</h2>
+      <p class="lede">The same layout on every project, so any PM (or AI agent) knows where to look.</p>
+    </div>
+    <div class="brain">
+<div class="tree" role="img" aria-label="Folder layout of a Project Brain"><span class="d">example-site-pm/</span>
+├─ CLAUDE.md            <span class="c"># entry point for the AI agent</span>
+├─ <span class="d">.ai/general/</span>         <span class="c"># Lobot itself, replaced on update</span>
+├─ <span class="d">.ai/project/</span>         <span class="c"># how we work on this project</span>
+├─ <span class="d">docs/</span>
+│  ├─ <span class="d">overview/</span>         <span class="c"># the project dossier</span>
+│  ├─ <span class="y">decisions.yaml</span>    <span class="c"># what we decided, and who approved</span>
+│  ├─ <span class="y">risks.yaml</span>        <span class="c"># what could go wrong</span>
+│  ├─ <span class="y">questions.yaml</span>    <span class="c"># what's still open</span>
+│  ├─ <span class="y">tasks.yaml</span>        <span class="c"># your own to-dos</span>
+│  ├─ <span class="y">people.yaml</span>  <span class="y">raci.yaml</span>  <span class="y">glossary.yaml</span>
+│  ├─ <span class="d">work/</span>             <span class="c"># what the team will build</span>
+│  ├─ <span class="d">meetings/</span>  <span class="d">transcripts/</span>  <span class="c"># cleaned; raw/ stays local</span>
+│  ├─ <span class="d">journals/</span>  <span class="d">reports/</span>
+├─ <span class="d">repo/</span>                <span class="c"># the code, read-only</span>
+└─ <span class="d">tmp/</span>                 <span class="c"># scratch, never saved</span>
+
+<span class="d">~/.lobot/</span>                <span class="c"># your voice and preferences,</span>
+                         <span class="c"># on your computer, every project</span></div>
+      <div class="notes">
+        <div class="note"><div><b>Saved to a private GitHub repository</b><span>The AI agent commits each piece of work as it finishes, with a note of what it was built from, and pushes when you say so. You never need a terminal to keep the Project Brain safe; if the AI agent can't push from where it runs, it walks you through doing it yourself.</span></div></div>
+        <div class="note"><div><b>One fact, one home</b><span>People live in the people directory, ownership in RACI, decisions in the decision log. Everything else points to them instead of copying.</span></div></div>
+        <div class="note"><div><b>Sources stay untouched</b><span>Transcripts, Drive files, and the code are read, never edited. Summaries go in <code>docs/</code> with a note of where they came from.</span></div></div>
+        <div class="note"><div><b>Lobot updates itself, not your records</b><span>An update only replaces Lobot's own files. If you've edited one, it stops and lists them instead of overwriting your work.</span></div></div>
+        <div class="note"><div><b>Yours to keep, wherever you go</b><span>Your writing voice and preferences live in <code>~/.lobot/</code>, so the next project already knows how you like to work.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="sponsor">A <a href="https://www.lullabot.com">Lullabot</a>-sponsored project. MIT licensed.</span>
+    <span><a href="start.html">Get Started</a> · <a href="skills.html">What Is Lobot?</a> · <a href="records.html">How It Works</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
