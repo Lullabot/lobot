@@ -12,12 +12,13 @@
   --accent-soft: #fde4e2;
   --on-accent: #ffffff;
   --sponsor: #d60000;
-  --lucy: #2f6f6a;
-  --lucy-soft: #dcece9;
-  --pepper: #8a4a9c;
-  --pepper-soft: #efe2f3;
-  --lobot: #2f5aa8;
-  --lobot-soft: #dfe7f6;
+  /* Agent colors, matched to each avatar (Lobot red, Lucy green, Pepper purple) */
+  --lucy: #4a7323;
+  --lucy-soft: #e4efd6;
+  --pepper: #7a3789;
+  --pepper-soft: #f0e1f3;
+  --lobot: #a8322d;
+  --lobot-soft: #f7e1df;
   --code-bg: #1b2833;
   --code-ink: #e9edf1;
   --shadow: 0 1px 2px rgba(34,51,64,.05), 0 6px 20px rgba(34,51,64,.07);
@@ -37,12 +38,12 @@
     --accent-soft: #3a1f1e;
     --on-accent: #121a21;
     --sponsor: #ff6b5e;
-    --lucy: #6cc0b6;
-    --lucy-soft: #1d3330;
-    --pepper: #c99ad8;
+    --lucy: #9fd26b;
+    --lucy-soft: #1f2e16;
+    --pepper: #d49ae2;
     --pepper-soft: #33243a;
-    --lobot: #8db0f0;
-    --lobot-soft: #1f2a42;
+    --lobot: #ff8a80;
+    --lobot-soft: #3a1f1e;
     --code-bg: #0d1419;
     --code-ink: #e9edf1;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
