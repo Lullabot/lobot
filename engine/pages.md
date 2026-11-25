@@ -10,7 +10,7 @@ The assistant must be able to publish a hosted page with a shared database and w
 
 Once per project, the first time the page is needed:
 
-1. Copy the skill's template to `tmp/<page>.html` and fill its placeholders. Check the script parses (`node --check` on the extracted script).
+1. Copy the skill's template to `tmp/<page>.html` and fill its placeholders. Then run `node .ai/general/scripts/fill-avatars.js tmp/<page>.html`, which fills the avatar placeholders (`{{LOBOT_AVATAR}}` and the like) with the images themselves; never paste an image's data by hand. Check the script parses (`node --check` on the extracted script).
 2. Publish it with capabilities `{"db": {}}`. It is the PM's internal page, like the review desk: don't suggest sharing it.
 3. Add it to the root `CLAUDE.md` "This project" table under the name its skill gives, with its link.
 4. Fill it (its skill's "Refresh and open" or equivalent).

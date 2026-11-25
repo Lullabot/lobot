@@ -34,6 +34,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
 .wrap{max-width:1100px;margin:0 auto;padding-block:24px 40px;display:grid;gap:16px;container-type:inline-size}
 header{display:grid;gap:4px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.byline{display:flex;align-items:center;gap:10px}
+.who{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+.who.sm{width:28px;height:28px}
 h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
 h2{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin:0;font-weight:700}
 .sub{color:var(--muted);margin:0;font-size:14px}
@@ -73,10 +76,11 @@ li.crit .when{color:var(--crit);font-weight:600}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <div class="byline"><img class="who" src="{{LOBOT_AVATAR}}" alt=""><div class="eyebrow" id="eyebrow">Lobot</div></div>
     <h1 id="title">Today</h1>
     <p class="sub" id="asof">What you need to know to start the day. Each item links to where you act on it.</p>
   </header>
+<script>document.querySelectorAll("img.who").forEach(i => { const s = i.getAttribute("src"); if (!s || s.startsWith("{{")) i.remove(); });</script>
 
   <div class="notice" id="notice" hidden></div>
 

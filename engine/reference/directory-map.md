@@ -10,6 +10,7 @@ Where everything in a Project Brain lives and who maintains it. Read it when uns
 | `.ai/general/` | Lobot: how the assistant operates as a PM assistant on **any** project. A copy of the Lobot engine at the version in `.ai/general/.lobot-version`. Must contain nothing project-specific. | Lobot (see "Changing Lobot") |
 | `.ai/general/lobot.md` | Loaded every session: hard rules, start-of-session routine, which skill to use when, working rules. | Lobot |
 | `.ai/general/personality.md` | How the assistant (Lobot) sounds when talking to the PM: tone, proactiveness, humor, adjustable settings. Applies to conversation only, never to records or drafts in the PM's voice. | Lobot |
+| `.ai/general/avatar.webp`, `.ai/general/agents/<name>/avatar.webp` | Avatars for Lobot and each agent (256 px, square), shown on the pages Lobot publishes (Lobot on the boards and review desk, Lucy beside her proposals, Pepper on the Issue Review Board). `scripts/fill-avatars.js` embeds them in a page, since hosted pages can't load local files. | Lobot |
 | `.ai/general/glossary.yaml` | Shared glossary: Drupal, Lullabot tooling, and Agile terms that mean the same on any project. | Lobot |
 | `.ai/general/reference/` | Pages read only when needed: this directory map, and pages for people outside the project, e.g. `security.md` (what Lobot needs access to and why, for a security team). | Lobot |
 | `.ai/general/research/` | Reference research behind the skills (e.g. industry criteria for ADRs, decision logs, risk registers, RACI). Suggestions in it are not rules until a PM adopts them. | Lobot |
@@ -18,10 +19,10 @@ Where everything in a Project Brain lives and who maintains it. Read it when uns
 | `.ai/general/pages.md` | Steps and rules shared by the pages Lobot publishes (weekly and daily boards, Issue Review Board). | Lobot |
 | `.ai/general/records-in-sheets.md` | How the risk tracker, decision log, and questions log live in Google Sheets instead of their `docs/` files when the PM moves them there: IDs, sites, approvals, and moving in and back. | Lobot |
 | `.ai/general/delegation.md` | Roster of named agents and the rules for handing work to them (routing, briefs, approvals, sequencing). | Lobot |
-| `.ai/general/agents/` | Named agents. `<name>.md` is the agent's definition, which Lobot copies to `.claude/agents/`, where Claude looks for it. `<name>/` holds its supporting files, e.g. Lucy the librarian's personality and general corrections log. The roster is in `delegation.md`. | Lobot |
+| `.ai/general/agents/` | Named agents. `<name>.md` is the agent's definition, which Lobot copies to `.claude/agents/`, where Claude looks for it. `<name>/` holds its supporting files, e.g. Lucy the librarian's personality, general corrections log, and avatar. The roster is in `delegation.md`. | Lobot |
 | `.ai/project/agents/<name>/` | An agent's settings for this project: `config.md` (autonomy levels, sources) and `corrections.md` (project corrections log). | PM |
 | `.claude/skills/`, `.agents/skills/` | Links to every skill in `.ai/general/skills/` and `.ai/project/skills/`, so assistants that discover skills on their own find them. Made by Lobot; the skills themselves live in `.ai/`. | Lobot |
-| `.ai/general/scripts/` | Helper scripts that work on any project (e.g. `drupal_config_inventory.py`). | Lobot |
+| `.ai/general/scripts/` | Helper scripts that work on any project (e.g. `drupal_config_inventory.py`, and `fill-avatars.js`, which puts the avatars into a page made from a template). | Lobot |
 | `.ai/project/` | How the assistant helps on **this** project only (project conventions, client norms, workflows). | PM + assistant |
 | `.ai/project/github.md` | The project's repo, GitHub Project boards, field and option IDs (used by the github skill), and where the Project Brain's own repository stands (project-setup skill). | PM + assistant |
 | `.ai/project/tickets.md` | Which tracker the project's tickets go to (the PM's choice), and the team's ticket conventions: labels, types, workflow, definition of done, stale threshold (used by the tickets skill). | PM + assistant |

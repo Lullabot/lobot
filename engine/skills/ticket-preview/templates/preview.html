@@ -29,6 +29,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
 .wrap{max-width:920px;margin:0 auto;padding-block:28px 48px;display:grid;gap:16px}
 header{display:grid;gap:8px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.byline{display:flex;align-items:center;gap:10px}
+.who{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+.who.sm{width:28px;height:28px}
 h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
 h2.plan{font-size:19px;line-height:1.25;margin:0;text-wrap:balance}
 .sub{color:var(--muted);margin:0;max-width:72ch}
@@ -158,7 +161,7 @@ button.primary:disabled{opacity:.55;cursor:default}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <div class="byline"><img class="who" src="{{PEPPER_AVATAR}}" alt=""><div class="eyebrow" id="eyebrow">Lobot</div></div>
     <h1>Issue Review Board</h1>
     <p class="sub">Every batch of tickets Claude drafts is reviewed here before it goes to the tracker. Read each plan as the tracker will show it, and leave notes on a plan, a ticket, or a single field; Claude updates the plan from your notes and learns from them. Approve, cancel, or archive a plan here; Claude sends an approved plan only when you ask.</p>
     <div class="sumrow">
@@ -166,6 +169,7 @@ button.primary:disabled{opacity:.55;cursor:default}
       <label class="check" id="incWrap"><span>Include</span> <input type="checkbox" id="incArchived"> <span id="incLabel">archived plans</span></label>
     </div>
   </header>
+<script>document.querySelectorAll("img.who").forEach(i => { const s = i.getAttribute("src"); if (!s || s.startsWith("{{")) i.remove(); });</script>
   <div class="notice" id="notice" hidden></div>
 
   <section class="panel" aria-label="Choose a plan">
