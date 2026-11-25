@@ -38,11 +38,27 @@
   // Copy buttons
   document.querySelectorAll('.copy').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var text = document.getElementById(btn.getAttribute('data-copy')).textContent;
+      var copy = document.getElementById(btn.getAttribute('data-copy')).cloneNode(true);
+      copy.querySelectorAll('[hidden]').forEach(function (h) { h.remove(); }); // only the reader's chosen level
+      var text = copy.textContent;
       var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1600); };
       if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done, function () {}); }
     });
   });
+
+  // Comfort level (Get started): one choice for the whole page, remembered per browser
+  var levelTabs = document.querySelectorAll('.level-tab');
+  function setLevel(level) {
+    levelTabs.forEach(function (t) { t.setAttribute('aria-selected', t.getAttribute('data-level') === level ? 'true' : 'false'); });
+    document.querySelectorAll('[data-level]:not(.level-tab)').forEach(function (el) { el.hidden = el.getAttribute('data-level') !== level; });
+    try { localStorage.setItem('lobot-level', level); } catch (e) {}
+  }
+  if (levelTabs.length) {
+    levelTabs.forEach(function (t) { t.addEventListener('click', function () { setLevel(t.getAttribute('data-level')); }); });
+    var saved = null;
+    try { saved = localStorage.getItem('lobot-level'); } catch (e) {}
+    setLevel(saved === 'checklist' || saved === 'terminal' ? saved : 'step');
+  }
 
   // Live version and release notes from GitHub
   function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Records & Project Brain · Lobot</title>
+<title>How It Works · Lobot</title>
 <meta name="description" content="The core records Lobot keeps for a PM, and the folder layout of a Project Brain.">
 <!--
   Maintainers: this site is kept by hand. Pages share assets/site.css and assets/site.js,
@@ -22,7 +22,7 @@
     <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><img src="assets/avatars/lobot.webp" alt=""></span>Lobot</a>
     <a class="version nav-version" id="version" href="https://github.com/Lullabot/lobot/releases" hidden><span class="dot"></span><span></span></a>
     <div class="nav-links">
-      <a href="skills.html">What it can do</a><a href="records.html" aria-current="page">Records</a><a href="security.html">Security</a><a class="btn primary nav-cta" href="start.html">Get started</a>
+      <a href="skills.html">What Is Lobot?</a><a href="records.html" aria-current="page">How It Works</a><a href="security.html">Security</a><a class="btn primary nav-cta" href="start.html">Get Started</a>
     </div>
   </div>
 </nav>
@@ -30,16 +30,16 @@
 <main id="top">
 <header class="page-hero">
   <div class="wrap">
-    <div class="eyebrow">Records & Project Brain</div>
-    <h1>Your whole project, written down.</h1>
+    <div class="eyebrow">How It Works</div>
+    <h1>Your Whole Project, Written Down.</h1>
     <p class="lede">Every project gets a Project Brain: one folder that holds Lobot plus everything about the project, from people and decisions to meeting notes and a daily journal.</p>
   </div>
 </header>
 <section id="records">
   <div class="wrap">
     <div class="head">
-      <div class="eyebrow">Core records</div>
-      <h2>The PM's records, kept for you.</h2>
+      <div class="eyebrow">Core Records</div>
+      <h2>The PM's Records, Kept for You.</h2>
       <p class="lede">The five records every project leans on. Lucy fills them from meetings, documents, and your answers, cites where each fact came from, and keeps them current. You make the calls.</p>
     </div>
     <div class="links" aria-label="How the records connect">
@@ -49,11 +49,11 @@
     </div>
 
     <div class="rec-tabs" role="tablist" aria-label="Core records">
-      <button class="rec-tab" role="tab" id="t-roster" aria-controls="r-roster" aria-selected="true"><b>Team roster</b><small>Who's who</small></button>
-      <button class="rec-tab" role="tab" id="t-raci" aria-controls="r-raci" aria-selected="false" tabindex="-1"><b>RACI matrix</b><small>Who decides</small></button>
-      <button class="rec-tab" role="tab" id="t-questions" aria-controls="r-questions" aria-selected="false" tabindex="-1"><b>Questions log</b><small>What's still open</small></button>
-      <button class="rec-tab" role="tab" id="t-risks" aria-controls="r-risks" aria-selected="false" tabindex="-1"><b>Risk tracker</b><small>What could go wrong</small></button>
-      <button class="rec-tab" role="tab" id="t-decisions" aria-controls="r-decisions" aria-selected="false" tabindex="-1"><b>Decision log</b><small>What we agreed</small></button>
+      <button class="rec-tab" role="tab" id="t-roster" aria-controls="r-roster" aria-selected="true"><b>Team Roster</b><small>Who's who</small></button>
+      <button class="rec-tab" role="tab" id="t-raci" aria-controls="r-raci" aria-selected="false" tabindex="-1"><b>RACI Matrix</b><small>Who decides</small></button>
+      <button class="rec-tab" role="tab" id="t-questions" aria-controls="r-questions" aria-selected="false" tabindex="-1"><b>Questions Log</b><small>What's still open</small></button>
+      <button class="rec-tab" role="tab" id="t-risks" aria-controls="r-risks" aria-selected="false" tabindex="-1"><b>Risk Tracker</b><small>What could go wrong</small></button>
+      <button class="rec-tab" role="tab" id="t-decisions" aria-controls="r-decisions" aria-selected="false" tabindex="-1"><b>Decision Log</b><small>What we agreed</small></button>
     </div>
 
     <div class="rec" role="tabpanel" id="r-roster" aria-labelledby="t-roster">
@@ -244,12 +244,12 @@
   <div class="wrap">
     <div class="head">
       <div class="eyebrow">Inside a Project Brain</div>
-      <h2>Everything has one home.</h2>
-      <p class="lede">The same layout on every project, so any PM (or assistant) knows where to look.</p>
+      <h2>Everything Has One Home.</h2>
+      <p class="lede">The same layout on every project, so any PM (or AI agent) knows where to look.</p>
     </div>
     <div class="brain">
 <div class="tree" role="img" aria-label="Folder layout of a Project Brain"><span class="d">example-site-pm/</span>
-├─ CLAUDE.md            <span class="c"># entry point for the assistant</span>
+├─ CLAUDE.md            <span class="c"># entry point for the AI agent</span>
 ├─ <span class="d">.ai/general/</span>         <span class="c"># Lobot itself, replaced on update</span>
 ├─ <span class="d">.ai/project/</span>         <span class="c"># how we work on this project</span>
 ├─ <span class="d">docs/</span>
@@ -268,7 +268,7 @@
 <span class="d">~/.lobot/</span>                <span class="c"># your voice and preferences,</span>
                          <span class="c"># on your computer, every project</span></div>
       <div class="notes">
-        <div class="note"><div><b>Saved to a private GitHub repository</b><span>The assistant commits each piece of work as it finishes, with a note of what it was built from, and pushes when you say so. You never need a terminal to keep the Project Brain safe; if the assistant can't push from where it runs, it walks you through doing it yourself.</span></div></div>
+        <div class="note"><div><b>Saved to a private GitHub repository</b><span>The AI agent commits each piece of work as it finishes, with a note of what it was built from, and pushes when you say so. You never need a terminal to keep the Project Brain safe; if the AI agent can't push from where it runs, it walks you through doing it yourself.</span></div></div>
         <div class="note"><div><b>One fact, one home</b><span>People live in the people directory, ownership in RACI, decisions in the decision log. Everything else points to them instead of copying.</span></div></div>
         <div class="note"><div><b>Sources stay untouched</b><span>Transcripts, Drive files, and the code are read, never edited. Summaries go in <code>docs/</code> with a note of where they came from.</span></div></div>
         <div class="note"><div><b>Lobot updates itself, not your records</b><span>An update only replaces Lobot's own files. If you've edited one, it stops and lists them instead of overwriting your work.</span></div></div>
@@ -282,7 +282,7 @@
 <footer>
   <div class="wrap">
     <span class="sponsor">A <a href="https://www.lullabot.com">Lullabot</a>-sponsored project. MIT licensed.</span>
-    <span><a href="start.html">Get started</a> · <a href="skills.html">What it can do</a> · <a href="records.html">Records</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
+    <span><a href="start.html">Get Started</a> · <a href="skills.html">What Is Lobot?</a> · <a href="records.html">How It Works</a> · <a href="security.html">Security</a> · <a href="https://github.com/Lullabot/lobot">GitHub</a> · <a href="https://github.com/Lullabot/lobot/releases">Releases</a></span>
   </div>
 </footer>
 
