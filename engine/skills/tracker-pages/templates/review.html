@@ -35,6 +35,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
 .wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;display:grid;gap:18px}
 header{display:grid;gap:6px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.byline{display:flex;align-items:center;gap:10px}
+.who{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+.who.sm{width:28px;height:28px}
 h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
 h2{font-size:15px;margin:0}
 .sub{color:var(--muted);margin:0;max-width:68ch}
@@ -126,11 +129,12 @@ ul.points li{overflow-wrap:anywhere}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <div class="byline"><img class="who" src="{{LOBOT_AVATAR}}" alt=""><div class="eyebrow" id="eyebrow">Lobot</div></div>
     <h1>Review desk</h1>
     <p class="sub">Everything that needs you, in one place: Lucy's proposals, your questions, questions to chase with others, your tasks, risks, pending decisions, and checklists. Work through a tab, and Claude files your changes into Lobot.</p>
     <div class="processed" id="processed"></div>
   </header>
+<script>document.querySelectorAll("img.who").forEach(i => { const s = i.getAttribute("src"); if (!s || s.startsWith("{{")) i.remove(); });</script>
 
   <div class="notice" id="notice" hidden></div>
 
@@ -205,6 +209,7 @@ const qMatch = (t, d) => { const f = qf[t.key]; return !f || ((f.kind === "any" 
 
 const $ = id => document.getElementById(id);
 const el = (tag, props = {}, kids = []) => { const n = document.createElement(tag); Object.assign(n, props); for (const k of [].concat(kids)) if (k != null) n.append(k); return n; };
+const LUCY = (u => u.startsWith("{{") ? "" : u)("{{LUCY_AVATAR}}"); // Lucy's avatar beside her proposals; filled by fill-avatars.js
 const pill = (cls, text) => el("span", {className: "pill " + cls, textContent: text});
 const store = {get(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }};
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
@@ -279,7 +284,8 @@ function render(){
   const t = tabOf(current);
   const all = rows(t).filter(inScope).filter(d => qMatch(t, d));
   const open = sortFor(t, all.filter(t.attention)), closed = sortFor(t, all.filter(d => !t.attention(d)));
-  const kids = [el("p", {className: "lead", textContent: t.lead})];
+  const lead = el("p", {className: "lead", textContent: t.lead});
+  const kids = [t.key === "review" && LUCY ? el("div", {className: "byline"}, [el("img", {className: "who sm", src: LUCY, alt: ""}), lead]) : lead];
   const narrowed = qf[t.key] && (qf[t.key].kind !== "any" || qf[t.key].pri !== "any");
   if (qf[t.key] && loaded) kids.push(qFilters(t, rows(t).filter(inScope).filter(t.attention)));
   // A record that lives in Google Sheets (records-in-sheets.md) has no items here, only links to its Sheets.

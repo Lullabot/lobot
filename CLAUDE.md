@@ -15,6 +15,7 @@ Never put a client's name, people, project details, internal URLs, or credential
 | `tools/lobot.js` | Runs through `npx`; not copied into projects | No dependencies. |
 | `tools/migrations.json` | Read by the tool's `status`, `update`, and `migrate` | Steps a breaking change needs in a project's own files (see "Breaking" below). |
 | `docs/` | The team, as the GitHub Pages site (https://lullabot.github.io/lobot/) | Not part of the package. `docs/index.html` is kept by hand; see "Keep the map current". |
+| `brand/` | Nobody | Full-size source art (avatar originals). Projects get the small copies in `engine/`; the site uses its own in `docs/assets/`. |
 | Everything else | Nobody | Repository docs, release config, this file. |
 
 ## Rules

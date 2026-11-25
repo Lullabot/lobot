@@ -27,6 +27,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
 .wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;display:grid;gap:18px}
 header{display:grid;gap:6px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.byline{display:flex;align-items:center;gap:10px}
+.who{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+.who.sm{width:28px;height:28px}
 h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
 h2{font-size:15px;margin:0;display:flex;gap:8px;align-items:center}
 .sub{color:var(--muted);margin:0;max-width:68ch}
@@ -112,11 +115,12 @@ table.staff td{overflow-wrap:anywhere}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="eyebrow">Lobot</div>
+    <div class="byline"><img class="who" src="{{LOBOT_AVATAR}}" alt=""><div class="eyebrow" id="eyebrow">Lobot</div></div>
     <h1 id="title">This week</h1>
     <p class="sub">The week at a glance: the schedule, who's working, the sprint, your tasks, and what's owed. Each item links to where you act on it.</p>
     <div class="mono" id="refreshed"></div>
   </header>
+<script>document.querySelectorAll("img.who").forEach(i => { const s = i.getAttribute("src"); if (!s || s.startsWith("{{")) i.remove(); });</script>
   <div class="notice" id="notice" hidden></div>
   <div id="board" style="display:grid;gap:14px"><p class="empty">Loading the week from Lobot. If nothing shows, ask Claude to refresh the weekly board.</p></div>
   <footer class="sources" id="sources"></footer>
